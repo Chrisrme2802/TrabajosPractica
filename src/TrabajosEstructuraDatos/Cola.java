@@ -1,5 +1,5 @@
 package TrabajosEstructuraDatos;
-public class Cola {
+public class Cola<T> {
     private Nodo<T> inicio;
     private Nodo<T> finalCola;
 
@@ -23,7 +23,7 @@ public class Cola {
         if (inicio == null) {
             return null;
         }
-        datoEliminado = inicio.dato;
+        T datoEliminado = inicio.dato;
         inicio = inicio.siguiente;
 
         return datoEliminado;

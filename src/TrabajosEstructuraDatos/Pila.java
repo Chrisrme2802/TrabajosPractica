@@ -1,6 +1,6 @@
 package TrabajosEstructuraDatos;
 public class Pila<T> {
-    private Nodo<T> = tope;
+    private Nodo<T> tope;
 
     public Pila() {
         this.tope = null;
@@ -16,10 +16,8 @@ public class Pila<T> {
         if (tope == null) {
             return null;
         }
-        while (tope.siguiente != null) {
-            T datoEliminado = tope.dato;
-            tope = datoEliminado.siguiente;
-        }
-        return datoEliminado;
+            T nodoEliminado = tope.dato;
+            tope = tope.siguiente;
+            return nodoEliminado;
     }
 }
