@@ -22,3 +22,6 @@ mv *.java src/TrabajosEstructuraDatos/ (Mueve todo)
 ls archivo (Ver archivos)
 ls -a (Archivos ocultos)
 ls -la (Archivos detalles)
+ls ves archivos de donde estes
+cd es carpeta, te mueves a esa carpeta
+cd .. regresas de carpeta
