@@ -35,3 +35,6 @@ gatos = {
 print(gatos)
 perros = dict(nombre = "Camilo", edad = 6)
 #print(dir(perros)) Te dara todo lo que puedes hacer con diccionarios en este caso
+
+#&& es and y || es or
+print("Cuando devuelve true") if 5 < 2 else print("Cuando devuelve false") 

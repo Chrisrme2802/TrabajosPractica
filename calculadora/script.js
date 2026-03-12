@@ -2,6 +2,23 @@ const pantalla = document.getElementById("pantalla");
 const botones = document.querySelectorAll("button");
 
 function procesarEntrada(valor) {
+    let ultimo = pantalla.value.slice(-1)
+    const operadores = ["+", "-", "/", "*"]
+    if (pantalla.value.length === 0) {
+        if ((operadores.includes(valor))||(valor === ".")) {
+            return;
+        }
+    }
+    if (operadores.includes(valor)&&(operadores.includes(ultimo))) {
+        pantalla.value = pantalla.value.slice(0, -1) + valor
+        return;
+    }
+    if ((valor === ".")&&(ultimo === ".")) {
+        return;
+    }
+    if ((valor === ".")&&(operadores.includes(ultimo))) {
+        return;
+    }
     if (valor ===  "C") {
         pantalla.value = "";
     } else if ((valor === "=")||(valor === "Enter")) {
