@@ -23,6 +23,7 @@
    <p>Texto</p>
 </div>
 
+
 ##CSS
 selector {
    propiedad: valor;
@@ -48,6 +49,7 @@ flex        (listas dentro de una lista acomodas elementos en una misma linea co
 inline      (todo en la misma linea)
 grid   grid-template-columns: 1fr 1fr;      (acomoda en lineas y columnas)
 
+
 ##JavaScript
 function agregarTarea(){        (Defines funcion o metodo)
 }
@@ -61,3 +63,10 @@ document.createElement("li")        (crea elemento html nuevo) (lista en este ca
 nuevaTarea.textContent = texto      (asignas texto a un elemento)
 appendChild(nuevaTarea)         (agregas elemento dentro de otro)(para que siempre este la opcion de agregar otra tarea, rellamar a nuevaTarea)
 document.querySelector(".tarjeta")          (modificar todo un bloque de html)
+
+#Pilas
+Declarar	let s = [];
+Meter	s.push("valor");
+Sacar	s.pop();
+Ver el tope	s[s.length - 1];
+Saber si está vacía s.length === 0;

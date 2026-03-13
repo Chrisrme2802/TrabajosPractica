@@ -38,3 +38,21 @@ perros = dict(nombre = "Camilo", edad = 6)
 
 #&& es and y || es or
 print("Cuando devuelve true") if 5 < 2 else print("Cuando devuelve false") 
+
+#Ingresar datos
+dato = input("Ingrese un dato: ")
+print(dato)
+
+try: 
+    num = int(input("Ingresa un numero: "))
+    resultado = 10 / num
+except ValueError: #No puede convertir un dato de otra cosa a int 
+    print("Debes ingresar un numero valido")
+except ZeroDivisionError:   #No puede dividir entre 0
+    print("No puedes dividir entre 0")
+except Exception as e:  #Igual que en exception de java cacha todo
+    print("Ocurrio un error inesperado: ", e)
+else: 
+    print("El resultado es: ", resultado)
+finally:
+    print("FIN DEL PROGRAMA")
