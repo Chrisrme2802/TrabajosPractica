@@ -10,6 +10,9 @@ function procesarEntrada(valor) {
             return;
         }
     }
+    if ((pantalla.value === "Ingrese una expresion")||(pantalla.value === "Error")) {
+        pantalla.value = "";
+    }
     if (operadores.includes(valor)&&(operadores.includes(ultimo))) {
         pantalla.value = pantalla.value.slice(0, -1) + valor
         return;
@@ -22,8 +25,10 @@ function procesarEntrada(valor) {
     }
     if (valor ===  "C") {
         pantalla.value = "";
-    } else if ((valor === "=")||(valor === "Enter")) {
-        pantalla.value = interpreteExpresiones(pantalla.value)
+    } else if ((!pantalla.value)&&(valor === "=")) {
+        pantalla.value = "Ingrese una expresion";
+    } else if (valor === "=") {
+        pantalla.value = interpreteExpresiones(pantalla.value);
     } else if (valor == "Backspace") {
         pantalla.value = pantalla.value.slice(0,-1);
     } else {
@@ -33,12 +38,21 @@ function procesarEntrada(valor) {
 
 //Funcion para interpretar expresiones
 function interpreteExpresiones(expresionBase) {
+    //Validacion de que haya expresion
     if (!expresionBase) {
         console.error("Entrada invalida");
         return "Error";
     }
+
     let dividido = dividirExpresiones(expresionBase);
+    //Validacion de que la expresion sea valida
+    if (!dividido) {
+        console.error("No se puede dividir la expresion, formato invalido");
+        return "Error";
+    }
+    console.log("Prueba: " + dividido);
     let ordenado = ordenarExpresiones(dividido);
+    console.log("Prueba: " + ordenado);
     let final = calcularFinal(ordenado);
     return final;
 }
@@ -46,16 +60,18 @@ function interpreteExpresiones(expresionBase) {
 //Funcion para ordenar la lista de expresiones
 function ordenarExpresiones(listaDeExpresiones) {
     let cajaOperadores = [];
-    let cajaFinal = [];
+    let listaFinal = [];
     const jerarquia = {
-        "+": "1",
-        "-": "1",
-        "*": "2",
-        "/": "2"
+        "+": 1,
+        "-": 1,
+        "*": 2,
+        "/": 2
     }
-    // isNaN (isNotaNumber) si no es numero
+    // isNaN (isNotaNumber) si no es numero (Es algo fragil)
+    const patronAnclaje = RegExp(/^\d+\.?\d*$/); //Patron pero con ^ $ ya que va a ir en un array no en una cadena
     for (let expresion of listaDeExpresiones) {
-        if (!isNaN(expresion)) {
+        if (patronAnclaje.test(expresion)) {        //.test() valida una expresion con base de un molde
+            console.log("Procesando:", expresion, " | Caja actual:", cajaOperadores);
             listaFinal.push(expresion);
         } 
         //Si la expresion es ( nomas la agrego
@@ -64,7 +80,7 @@ function ordenarExpresiones(listaDeExpresiones) {
         }
         //Si la expresion es ), la caja de operadores tiene cosas y el pasado no es un ( entonces empezamos a vaciar la caja hasta que llegamos al muro
         else if (expresion === ")") {
-            while ((cajaOperadores > 0)&&((cajaOperadores.length - 1)!== "(")) {
+            while ((cajaOperadores.length > 0)&&((cajaOperadores[cajaOperadores.length - 1])!== "(")) {
                 listaFinal.push(cajaOperadores.pop());
             }
             cajaOperadores.pop();
@@ -72,11 +88,13 @@ function ordenarExpresiones(listaDeExpresiones) {
         //Ahora hacemos con los operadores, si el operador que esta dentro es de mayor poder entonces ese pasa primero a la caja y se guardan
         //operadores que tienen menos poder ya que primero se ejecuta el fuerte, ya sea cuando entre uno mas fuerte que el debil o hasta el final
         //que vaciemos la caja saldra el debil
-        else {
-            while ((cajaOperadores > 0)&&((cajaOperadores.length - 1)!== "(")&&poder[cajaOperadores[cajaOperadores.length - 1]] >= poder[expresion]) {
+        else if (['-', '+', '/', '*'].includes(expresion)) {
+            while ((cajaOperadores.length > 0)&&((cajaOperadores.length - 1) !== "(")&&(jerarquia[cajaOperadores[cajaOperadores.length - 1]] >= jerarquia[expresion])) {
+                console.log("Procesando:", expresion, " | Caja actual:", cajaOperadores);
                 listaFinal.push(cajaOperadores.pop());
             }
-            listaFinal.push(expresion);
+            cajaOperadores.push(expresion);
+            console.log("operador guardado en caja: " + expresion);
         }
     }
         //Ya que acabamos de revisar todas las piezas terminamos de validar que si que dejamos totalmente vacia la caja de operadores
@@ -89,13 +107,15 @@ function ordenarExpresiones(listaDeExpresiones) {
 
 //Funcion dividir expresiones en terminos
 function dividirExpresiones(expresion) {
-    return expresion.match(/ (\d+\.?\d*) | [\+\-\*\/\(\))] /g);
+    const patronGlobal = RegExp(/(\d+\.?\d*)|[\+\-\*\/\(\))]/g); //De esta forma estas creando un constructor de regex para usar en cualquier momento (RegExp())
+    return expresion.match(patronGlobal);
+    //  return expresion.match(/(\d+\.?\d*)|[\+\-\*\/\(\))]/g); Esta es una manera simple de hacer lo mismo
     // \d+ busca numeros (0-9) puede ser uno o mas
     // \.? busca . puede estar o no estar
     // \d* si se cumple la condicion busca mas numeros
     // [] busca lo que sea que este aqui dentro 
     // \caracter busca ese caracter en especifico (solo busca uno en este caso)
-    // / /g busca en toda la expresion, no solo cuando encuentre uno, sin eso al primero se para
+    // / /g busca en toda la expresion, no solo cuando encuentre uno, sin eso al primero se para, y busca en cadenas no en arrays
     // .match() devuelve un array con coincidencias o un null si nada
 }
 
@@ -112,13 +132,13 @@ function calcularFinal (listaFinal) {
             let numeroB = pilaNumeros.pop();
 
             if (expresion === "+") pilaNumeros.push(numeroA + numeroB);
-            if (expresion === "-") pilaNumeros.push(numeroA - numeroB);
+            if (expresion === "-") pilaNumeros.push(numeroB - numeroA);
             if (expresion === "*") pilaNumeros.push(numeroA * numeroB);
-            if (expresion === "/") pilaNumeros.push(numeroA / numeroB);
+            if (expresion === "/") pilaNumeros.push(numeroB / numeroA);
         }
     }
     //Regresas el primer termino de la pila de abajo hacia arriba que realmente es el unico que hay
-    return listaFinal[0];
+    return pilaNumeros[0];
 }
 
 //Poner cosas por mouse
@@ -132,8 +152,40 @@ botones.forEach(boton => {
 //Poner cosas por teclado
 document.addEventListener("keydown", (event) => {
     const tecla = event.key;
-    const permitidas = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "+", "-", "*", "/", ".", "=", "C", "Backspace", "Enter", "(", ")"];
+    if ((tecla === "=")||(tecla === "Enter")) {
+        event.preventDefault();
+        procesarEntrada("=");
+    } else if (tecla === "Escape") {
+        procesarEntrada("C");
+    }
+    const permitidas = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "+", "-", "*", "/", ".", "Backspace", "(", ")"];
     if (permitidas.includes(tecla)) {
         procesarEntrada(tecla);
+    }
+})
+
+//Poder copiar y pegar cosas
+document.addEventListener("keydown", async (event) => {
+    const valoresAceptados = RegExp(/^[0-9+\-*/().]+$/);
+    if ((event.ctrlKey)&&(event.key === 'v')) {
+        event.preventDefault();
+        try {
+            const textoOriginal = await navigator.clipboard.readText();
+            let textoLimpio = textoOriginal.replace(/\s+/g, '');
+
+            if (valoresAceptados.test(textoLimpio)) {
+                pantalla.value = textoLimpio;
+            } else {
+                pantalla.value = "Error";
+            }
+        } catch (e) {
+            console.error("Error: ", e);
+        }
+    }
+    if ((event.ctrlKey)&&(event.key === 'c')) {
+        event.preventDefault();
+        if (pantalla.value) {
+            
+        }
     }
 })
