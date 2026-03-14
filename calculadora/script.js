@@ -151,14 +151,12 @@ botones.forEach(boton => {
 
 //Poner cosas por teclado
 document.addEventListener("keydown", (event) => {
-    const tecla = event.key;
-    if ((tecla === "=")||(tecla === "Enter")) {
-        event.preventDefault();
-        procesarEntrada("=");
-    } else if (tecla === "Escape") {
-        procesarEntrada("C");
-    }
-    const permitidas = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "+", "-", "*", "/", ".", "Backspace", "(", ")"];
+    let tecla = event.key;
+    if (tecla === "=" || tecla === "Enter") tecla = "=";
+    if (tecla === "×" || tecla === "*") tecla = "*";
+    if (tecla === "÷" || tecla === "/") tecla = "/";
+    if (tecla === "Escape") tecla = "C";
+    const permitidas = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "+", "-", "*", "/", ".", "C", "Backspace", "(", ")", "="];
     if (permitidas.includes(tecla)) {
         procesarEntrada(tecla);
     }
