@@ -1,5 +1,7 @@
-const pantalla = document.getElementById("pantalla");
-const botones = document.querySelectorAll("button");
+import { UI } from './utils.js';
+import { animarBoton, animarResultado } from './animaciones.js';
+const { pantalla, botones } = UI;
+const botonesArray = Array.from(botones);
 
 //Funcion para procesar valores de entrada
 function procesarEntrada(valor) {
@@ -46,7 +48,13 @@ function procesarEntrada(valor) {
     }} else if (valor === "=") {
         let expresion = pantalla.value.replace(/\+\-/g, "-");
         expresion = expresion.replace(/(?<!\d)--/g, "+");
-        pantalla.value = interpreteExpresiones(expresion);
+        let resultado = interpreteExpresiones(expresion);
+        if (resultado === "Error") {
+            animarResultado(pantalla, true);
+        } else {
+            animarResultado(pantalla, false);
+        }
+        pantalla.value = resultado;
     } else if ((valor === "Backspace")||(valor === "⌫")) {
         pantalla.value = pantalla.value.slice(0,-1);
     } else {
@@ -68,9 +76,7 @@ function interpreteExpresiones(expresionBase) {
         console.error("No se puede dividir la expresion, formato invalido");
         return "Error";
     }
-    console.log("Prueba: " + dividido);
     let ordenado = ordenarExpresiones(dividido);
-    console.log("Prueba: " + ordenado);
     let final = calcularFinal(ordenado);
     return final;
 }
@@ -140,7 +146,7 @@ function dividirExpresiones(expresion) {
 function calcularFinal (listaFinal) {
     let pilaNumeros = [];
     //Si la expresion es un numero pasa a la pila de numeros
-    for (expresion of listaFinal) {
+    for (let expresion of listaFinal) {
         if (!isNaN(expresion)) {
             //parseFloat se asegura que con lo que trates sea doubles y no otros tipos de datos
             pilaNumeros.push(parseFloat(expresion));
@@ -163,6 +169,7 @@ function calcularFinal (listaFinal) {
 botones.forEach(boton => {
     boton.addEventListener("click", () => {
         const botonApretado = boton.textContent;
+        animarBoton(boton);
         procesarEntrada(botonApretado);
     })
 })
@@ -176,6 +183,8 @@ document.addEventListener("keydown", (event) => {
     if (tecla === "Escape") tecla = "AC";
     const permitidas = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "+", "-", "*", "/", ".", "AC", "Backspace", "(", ")", "="];
     if (permitidas.includes(tecla)) {
+        const botonReal = botonesArray.find(boton => boton.textContent === tecla);
+        if (botonReal) animarBoton(botonReal);
         procesarEntrada(tecla);
     }
 })
