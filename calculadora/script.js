@@ -23,13 +23,31 @@ function procesarEntrada(valor) {
     if ((valor === ".")&&(operadores.includes(ultimo))) {
         return;
     }
-    if (valor ===  "C") {
+    if (valor ===  "AC") {
         pantalla.value = "";
     } else if ((!pantalla.value)&&(valor === "=")) {
         pantalla.value = "Ingrese una expresion";
-    } else if (valor === "=") {
-        pantalla.value = interpreteExpresiones(pantalla.value);
-    } else if (valor == "Backspace") {
+    } else if (valor === "+/-") {
+        if ((pantalla.value === "")||(pantalla.value === "Error")) {
+            return;
+        } 
+        const regexUltimoNumero = /(-?\d+\.?\d*)$/;
+        const coincidencia = pantalla.value.match(regexUltimoNumero);
+        if (coincidencia) {
+            let numeroEncontrado = coincidencia[0];
+            let nuevoNumero;
+            if (numeroEncontrado.startsWith("-")) {
+                nuevoNumero = numeroEncontrado.slice(1);
+        } else {
+                nuevoNumero = "-" + numeroEncontrado;
+        }
+            pantalla.value = pantalla.value.replace(regexUltimoNumero, nuevoNumero);
+            return; 
+    }} else if (valor === "=") {
+        let expresion = pantalla.value.replace(/\+\-/g, "-");
+        expresion = expresion.replace(/(?<!\d)--/g, "+");
+        pantalla.value = interpreteExpresiones(expresion);
+    } else if ((valor === "Backspace")||(valor === "⌫")) {
         pantalla.value = pantalla.value.slice(0,-1);
     } else {
         pantalla.value += valor;
@@ -68,7 +86,7 @@ function ordenarExpresiones(listaDeExpresiones) {
         "/": 2
     }
     // isNaN (isNotaNumber) si no es numero (Es algo fragil)
-    const patronAnclaje = RegExp(/^\d+\.?\d*$/); //Patron pero con ^ $ ya que va a ir en un array no en una cadena
+    const patronAnclaje = /^\d+\.?\d*$/; //Patron pero con ^ $ ya que va a ir en un array no en una cadena
     for (let expresion of listaDeExpresiones) {
         if (patronAnclaje.test(expresion)) {        //.test() valida una expresion con base de un molde
             console.log("Procesando:", expresion, " | Caja actual:", cajaOperadores);
@@ -107,7 +125,7 @@ function ordenarExpresiones(listaDeExpresiones) {
 
 //Funcion dividir expresiones en terminos
 function dividirExpresiones(expresion) {
-    const patronGlobal = RegExp(/(\d+\.?\d*)|[\+\-\*\/\(\))]/g); //De esta forma estas creando un constructor de regex para usar en cualquier momento (RegExp())
+    const patronGlobal = /(\d+\.?\d*)|[\+\-\*\/\(\))]/g; //De esta forma estas creando un constructor de regex para usar en cualquier momento (RegExp())
     return expresion.match(patronGlobal);
     //  return expresion.match(/(\d+\.?\d*)|[\+\-\*\/\(\))]/g); Esta es una manera simple de hacer lo mismo
     // \d+ busca numeros (0-9) puede ser uno o mas
@@ -155,8 +173,8 @@ document.addEventListener("keydown", (event) => {
     if (tecla === "=" || tecla === "Enter") tecla = "=";
     if (tecla === "×" || tecla === "*") tecla = "*";
     if (tecla === "÷" || tecla === "/") tecla = "/";
-    if (tecla === "Escape") tecla = "C";
-    const permitidas = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "+", "-", "*", "/", ".", "C", "Backspace", "(", ")", "="];
+    if (tecla === "Escape") tecla = "AC";
+    const permitidas = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "+", "-", "*", "/", ".", "AC", "Backspace", "(", ")", "="];
     if (permitidas.includes(tecla)) {
         procesarEntrada(tecla);
     }

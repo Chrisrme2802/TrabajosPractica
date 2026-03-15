@@ -1,9 +1,13 @@
+* {
+    outline: 2px solid red;
+}
+
 .calculadora {
-    width: 200px;
+    width: 300px;
 }
 .botones {
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: repeat(5, 1fr);
     gap: 5px;
     padding: 20px;
 }
@@ -32,8 +36,20 @@ button:hover {
 button:active {
     transform: scale(0.95);
 }
-.boton-especial {
+.boton-igual {
     background-color: #ff9500;
     color: white;
+    grid-column: span 5;
+}
+.boton-AC {
+    background-color: #ff9500;
+    color: white;
+}
+.boton-Backspace {
+    background-color: #ff9500;
+    color: white;
+    grid-column: span 2;
+}
+.boton-operador-columna {
     grid-column: span 2;
 }
