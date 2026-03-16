@@ -1,5 +1,5 @@
 import { UI } from './utils.js';
-import { animarBoton, animarResultado } from './animaciones.js';
+import { animarBoton, animarResultado, borrarUltimo, dispararAnimacion} from './animaciones.js';
 const { pantalla, botones } = UI;
 const botonesArray = Array.from(botones);
 
@@ -30,21 +30,22 @@ function procesarEntrada(valor) {
     } else if ((!pantalla.value)&&(valor === "=")) {
         pantalla.value = "Ingrese una expresion";
     } else if (valor === "+/-") {
-        if ((pantalla.value === "")||(pantalla.value === "Error")) {
-            return;
-        } 
+        if ((pantalla.value === "")||(pantalla.value === "Error")) {    return; } 
         const regexUltimoNumero = /(-?\d+\.?\d*)$/;
         const coincidencia = pantalla.value.match(regexUltimoNumero);
         if (coincidencia) {
             let numeroEncontrado = coincidencia[0];
+            let parteAnterior = pantalla.value.slice(0, coincidencia.index);
             let nuevoNumero;
             if (numeroEncontrado.startsWith("-")) {
                 nuevoNumero = numeroEncontrado.slice(1);
         } else {
                 nuevoNumero = "-" + numeroEncontrado;
         }
-            pantalla.value = pantalla.value.replace(regexUltimoNumero, nuevoNumero);
-            return; 
+            if (parteAnterior.endsWith("-") && nuevoNumero.startsWith("-")) {
+            parteAnterior = parteAnterior.slice(0, -1) + "+";
+        }
+            pantalla.value = parteAnterior + nuevoNumero;
     }} else if (valor === "=") {
         let expresion = pantalla.value.replace(/\+\-/g, "-");
         expresion = expresion.replace(/(?<!\d)--/g, "+");
@@ -56,7 +57,7 @@ function procesarEntrada(valor) {
         }
         pantalla.value = resultado;
     } else if ((valor === "Backspace")||(valor === "⌫")) {
-        pantalla.value = pantalla.value.slice(0,-1);
+        borrarUltimo();
     } else {
         pantalla.value += valor;
     }
@@ -200,6 +201,7 @@ document.addEventListener("keydown", async (event) => {
 
             if (valoresAceptados.test(textoLimpio)) {
                 pantalla.value = textoLimpio;
+                dispararAnimacion(pantalla);
             } else {
                 pantalla.value = "Error";
             }
@@ -209,8 +211,16 @@ document.addEventListener("keydown", async (event) => {
     }
     if ((event.ctrlKey)&&(event.key === 'c')) {
         event.preventDefault();
-        if (pantalla.value) {
-            
+        pantalla.focus();
+        pantalla.select();
+    if (pantalla.value && pantalla.value !== "Error") {
+            try {
+                await navigator.clipboard.writeText(pantalla.value);
+                dispararAnimacion(pantalla);
+                console.log("Copiado al portapapeles: " + pantalla.value);
+            } catch (err) {
+                console.error("No se pudo copiar: ", err);
+            }
         }
     }
 })

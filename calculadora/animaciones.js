@@ -1,4 +1,6 @@
 import { gsap } from "https://esm.sh/gsap";
+import { UI } from './utils.js';
+const { pantalla, botones } = UI;
 
 //Funcion para animar clicks a los botones
 export function animarBoton(boton) {
@@ -14,6 +16,7 @@ export function animarBoton(boton) {
     //"back.out(2)" El botón se encoge, pero al final da un pequeño rebote hacia afuera
     //"bounce.out" El botón rebota como una pelota al llegar a su tamaño final
 }
+//Funcion para correcto e incorrecto
 export function animarResultado(elemento, esError = false) {
     const timeline = gsap.timeline();
 
@@ -35,4 +38,27 @@ export function animarResultado(elemento, esError = false) {
         duration: 0.3,
         ease: "power1.inOut"
     });
+}
+//Funcion para borrar con Backspace
+export function borrarUltimo() {
+    // Añadimos la clase para que inicie la animación inicia la escena
+    pantalla.classList.add('animar-borrado');
+        if (pantalla.value === "") {    return; }
+    // Esperamos a que la animación termine (0.2s lo mismo que la animacion = 200 ms) para borrar el contenido
+    setTimeout(() => {
+        pantalla.value = pantalla.value.slice(0, -1);
+        
+        // Se quita la clase para que pueda volver a animarse después y que pues ya se acabe
+        pantalla.classList.remove('animar-borrado');
+    }, 100);
+}
+//Funcion para copiar y pegar
+export function dispararAnimacion(elemento) {
+    // Agregamos la clase
+    elemento.classList.add('input-activo');
+    
+    // Quitamos la clase después de 300ms (lo mismo que tu transición CSS)
+    setTimeout(() => {
+        elemento.classList.remove('input-activo');
+    }, 300);
 }

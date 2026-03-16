@@ -4,7 +4,7 @@
 
 .contenedor-principal {
     width: 350px; 
-    margin: 0;    
+    margin: 50px;    
     padding: 20px;
     font-family: sans-serif;
     border-radius: 8px;
@@ -31,6 +31,7 @@
     box-sizing: border-box;
     margin-bottom: 20px;
     padding-right: 15px;
+    transition: all 0.3s ease;
 }
 button {
     padding: 15px;
@@ -60,4 +61,23 @@ button:hover {
 }
 .boton-operador-columna {
     grid-column: span 2;
+}
+@keyframes deslizar { /* @Keyframes tambien se puede usar con porcentajes (0%, 50%, 100% ejem) */
+    from { opacity: 1; }
+    to { opacity: 0; }
+}
+.animar-borrado {
+    animation: deslizar 0.1s ease-out forwards;
+}
+.input-activo {
+    border-color: #ff9900 !important;
+    box-shadow: 0 0 8px rgba(255, 153, 0, 0.4) !important; /* resplandor */
+    transform: scale(1.02); 
+}
+.pantalla:focus {
+    outline: none;
+}
+.pantalla::selection {
+    background: transparent; /* #fcfaa7 o con un color claro y luego deseleccionarlo con un blur() o un window.getSelection().removeAllRanges(); */
+    color: inherit;
 }
