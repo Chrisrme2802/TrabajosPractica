@@ -1,5 +1,6 @@
 import { UI } from './utils.js';
 import { animarBoton, animarResultado, borrarUltimo, dispararAnimacion} from './animaciones.js';
+import { reproducirBoton } from './audios.js';
 const { pantalla, botones } = UI;
 const botonesArray = Array.from(botones);
 
@@ -26,8 +27,10 @@ function procesarEntrada(valor) {
         return;
     }
     if (valor ===  "AC") {
+        reproducirBoton('fuerte');
         pantalla.value = "";
     } else if ((!pantalla.value)&&(valor === "=")) {
+        animarResultado(pantalla, true);
         pantalla.value = "Ingrese una expresion";
     } else if (valor === "+/-") {
         if ((pantalla.value === "")||(pantalla.value === "Error")) {    return; } 
@@ -45,20 +48,24 @@ function procesarEntrada(valor) {
             if (parteAnterior.endsWith("-") && nuevoNumero.startsWith("-")) {
             parteAnterior = parteAnterior.slice(0, -1) + "+";
         }
+            reproducirBoton('debil');
             pantalla.value = parteAnterior + nuevoNumero;
     }} else if (valor === "=") {
         let expresion = pantalla.value.replace(/\+\-/g, "-");
         expresion = expresion.replace(/(?<!\d)--/g, "+");
         let resultado = interpreteExpresiones(expresion);
-        if (resultado === "Error") {
+        if (pantalla.value === "Error") {
             animarResultado(pantalla, true);
         } else {
             animarResultado(pantalla, false);
         }
+        reproducirBoton('fuerte');
         pantalla.value = resultado;
     } else if ((valor === "Backspace")||(valor === "⌫")) {
+        reproducirBoton('debil');
         borrarUltimo();
     } else {
+        reproducirBoton('debil');
         pantalla.value += valor;
     }
 }
@@ -144,6 +151,7 @@ function dividirExpresiones(expresion) {
     // .match() devuelve un array con coincidencias o un null si nada
 }
 
+//Mete todo en un resultado final
 function calcularFinal (listaFinal) {
     let pilaNumeros = [];
     //Si la expresion es un numero pasa a la pila de numeros
@@ -166,6 +174,16 @@ function calcularFinal (listaFinal) {
     return pilaNumeros[0];
 }
 
+//Funcion para actualizar el historial
+function actualizarHistorial (proceso, resultado) {
+    const lista = document.getElementById("listaHistorial");
+    const marcador = document.getElementById("marcador");
+
+    const nuevoItem = document.createElement('li');     //Crear elemento de lista 'lista'
+    nuevoItem.classList.add('item-historial');          //Aqui le estoy dando una clase al nuevoIteam para verlo en css
+    nuevoItem.innerHTML = `${operacion} = <strong>${resultado}</strong>`;
+
+}
 //Poner cosas por mouse
 botones.forEach(boton => {
     boton.addEventListener("click", () => {
@@ -185,8 +203,8 @@ document.addEventListener("keydown", (event) => {
     const permitidas = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "+", "-", "*", "/", ".", "AC", "Backspace", "(", ")", "="];
     if (permitidas.includes(tecla)) {
         const botonReal = botonesArray.find(boton => boton.textContent === tecla);
-        if (botonReal) animarBoton(botonReal);
-        procesarEntrada(tecla);
+        if (botonReal) { animarBoton(botonReal);  }
+        procesarEntrada(tecla); 
     }
 })
 
@@ -201,6 +219,7 @@ document.addEventListener("keydown", async (event) => {
 
             if (valoresAceptados.test(textoLimpio)) {
                 pantalla.value = textoLimpio;
+                reproducirBoton(fuerte);
                 dispararAnimacion(pantalla);
             } else {
                 pantalla.value = "Error";
