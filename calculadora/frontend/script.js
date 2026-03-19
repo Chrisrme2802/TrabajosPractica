@@ -1,7 +1,7 @@
 import { UI } from './utils.js';
 import { animarBoton, animarResultado, borrarUltimo, dispararAnimacion} from './animaciones.js';
 import { reproducirBoton } from './audios.js';
-const { pantalla, botones } = UI;
+const { pantalla, botones, lista, marcador } = UI;
 const botonesArray = Array.from(botones);
 
 //Funcion para procesar valores de entrada
@@ -53,6 +53,7 @@ function procesarEntrada(valor) {
     }} else if (valor === "=") {
         let expresion = pantalla.value.replace(/\+\-/g, "-");
         expresion = expresion.replace(/(?<!\d)--/g, "+");
+        const tieneOperadores = /[+\-*/]/g.test(expresion);
         let resultado = interpreteExpresiones(expresion);
         if (pantalla.value === "Error") {
             animarResultado(pantalla, true);
@@ -60,11 +61,16 @@ function procesarEntrada(valor) {
             animarResultado(pantalla, false);
         }
         reproducirBoton('fuerte');
+        if (resultado !== "Error" && tieneOperadores) {
+            actualizarHistorial(expresion, resultado);
+        }
         pantalla.value = resultado;
     } else if ((valor === "Backspace")||(valor === "⌫")) {
         reproducirBoton('debil');
         borrarUltimo();
-    } else {
+    } else if (valor === "Limpiar Historial") {
+        vaciarHistorial();
+    }  else {
         reproducirBoton('debil');
         pantalla.value += valor;
     }
@@ -175,14 +181,26 @@ function calcularFinal (listaFinal) {
 }
 
 //Funcion para actualizar el historial
-function actualizarHistorial (proceso, resultado) {
-    const lista = document.getElementById("listaHistorial");
-    const marcador = document.getElementById("marcador");
-
+function actualizarHistorial (operacion, resultado) {
     const nuevoItem = document.createElement('li');     //Crear elemento de lista 'lista'
-    nuevoItem.classList.add('item-historial');          //Aqui le estoy dando una clase al nuevoIteam para verlo en css
-    nuevoItem.innerHTML = `${operacion} = <strong>${resultado}</strong>`;
+    nuevoItem.classList.add('item-historial');          //Aqui le estoy dando una clase al nuevoIteam para verlo en css ya que originalmente viene en blanco
+    nuevoItem.innerHTML = `${operacion} = <strong>${resultado}</strong>`; //El <strong> </strong> lo que hace es resaltar lo que este dentro
+    lista.prepend(nuevoItem); //Añade el item en el top, si se usara .appendChild() se iria hasta el fondo
+    const totalItems = lista.children.length;
+    marcador.innerText = totalItems;    //Es como .textContent() pero mas simple para cosas sencillas
+    //.innerHTML sirve para meter etiquetas como <strong> o <span> 
+    //<span> </span> sirve para cambiar el diseño de texto a pesar de estar en la misma linea que otro, por medio de css
 
+    nuevoItem.onclick = () => {
+        pantalla.value = resultado;
+    };
+}
+
+//Funcion para vaciar el historial
+function vaciarHistorial() {
+    lista.innerHTML = ""; 
+    marcador.innerText = "0";
+    reproducirBoton('fuerte'); 
 }
 //Poner cosas por mouse
 botones.forEach(boton => {
@@ -243,3 +261,21 @@ document.addEventListener("keydown", async (event) => {
         }
     }
 })
+
+//Funcion de prueba de servidor
+async function probarConexion() {
+    try {
+        // fetch hace la petición a la URL de tu servidor
+        const respuesta = await fetch('https://turbo-zebra-v64g5jw455g73w4q9-3000.app.github.dev/');
+        
+        // Convertimos la respuesta a un objeto que JS entienda
+        const datos = await respuesta.json();
+        
+        console.log("Mensaje del servidor:", datos.mensaje);
+    } catch (error) {
+        console.error("Huy, parece que el servidor está apagado...", error);
+    }
+}
+
+// Llamamos a la función (prueba)
+probarConexion();

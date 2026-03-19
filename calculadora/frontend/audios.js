@@ -1,7 +1,7 @@
 //Un diccionario con los audios
 const audios = {
-    fuerte: new Audio('assets/audios/Boton_fuerte.mp3'),
-    debil: new Audio('assets/audios/Boton_debil.mp3')
+    fuerte: new Audio('./assets/audios/Boton_fuerte.mp3'),
+    debil: new Audio('./assets/audios/Boton_debil.mp3')
 };
 
 //Funcion para reproducir sonidos (fuerte, debil)
