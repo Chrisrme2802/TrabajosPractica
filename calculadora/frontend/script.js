@@ -266,7 +266,7 @@ document.addEventListener("keydown", async (event) => {
 async function probarConexion() {
     try {
         // fetch hace la petición a la URL de tu servidor
-        const respuesta = await fetch('https://turbo-zebra-v64g5jw455g73w4q9-4000.app.github.dev/api/status');
+        const respuesta = await fetch('http://localhost:4000/api/status');
         
         // Convertimos la respuesta a un objeto que JS entienda
         const datos = await respuesta.json();
