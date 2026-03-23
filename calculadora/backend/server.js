@@ -25,7 +25,7 @@ pool.query('SELECT NOW()', (err, res) => {
 // Middleware para que el servidor entienda JSON (lo que enviará la calculadora)
 app.use(express.json());
 app.use(cors({
-    origin: 'https://turbo-zebra-v64g5jw455g73w4q9-5502.app.github.dev', // La URL de tu calculadora
+    origin: '*', // La URL de tu calculadora
     methods: ['GET', 'POST']
     //Metodos comunes:     GET: Dame    POST: Enviar/Crear    PUT: Reemplazar    DELETE: Borra
 }));
