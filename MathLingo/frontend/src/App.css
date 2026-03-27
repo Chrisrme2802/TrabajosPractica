@@ -1,0 +1,73 @@
+.App {                          /* Posicion => Texto => Visual => Otros */
+  display: flex;                /* Posicion = Posicionamiento => Capa => Coordenadas */
+  flex-direction: column;       /* Caja = Display => Alineaciones => Dimensiones => Margenes => Relleno */
+  align-items: center;          /* Texto = Fuente => Tamaño => Grosor => Alineacion => Color => Espaciado */
+  justify-content: center;      /* Visuales = Fondo => Bordes => Efectos */
+  gap: 20px;
+  min-height: 100vh;            /* vh es el porcentaje % de  altura de la pantalla que se este usando, vw lo mismo pero de ancho */
+  font-family: var(--fuente-principal);
+  background-color: var(--color-fondo);
+}
+
+.card-operacion {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  padding: 30px;       
+  background: var(--color-blanco);       
+  border-radius: 15px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.1);       /* 0px (horizontal) 4px (vertical) 10px (desenfoque) rgba(0,0,0,0.1) (color (rgb) y transparencia del 0 a 1 */
+  transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.card-operacion:hover {
+  transform: translateY(-5px); 
+  box-shadow: 0px 10px 20px rgba(0,0,0,0.15); 
+}
+
+.numero {
+  font-weight: bold;
+  color: var(--color-texto);
+}
+
+.operador {
+  color: var(--color-texto);
+}
+
+.input-respuesta {
+  width: 80px;
+  padding: 10px;
+  font-size: 1.5rem;
+  text-align: center;
+  border-radius: 8px;
+  border: 2px solid #ddd;
+}
+
+.boton-comprobar {
+  padding: 15px 40px;
+  font-size: 1.2rem;
+  color: white;
+  background-color: var(--color-primario);
+  border: none;
+  border-radius: 50px;
+  transition: transform 0.2s, background-color 0.2s;        /* La transicion a otros estados como hover */
+}
+
+.boton-comprobar:hover {
+  transform: scale(1.05);
+  background-color: var(--color-primario-oscuro);
+}
+
+.overlay-lottie {
+  position: fixed;                        /* El elemento es totalmente independiente de todo lo demas */
+  z-index: 1000;                          /* Es la profundidad en el documento */
+  left: 0;
+  top: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100vw;
+  height: 100vh;
+  background-color: var(--color-translucido);
+  pointer-events: none;             /* Evita que sea alterado de cualquier forma por el raton */
+}

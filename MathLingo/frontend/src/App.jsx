@@ -1,6 +1,5 @@
 import { DotLottieReact } from '@lottiefiles/dotlottie-react';
-import { useState, useRef, useEffect } from "react"   //Metodo hook de react 
-import AnimacionCelebracion  from './assets\animaciones\AnimacionCelebracion.lottie'; 
+import { useState, useRef, useEffect } from "react"   //Metodo hook de react  
 import './App.css'
 
 function App() {
@@ -63,12 +62,13 @@ function App() {
         />
         </div>
 
-        <button onClick={comprobarRespuesta} className="boton-comprobar"> </button>
-
+        <button onClick={comprobarRespuesta} className="boton-comprobar">Comprobar</button>
+        
+        {/* No se ocupa nada para entrar a la animacion ya que esta en public, para el navegador public es raiz */}
         {celebracion && (
         <div className="overlay-lottie">
           <DotLottieReact
-            src={AnimacionCelebracion}
+            src= "assets/animaciones/AnimacionCelebracion.lottie"     
             dotLottieRefCallback={(dotLottie) => {
               lottieRef.current = dotLottie;
             }}

@@ -1,0 +1,68 @@
+/* Valores base de la app */ 
+:root {
+  /* Paleta de colores */
+  --color-primario: #4caf50;
+  --color-primario-oscuro: #409445; 
+  --color-secundario: #ff6b6b;
+  --color-fondo: #f0f4f8;
+  --color-translucido: rgba(255, 255, 255, 0.7);       
+  --color-texto: #2d3436;       
+  --color-blanco: #ffffff;
+
+  /* Sombras base */
+  --sombra-suave: 0 4px 6px rgba(0, 0, 0, 0.1);
+  --sombra-fuerte: 0 10px 20px rgba(0, 0, 0, 0.15);
+
+  /* Tipografía */
+  --fuente-principal: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+}
+
+/* Valores generales para tema de navegador */ 
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box; /* Evita que el padding afecte el tamaño */
+}
+
+html, body {
+  height: 100%;    
+  width: 100%;      /* Igual reseta todo */ 
+  margin: 0;        
+  padding: 0;      
+}
+
+/* Cuerpo donde desarrollas todo lo relacionado con la app, no toda la pagina */ 
+body {  
+  display: flex;   
+  justify-content: center;
+  align-items: center;
+  font-family: var(--fuente-principal);
+  background-color: var(--color-fondo);
+}
+
+/* Titulos prehechos */ 
+h1, h2, h3 {
+  margin-bottom: 1rem;
+  color: var(--color-texto);
+}
+
+/* Con todo lo que no sea simple texto si tengo que heredar las cosas */
+/* Botones prehechos */ 
+button {            
+  font-family: inherit; /* Hereda la fuente del body */
+  cursor: pointer;
+  border: none;
+  outline: none;
+}
+
+/* Cosas que haga click */ 
+input {
+  font-family: inherit;
+  outline: none; 
+}
+
+/* Las imagenes tambien tienen sus propiedades */
+img {
+  max-width: 100%;
+  display: block;
+}
