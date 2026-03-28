@@ -16,7 +16,7 @@ public class Simulacion {
                 Celula celulaActual = tablero.getCelulas()[i][j];
                 int nVecinos = tablero.contarVecinos(columnas, filas);
                 if (celulaActual.getEstadoActual() == EstadoCelda.VIVO) {
-                        if ((nVecinos < 2)||(nVecinos > 3)) {
+                        if ((nVecinos < 2)||(nVecinos >= 3)) {
                         celulaActual.setEstadoSiguiente(EstadoCelda.MUERTO);
                     } else {
                         celulaActual.setEstadoSiguiente(EstadoCelda.VIVO);

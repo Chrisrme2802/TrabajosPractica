@@ -52,8 +52,10 @@ public class AplicacionCelula {
         tablero.agregarCelula(columnaCelula, filaCelula);
     }
 
-    //Hacer la simulacion
+    //Crear simulacion
     Simulacion simulacion = new Simulacion(tablero);
+
+    //Hacer la simulacion
     System.out.println("Comenzara la simulacion: ");
     System.out.println("-------------------------");
     char decisionC;
@@ -73,6 +75,7 @@ public class AplicacionCelula {
         } else {
             decisionC = 'N';
         }
-    } while(decisionC == 'N');
-  }  
+    } while(decisionC == 'S');
+    System.out.println("Juego terminado");
+    }  
 }

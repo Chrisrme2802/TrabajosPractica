@@ -1,4 +1,3 @@
-package TrabajosEstructuraDatos;
 public class Nodo<T> {
     public T dato;
     public Nodo<T> siguiente;
