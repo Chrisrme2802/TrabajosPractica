@@ -14,12 +14,12 @@ public class Simulacion {
         for (int i = 0; i < columnas; i++) {
             for (int j = 0; j < filas; j++) {
                 Celula celulaActual = tablero.getCelulas()[i][j];
-                int nVecinos = tablero.contarVecinos(columnas, filas);
+                int nVecinos = tablero.contarVecinos(i, j);
                 if (celulaActual.getEstadoActual() == EstadoCelda.VIVO) {
-                        if ((nVecinos < 2)||(nVecinos > 3)) {
-                        celulaActual.setEstadoSiguiente(EstadoCelda.MUERTO);
-                    } else {
+                        if ((nVecinos == 2)||(nVecinos == 3)) {
                         celulaActual.setEstadoSiguiente(EstadoCelda.VIVO);
+                    } else {
+                        celulaActual.setEstadoSiguiente(EstadoCelda.MUERTO);
                     }
                 } else {
                     if (nVecinos == 3) {
@@ -31,5 +31,4 @@ public class Simulacion {
             }
         }
     }
-
 }

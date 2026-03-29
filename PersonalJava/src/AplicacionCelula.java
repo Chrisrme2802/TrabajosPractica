@@ -34,7 +34,7 @@ public class AplicacionCelula {
         do {
             columnaCelula = sc.nextInt();
             sc.nextLine();
-            if ((columnaCelula < 0)||(columnaCelula > columnas)) {
+            if ((columnaCelula < 0)||(columnaCelula >= columnas)) {
                 System.out.println("Numero de columna invalido");
             }
         } while ((columnaCelula < 0)||(columnaCelula >= columnas));
@@ -43,7 +43,7 @@ public class AplicacionCelula {
         do {
             filaCelula = sc.nextInt();
             sc.nextLine();
-            if ((filaCelula < 0)||(filaCelula > filas)) {
+            if ((filaCelula < 0)||(filaCelula >= filas)) {
                 System.out.println("Numero de fila invalido");
             }
         } while ((filaCelula < 0)||(filaCelula >= filas));
@@ -73,6 +73,6 @@ public class AplicacionCelula {
         } else {
             decisionC = 'N';
         }
-    } while(decisionC == 'N');
+    } while(decisionC == 'S');
   }  
 }
