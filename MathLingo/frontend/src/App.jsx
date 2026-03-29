@@ -56,7 +56,7 @@ function App() {
           <div className="botones-dificultad">
             <button onClick={() => empezarJuego('facil')}>Nivel Básico</button>
             <button onClick={() => empezarJuego('intermedio')}>Nivel Medio</button>
-            <button onClick={() => empezarJuego('dificil')}>Nivel Pro</button>
+            <button onClick={() => empezarJuego('dificil')}>Nivel Difícil</button>
           </div>
 
         </div>
