@@ -76,11 +76,5 @@ public class AplicacionCelula {
             decisionC = 'N';
         }
     } while(decisionC == 'S');
-<<<<<<< HEAD
   }  
 }
-=======
-    System.out.println("Juego terminado");
-    }  
-}
->>>>>>> 9c7121414b1c7a88600394be0a673b8cec696fb7
