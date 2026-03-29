@@ -1,4 +1,3 @@
-package TrabajosEstructuraDatos;
 public class Cola<T> {
     private Nodo<T> inicio;
     private Nodo<T> finalCola;
