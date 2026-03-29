@@ -1,82 +1,100 @@
-import { DotLottieReact } from '@lottiefiles/dotlottie-react';
-import { useState, useRef, useEffect } from "react"   //Metodo hook de react  
+import { interpreteExpresiones } from "./utils/interprete"
+import { generarNuevaPregunta } from "./utils/generador"
+import { useState } from "react"   //Metodo hook de react  
 import './App.css'
 
 function App() {
 
   //Primero se crean los estados de las cosas que usaremos
-  const [num1, setNum1] = useState(0)    //Primero declaras y lo segundo es con lo que alteras su valor
-  const [num2, setNum2] = useState(0)    //useState es lo que uso para darle valor a las cosas
+  const [expresion, setExpresion] = useState(0)    //Primero declaras y lo segundo es con lo que alteras su valor
   const [respuesta, setRespuesta] = useState('')
   const [mensaje, setMensaje] = useState('')
-  const [celebracion, setCelebracion] = useState(false)
+  const [pantalla, setPantalla] = useState('menu'); // 'menu', 'juego', 'resultados' (cosas preevistas para estar)
+  const [dificultadSeleccionada, setDificultadSeleccionada] = useState('facil');
+  const [progreso, setProgreso] = useState(0);
+  const TOTAL_PREGUNTAS = 10; 
 
-  const lottieRef = useRef(null);   //Es con lo que usaremos las animaciones, useRef
-
+  //Funciones de la app
   //Funcion para comprobar respuesta
-  const comprobarRespuesta = () => {
-    if (parseInt(respuesta) === num1 + num2) {
-      setMensaje('Correcto tilin');
-      setCelebracion(true);
+  const comprobarEstado = () => {
+    const resultadoCorrecto = interpreteExpresiones(expresion)
+    if (parseInt(respuesta) === resultadoCorrecto) {
+      setMensaje('Correcto! ✨');
+      setProgreso(prev => prev + 1);      //prev es como react se refiere a su estado anterior
     } else {
-      setMensaje('Hash fallado')
-      setTimeout(() => {
-          generarNuevaPregunta();
-          setCelebracion(false);
+      setMensaje('Incorrecto... el resultado era ${resultadoCorrecto}')
+    }
+    //Un tiempo para la siguiente pregunta
+        setTimeout(() => {
+        generarNuevaPregunta(dificultadSeleccionada);
       }, 2000);
+    if (progreso = TOTAL_PREGUNTAS) {
+      setMensaje("¡Nivel Completado! 🏆");
+      setTimeout(() => setPantalla('menu'), 3000);
     }
   }
 
-  //Funcion para generarPreguntaNueva
-  const generarNuevaPregunta = () => {
-    setNum1(Math.floor(Math.random() * 10));
-    setNum2(Math.floor(Math.random() * 10));
-    setRespuesta('');
-    setMensaje('Cuanto es?');
-  };
-
-  //Funcion para abrir pregunta apenas se abra la pagina
-  useEffect(() => {
-    generarNuevaPregunta();
-    console.log("Se genero pregunta al ejecutar");
-  }, []);                 //Los corchetes manejan la variable que activara a la funcion, si no hay nada se ejecutara al inicializar la app
+  //Funcion para comenzar juego de cierta dificultad
+  const empezarJuego = (nivel) => {
+  setDificultadSeleccionada(nivel);
+  setPantalla('juego');
+  const primeraPregunta = elegirMolde(nivel); 
+  setExpresion(primeraPregunta); 
+};
 
   return (
     <div className="App">    {/* Todo tiene que ir encerrado en una division gigante (asi son los comentarios en html) */} 
-      <h1>{mensaje}</h1>
 
-      <div className = "card-operacion">
+      {/* Pantalla de menu */}
+      {pantalla === 'menu' && (
+        <div className="menu-principal">
+          
+          <h1>MathLingo</h1>
+
+          <p>Elige tu desafío:</p>     {/* <p> parrafo </p> */}
+
+          <div className="botones-dificultad">
+            <button onClick={() => empezarJuego('facil')}>Nivel Básico</button>
+            <button onClick={() => empezarJuego('intermedio')}>Nivel Medio</button>
+            <button onClick={() => empezarJuego('dificil')}>Nivel Pro</button>
+          </div>
+
+        </div>
+      )}
+
+      {/* Pantalla de juego */}
+      {pantalla === 'juego' && (
+        <div className="juego-principal">
+          <div className="progress-container">
+          <div className="progress-fill" style={{ width: `${progreso / TOTAL_PREGUNTAS * 100}%` }}></div>
+      </div>
+
+      {/* main es aquello que no tocamos */} 
+      <main className = "information-card">
         {/* Se muestran los numeros con los que trataremos */}
-        <span className="numero">{num1}</span>
-        <span className="operador">+</span>         {/* span es lo que se usa para que todo este en una sola linea */}
-        <span className="numero">{num2}</span>
-        <span className="operador">=</span> 
+        <div className="speech-bubble">
+          <h2>${mensaje}</h2>
+        </div>
 
+      </main>
+        {/* footer es aquello con lo que interactuamos */}
         {/* onChange es el escuchador de eventos de React, e es evento */}
-        <input 
+        <footer className = "control-card">
+          <input 
           className="input-respuesta"
           type="number" 
           placeholder="?"
           value={respuesta} 
-          onChange={(e) => setRespuesta(e.target.value)}         
+          onChange={(event) => setRespuesta(event.target.value)}         
         />
-        </div>
 
-        <button onClick={comprobarRespuesta} className="boton-comprobar">Comprobar</button>
-        
-        {/* No se ocupa nada para entrar a la animacion ya que esta en public, para el navegador public es raiz */}
-        {celebracion && (
-        <div className="overlay-lottie">
-          <DotLottieReact
-            src= "assets/animaciones/AnimacionCelebracion.lottie"     
-            dotLottieRefCallback={(dotLottie) => {
-              lottieRef.current = dotLottie;
-            }}
-            style={{ width: '100%', height: '100%' }}
-          />
+        <button onClick={comprobarEstado} className="boton-comprobar">Comprobar</button> 
+
+        </footer>
         </div>
       )}
-    </div> 
+
+        </div>
   ); 
 }
 
