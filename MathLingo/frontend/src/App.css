@@ -10,13 +10,134 @@
   background-color: var(--color-fondo);
 }
 
+.menu-principal {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-height: 100vh;
+  padding: 40px 20px;
+  background-color: var(--color-fondo);
+  animation: entradaTitulo 0.6s cubic-bezier(0.17, 0.67, 0.83, 0.67); /* la velocidad que tiene la animacion en 2 tiempos */
+}
+
+/* Titulo principal del menu principal */
+.menu-principal h1 {
+  font-size: 3.5rem; 
+  font-weight: 900;
+  color: var(--color-primario); 
+  margin-bottom: 10px;
+  letter-spacing: -1px; /* spaciado de las letras */
+  text-shadow: 2px 2px 0px var(--color-blanco), 
+               4px 4px 0px rgba(0,0,0,0.1); /* Doble sombra para dar relieve */
+}
+
+.logo-bonito span {
+  color: var(--color-primario-oscuro);
+}
+
+.decoracion-subtitulo {
+  width: 50px;
+  height: 4px;
+  margin: 0 auto 15px auto;
+  background-color: var(--color-primario);
+  border-radius: 10px;
+}
+
+/* parrafos del menu principal */
+.menu-principal p {
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: var(--color-gris-oscuro);
+  margin-bottom: 30px;
+  opacity: 0.8;
+}
+
+.botones-dificultad {
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+  width: 100%;
+  max-width: 400px;
+  margin-top: 40px;
+}
+
+.boton-nivel {
+  position: relative;
+  width: 180px; 
+  height: 100px;
+  border-radius: 25px;
+  font-family: 'Nunito', sans-serif; 
+  font-weight: 800;
+  font-size: 1.1rem;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.boton-nivel.basico { 
+  align-self: center; 
+  background-color: var(--color-primario); 
+  box-shadow: 0 8px 0 var(--color-primario-oscuro);
+  color: var(--color-blanco);
+}
+
+.boton-nivel.medio { 
+  align-self: flex-start; 
+  background-color: #1cb0f6; 
+  box-shadow: 0 8px 0 #1899d6;
+  color: var(--color-blanco);
+}
+
+.boton-nivel.dificil { 
+  align-self: flex-end; 
+  background-color: #ff9600; 
+  box-shadow: 0 8px 0 #e68600;
+  color: var(--color-blanco);
+}
+
+/* Todos los botones-nivel que no esten bloqueados */
+.boton-nivel:not(.bloqueado):hover {
+  transform: translateY(-2px); 
+  filter: brightness(1.1); 
+}
+
+.boton-nivel.basico:not(.bloqueado):hover {
+  box-shadow: 0 12px 0 var(--color-primario-oscuro-sombra);
+}
+
+.boton-nivel.medio:not(.bloqueado):hover {
+  box-shadow: 0 12px 0 #1482b5; 
+}
+
+.boton-nivel.dificil:not(.bloqueado):hover {
+  box-shadow: 0 12px 0 #cc7800;
+}
+
+.boton-nivel:not(.bloqueado):active {
+  transform: translateY(6px);
+  box-shadow: 0 2px 0 rgba(0,0,0,0.3);
+  transition: all 0.1s;
+}
+
+.boton-nivel.bloqueado {
+  background-color: #e5e5e5 !important;
+  box-shadow: 0 8px 0 #afafaf !important;
+  color: #afafaf !important;
+  cursor: not-allowed;
+  filter: grayscale(0.5);
+}
+
 .juego-principal {
   flex-direction: column;       /* Apila los elementos en una columna */
   display: flex;
+  align-items: center;  
   box-sizing: border-box;       /* Tamaño inalterable */
   height: 90vh;
-  justify-content: space-between;       /* Empuja el primero arriba y el último abajo */
+  max-width: 600px;
+  justify-content: flex-start;       /* Empuja el primero arriba y el último abajo */
+  gap: 30px;
   padding: 20px;
+  overflow: hidden;
 }
 
 .juego-header {
@@ -47,21 +168,39 @@
 }
 
 .information-card {
-  flex-grow: 1;       /* Ocupa el espacio de arriba */
+  flex: none; 
+  height: 320px;      /* No se altera con nada */
   display: flex;
+  flex-direction: column;
+  justify-content: center; 
   align-items: center;
+  width: 100%;            /* Que use el ancho del contenedor */
   max-width: 400px;
   gap: 15px;
-  padding: 30px;       
+  padding: 40px 20px;       
   background: var(--color-blanco);       
   border-radius: 15px;
   box-shadow: 0 4px 15px rgba(0,0,0,0.1);       /* 0px (horizontal) 4px (vertical) 10px (desenfoque) rgba(0,0,0,0.1) (color (rgb) y transparencia del 0 a 1 */
   transition: transform 0.3s, box-shadow 0.3s;
+  box-sizing: border-box;
 }
 
 .information-card:hover {
   transform: translateY(-5px); 
   box-shadow: 0px 10px 20px rgba(0,0,0,0.15); 
+}
+
+.information-card h2 {
+  font-size: 1.5rem;
+  color: var(--color-texto);
+}
+
+.expresion-matematica {
+  font-weight: bold;
+  font-size: 2.4rem;
+  color: var(--color-primario-oscuro2);
+  margin: 0;
+  word-break: break-all;  /* Evita que rompan el ancho del contenedor */
 }
 
 .control-card {
@@ -71,11 +210,6 @@
   gap: 15px; /* Espacio entre el grupo de input y el botón saltar */
   padding: 20px 0;
   border-top: 2px var(--color-primario-oscuro); /* Una línea de separación */
-}
-
-.expresion {
-  font-weight: bold;
-  color: var(--color-texto);
 }
 
 .input-respuesta {
@@ -103,6 +237,8 @@
 }
 
 .boton-comprobar {
+  flex: none;
+  display: flex;
   padding: 15px 40px;
   font-size: 1.2rem;
   color: white;
@@ -211,13 +347,13 @@
   margin-bottom: 15px;
   color: var(--color-blanco);
   background-color: var(--color-primario);
-  box-shadow: var(--sombra-color-primario-oscuro); 
+  box-shadow: 0 5px 0 var(--color-primario-oscuro2); 
 }
 
 .boton-reintentar:hover {
   filter: brightness(1.1); /* Lo aclara un 10% */
   transform: translateY(-2px); 
-  box-shadow: var(--sombra-color-primario-oscuro2); /* Sombra mas oscura */
+  box-shadow: 0 7px 0 var(--color-primario-oscuro2); /* Sombra mas oscura */
 }
 
 .boton-reintentar:active {
@@ -232,8 +368,10 @@
   box-shadow: 0 5px 0 var(--color-gris-oscuro);
 }
 
-.boton-menu:hover {
+.boton-menu:hover { 
   background-color: #f7f7f7;
+  box-shadow: 0 7px 0 var(--color-gris-oscuro2); /* Sombra mas oscura */
+  transform: translateY(-2px);
 }
 
 .boton-menu:active {

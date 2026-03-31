@@ -12,10 +12,13 @@ function App() {
   const [mensaje, setMensaje] = useState('')
   const [pantalla, setPantalla] = useState('menu'); // 'menu', 'juego', 'resultados' (cosas preevistas para estar)
   const [dificultadSeleccionada, setDificultadSeleccionada] = useState('facil');
+  const [dificultadActual, setDificultadActual] = useState('facil');
   const [progreso, setProgreso] = useState(0);
   const [skips, setSkips] = useState(0);
   const [tiempo, setTiempo] = useState(30);
   const [mostrarBonus, setMostrarBonus] = useState(false);
+  const [nivelesDesbloqueados, setNivelesDesbloqueados] = useState(3);
+  const [botonError, setBotonError] = useState(null);
   const TOTAL_PREGUNTAS = 10;
   const TOTAL_SKIPS = 3; 
 
@@ -93,6 +96,8 @@ function App() {
     if (progreso === TOTAL_PREGUNTAS) {
       setMensaje(`¡Nivel Completado! 🏆`);
       setTimeout(() => setPantalla('resultados'), 3000);
+      if (dificultadActual === 'facil' && nivelesDesbloqueados < 2) {setNivelesDesbloqueados(2); setDificultadActual('intermedio');} 
+      if (dificultadActual === 'intermedio' && nivelMaximo < 3) {setNivelMaximo(3); setDificultadActual('dificil');}
     }
   }
 
@@ -103,21 +108,52 @@ function App() {
   ponerNuevaPregunta();
 };
 
+  //Funcion para revisar si puedes jugar un nivel
+  const intentarJugar = (nivel, nivelDeNivel) => {
+    if (nivelesDesbloqueados < nivelDeNivel) {
+      setBotonError(nivel); 
+      setTimeout(() => setBotonError(null), 500);
+      //alert("¡Nivel bloqueado! Completa el anterior."); tambien puedes mandar un alert (notificacion) 
+      return;
+    }
+    empezarJuego(nivel);
+};
+
   return (
   <div className="App">    {/* Todo tiene que ir encerrado en una division gigante (asi son los comentarios en html) */} 
 
       {/* Pantalla de menu */}
       {pantalla === 'menu' && (
         <div className="menu-principal">
-          
-          <h1>MathLingo</h1>
+          <div className="header-menu">
 
-          <p>Elige tu desafío:</p>     {/* <p> parrafo </p> */}
+          <h1 className="logo-bonito">Math<span>Lingo</span></h1>
+
+          <div className="decoracion-subtitulo"></div>
+
+          <p>Elige tu desafío:</p>    {/* <p> parrafo </p> */}
+        </div>
 
           <div className="botones-dificultad">
-            <button onClick={() => empezarJuego('facil')}>Nivel Básico</button>
-            <button onClick={() => empezarJuego('intermedio')}>Nivel Medio</button>
-            <button onClick={() => empezarJuego('dificil')}>Nivel Difícil</button>
+            <button className="boton-nivel basico" onClick={() => empezarJuego('facil')}>Nivel Básico</button>
+
+            <button 
+              className={`boton-nivel medio 
+              ${nivelesDesbloqueados < 2 ? 'bloqueado' : ''} 
+              ${botonError === 'intermedio' ? 'animacion-error' : ''}`
+              }
+              onClick={() => intentarJugar('intermedio', 2)}
+              > {nivelesDesbloqueados < 2 ? '🔒 Nivel Medio' : 'Nivel Medio'}
+            </button>
+
+            <button className={`boton-nivel dificil
+            ${nivelesDesbloqueados < 3 ? 'bloqueado' : ''}
+            ${botonError === 'dificil' ? 'animacion-error' : ''}`
+            }
+            onClick={() => intentarJugar('dificil', 3)}
+            > {nivelesDesbloqueados < 3 ? '🔒 Nivel Dificil' : 'Nivel Dificil'}
+            </button>
+
           </div>
 
         </div>
@@ -153,10 +189,8 @@ function App() {
       {/* main es aquello que no tocamos */} 
       <main className = "information-card">
         {/* Se muestran los numeros con los que trataremos */}
-        <div className="speech-bubble">
           <h2>{mensaje}</h2>
           <h3 className="expresion-matematica">{expresion}</h3>
-        </div>
 
       </main>
         {/* footer es aquello con lo que interactuamos */}

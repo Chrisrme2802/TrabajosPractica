@@ -1,7 +1,19 @@
+/* Animaciones generales de la app */
 /* Animaciones clase de la app (Utility classes) */
+/* Animacion para que suban los botones de una pantalla */
 .animacion-entrada {
   animation: aparecerYSubir 0.5s ease-out forwards;
 }
+
+/* Animacion de error */
+.animacion-error {
+  animation: shake 0.3s ease-in-out;
+  /* !important para asegurarse que le gane al otro formato */
+  background-color: #ff4444 !important; 
+  color: var(--color-blanco) !important;
+  box-shadow: 0 5px 0 #b91c1c !important;
+}
+
 /* Animaciones individuales de la app (@Keyframes) */
 /* Animacion del +3 */
 @keyframes floatUpFade {
@@ -27,9 +39,28 @@
   }
 }
 
-/* Animacion de lso botones (aparecerYSubirRetraso) */
+/* Animacion de los botones (aparecerYSubirRetraso) */
 @keyframes aparecerBotones {
   0% { opacity: 0; transform: translateY(10px); }
   50% { opacity: 0; } 
   100% { opacity: 1; transform: translateY(0); }
+}
+
+/* Animacion para opciones incorrectas */
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-5px); }
+  75% { transform: translateX(5px); }
+}
+
+/* Animacion de entrada de titulos */
+@keyframes entradaTitulo {
+  from {
+    opacity: 0;
+    transform: translateY(-20px) scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
 }
