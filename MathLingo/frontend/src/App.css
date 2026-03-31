@@ -142,7 +142,7 @@
 
 .bonus {
   position: absolute;
-  right: 0px; /* un poco a la derecha del número */
+  right: 0px; 
   top: -15px;
   color: var(--color-primario); 
   font-weight: bold;
@@ -189,4 +189,54 @@
   gap: 10px;
   width: 100%;
   max-width: 400px;
+  animation: aparecerBotones 0.8s ease-out;
+}
+
+/* darle valores a dos botones a la vez */
+.boton-reintentar, .boton-menu {
+  position: relative;
+  width: 100%;
+  letter-spacing: 1px;
+  padding: 16px 24px;
+  font-size: 1.1rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  border-radius: 16px;
+  border: none;
+  cursor: pointer;
+  transition: filter 0.2s;
+}
+
+.boton-reintentar {
+  margin-bottom: 15px;
+  color: var(--color-blanco);
+  background-color: var(--color-primario);
+  box-shadow: var(--sombra-color-primario-oscuro); 
+}
+
+.boton-reintentar:hover {
+  filter: brightness(1.1); /* Lo aclara un 10% */
+  transform: translateY(-2px); 
+  box-shadow: var(--sombra-color-primario-oscuro2); /* Sombra mas oscura */
+}
+
+.boton-reintentar:active {
+  box-shadow: none;
+  transform: translateY(5px); 
+}
+
+.boton-menu {
+  background-color: var(--color-blanco);
+  color: var(--color-gris);
+  border: 2px solid var(--color-gris);
+  box-shadow: 0 5px 0 var(--color-gris-oscuro);
+}
+
+.boton-menu:hover {
+  background-color: #f7f7f7;
+}
+
+.boton-menu:active {
+  box-shadow: none;
+  transform: translateY(5px);
 }

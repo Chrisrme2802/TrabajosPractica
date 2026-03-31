@@ -48,7 +48,8 @@ function App() {
   //Funcion para volver al menu
   const volverAlMenu = () => {
   setTiempo(30);         
-  setProgreso(0);        
+  setProgreso(0);
+  setSkips(0);        
   setPantalla('menu');   
 };
 

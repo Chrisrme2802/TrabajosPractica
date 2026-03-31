@@ -1,4 +1,9 @@
-/* Animiaciones de la app */
+/* Animaciones clase de la app (Utility classes) */
+.animacion-entrada {
+  animation: aparecerYSubir 0.5s ease-out forwards;
+}
+/* Animaciones individuales de la app (@Keyframes) */
+/* Animacion del +3 */
 @keyframes floatUpFade {
   0% {
     transform: translateY(0);
@@ -6,6 +11,25 @@
   }
   100% {
     transform: translateY(-20px); /* Sube 20 pixeles */
-    opacity: 0;                   /* Se desvanece */
+    opacity: 0;                   
   }
+}
+
+/* Animacion de la tabla de resultados */
+@keyframes aparecerYSubir {
+  from {
+    opacity: 0;
+    transform: translateY(20px); /* Empieza un poco más abajo */
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);    /* Termina en su posición original */
+  }
+}
+
+/* Animacion de lso botones (aparecerYSubirRetraso) */
+@keyframes aparecerBotones {
+  0% { opacity: 0; transform: translateY(10px); }
+  50% { opacity: 0; } 
+  100% { opacity: 1; transform: translateY(0); }
 }

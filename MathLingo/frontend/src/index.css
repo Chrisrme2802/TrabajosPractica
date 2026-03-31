@@ -3,6 +3,7 @@
   /* Paleta de colores */
   --color-primario: #4caf50;
   --color-primario-oscuro: #409445; 
+  --color-primario-oscuro2: #43910c;
   --color-secundario: #ff6b6b;
   --color-gris: #afafaf;
   --color-gris-oscuro: #777;
@@ -14,6 +15,8 @@
   /* Sombras base */
   --sombra-suave: 0 4px 6px rgba(0, 0, 0, 0.1);
   --sombra-fuerte: 0 10px 20px rgba(0, 0, 0, 0.15);
+  --sombra-color-primario: 0 7px 0 var(--color-primario);
+  --sombra-color-primario-oscuro: 0 7px 0 var(--color-primario-oscuro2);
 
   /* Tipografía */
   --fuente-principal: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
