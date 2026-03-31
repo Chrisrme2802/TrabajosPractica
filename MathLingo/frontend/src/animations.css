@@ -1,0 +1,11 @@
+/* Animiaciones de la app */
+@keyframes floatUpFade {
+  0% {
+    transform: translateY(0);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(-20px); /* Sube 20 pixeles */
+    opacity: 0;                   /* Se desvanece */
+  }
+}

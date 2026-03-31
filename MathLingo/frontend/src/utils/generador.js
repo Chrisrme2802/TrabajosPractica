@@ -1,9 +1,7 @@
   //Funcion para generarPreguntaNueva
   export const generarNuevaPregunta = (dificultad) => {
     const nuevaExpresion = elegirMolde(dificultad);
-    setExpresion(nuevaExpresion);
-    setRespuesta('');
-    setMensaje('¿Cuál es el resultado?')
+    return nuevaExpresion;
   };
 
   //Funcion que elige operador aleatorio
