@@ -1,28 +1,59 @@
+//Imports de HTML
+import { PantallaMenu } from "./components/PantallaMenu";
+import { PantallaJuego } from "./components/PantallaJuego";
+import { PantallaResultados } from "./components/PantallaResultados";
+//Imports de Utils
 import { interpreteExpresiones } from "./utils/interprete"
 import { generarNuevaPregunta } from "./utils/generador"
-import { useEffect, useState } from "react"   //Metodo hook y listener de React
+//Imports de Constants
+import { GAME_CONFIG } from './constants/gameConfig';
+//Imports de React
+import { useEffect, useState, useRef } from "react"   //Metodo hook y listener de React y referencia directa a espacio en pantalla
+//Imports de CSS
 import './App.css'
 import './animations.css'
 
 function App() {
 
   //Primero se crean los estados de las cosas que usaremos
+  const inputRef = useRef(null);        //Declarar la referencia para poder marcar referencias a cosas depende la pantalla
   const [expresion, setExpresion] = useState('')    //Primero declaras y lo segundo es con lo que alteras su valor
   const [respuesta, setRespuesta] = useState('')
+  const [resultado, setResultado] = useState('');
   const [mensaje, setMensaje] = useState('')
   const [pantalla, setPantalla] = useState('menu'); // 'menu', 'juego', 'resultados' (cosas preevistas para estar)
   const [dificultadSeleccionada, setDificultadSeleccionada] = useState('facil');
   const [dificultadActual, setDificultadActual] = useState('facil');
   const [progreso, setProgreso] = useState(0);
   const [skips, setSkips] = useState(0);
-  const [tiempo, setTiempo] = useState(30);
+  const [tiempo, setTiempo] = useState(GAME_CONFIG.TIEMPO_INICIAL);
   const [mostrarBonus, setMostrarBonus] = useState(false);
-  const [nivelesDesbloqueados, setNivelesDesbloqueados] = useState(3);
+  const [nivelesDesbloqueados, setNivelesDesbloqueados] = useState(1);
   const [botonError, setBotonError] = useState(null);
-  const TOTAL_PREGUNTAS = 10;
-  const TOTAL_SKIPS = 3; 
+  const [digitosRevelados, setDigitosRevelados] = useState(0);
 
   //useEffects() de la app
+  //useEffect para la victoria de cada nivel
+  useEffect(() => {
+  if (progreso === TOTAL_PREGUNTAS) {
+    setMensaje(`¡Nivel Completado! 🏆`);
+    
+    // Bloqueamos el juego un momento para mostrar el éxito
+    setTimeout(() => {
+      setPantalla('resultados');
+    }, 2000);
+
+    // Lógica de desbloqueo de niveles
+    if (dificultadActual === 'facil' && nivelesDesbloqueados < 2) {
+      setNivelesDesbloqueados(2);
+      setDificultadActual('intermedio');
+    } else if (dificultadActual === 'intermedio' && nivelesDesbloqueados < 3) {
+      setNivelesDesbloqueados(3);
+      setDificultadActual('dificil');
+    }
+  }
+}, [progreso, TOTAL_PREGUNTAS]);
+
   //useEffect que controla el tiempo
   useEffect(() => {
     if ((pantalla === 'juego')&&(tiempo > 0)) {
@@ -36,11 +67,37 @@ function App() {
     }
   }, [pantalla, tiempo]);
 
+  //useEffect que controla el numero de digitos revelados
+  useEffect(() => {
+    if (pantalla === 'juego' && resultado !== '') {
+      const resultadoStr = resultado.toString();
+        if (digitosRevelados < resultadoStr.length) {
+          const timer = setInterval(() => {
+          setDigitosRevelados(prev => prev + 1);
+          }, 3000);
+          return () => clearInterval(timer);
+        }
+      }
+  }, [digitosRevelados, pantalla, resultado]);
+
+  //useEffect que manda focus al input en cada cambio de pregunta y pantalla juego
+  useEffect(() => {
+  if (pantalla === 'juego' && inputRef.current) {
+    inputRef.current.focus();
+  }
+}, [expresion, pantalla]);
+
   //Funciones de la app
+  //Funcion para detectar input por teclado para respuesta
+  const handleKeyDown = (event) => {
+  if (event.key === 'Enter') {
+    comprobarEstado();
+  }
+};
   //Funcion para reiniciar el juego
   const reiniciarJuego = () => {
     setProgreso(0);
-    setTiempo(30);
+    setTiempo(GAME_CONFIG.TIEMPO_INICIAL);
     setSkips(0);
     setRespuesta('');
     setMensaje('¡Prepárate!');
@@ -50,7 +107,7 @@ function App() {
 
   //Funcion para volver al menu
   const volverAlMenu = () => {
-  setTiempo(30);         
+  setTiempo(GAME_CONFIG.TIEMPO_INICIAL);         
   setProgreso(0);
   setSkips(0);        
   setPantalla('menu');   
@@ -61,7 +118,12 @@ function App() {
     const texto = generarNuevaPregunta(dificultadSeleccionada);
     setExpresion(texto);
     setRespuesta('');
+    setDigitosRevelados(0);
     setMensaje('¿Cuál es el resultado?')
+
+    const resultadoCalculado = interpreteExpresiones(texto);
+    const resultadoFormateado = Number(resultadoCalculado.toFixed(2));
+    setResultado(resultadoFormateado);
   }
 
   //Funcion para saltar una pregunta
@@ -77,13 +139,14 @@ function App() {
 
   //Funcion para comprobar respuesta
   const comprobarEstado = () => {
-    const resultadoCorrecto = interpreteExpresiones(expresion)
     const resUsuario = parseFloat(parseFloat(respuesta).toFixed(2));
-    const resSistema = parseFloat(resultadoCorrecto.toFixed(2));
-    if (resUsuario === resSistema) {
+    const resSistema = parseFloat(resultado.toFixed(2));
+    const diferencia = Math.abs(resUsuario - resSistema);
+    const margenTolerancia = 0.11;
+    if (diferencia <= margenTolerancia) {
       setMensaje('Correcto! ✨');
       setProgreso(prev => prev + 1);      //prev es como react se refiere a su estado anterior
-      setTiempo(prev => Math.min(prev + 3, 30));    //para que no supere el maximo de 30
+      setTiempo(prev => Math.min(prev + GAME_CONFIG.BONUS_TIEMPO, GAME_CONFIG.TIEMPO_INICIAL));    //para que no supere el maximo de 30
       setMostrarBonus(true);            //animacion del +3 con su tiempo
       setTimeout(() => setMostrarBonus(false), 1000);
     } else {
@@ -93,12 +156,6 @@ function App() {
         setTimeout(() => {
         ponerNuevaPregunta();
       }, 2000);
-    if (progreso === TOTAL_PREGUNTAS) {
-      setMensaje(`¡Nivel Completado! 🏆`);
-      setTimeout(() => setPantalla('resultados'), 3000);
-      if (dificultadActual === 'facil' && nivelesDesbloqueados < 2) {setNivelesDesbloqueados(2); setDificultadActual('intermedio');} 
-      if (dificultadActual === 'intermedio' && nivelMaximo < 3) {setNivelMaximo(3); setDificultadActual('dificil');}
-    }
   }
 
   //Funcion para comenzar juego de cierta dificultad
@@ -122,123 +179,44 @@ function App() {
   return (
   <div className="App">    {/* Todo tiene que ir encerrado en una division gigante (asi son los comentarios en html) */} 
 
-      {/* Pantalla de menu */}
       {pantalla === 'menu' && (
-        <div className="menu-principal">
-          <div className="header-menu">
-
-          <h1 className="logo-bonito">Math<span>Lingo</span></h1>
-
-          <div className="decoracion-subtitulo"></div>
-
-          <p>Elige tu desafío:</p>    {/* <p> parrafo </p> */}
-        </div>
-
-          <div className="botones-dificultad">
-            <button className="boton-nivel basico" onClick={() => empezarJuego('facil')}>Nivel Básico</button>
-
-            <button 
-              className={`boton-nivel medio 
-              ${nivelesDesbloqueados < 2 ? 'bloqueado' : ''} 
-              ${botonError === 'intermedio' ? 'animacion-error' : ''}`
-              }
-              onClick={() => intentarJugar('intermedio', 2)}
-              > {nivelesDesbloqueados < 2 ? '🔒 Nivel Medio' : 'Nivel Medio'}
-            </button>
-
-            <button className={`boton-nivel dificil
-            ${nivelesDesbloqueados < 3 ? 'bloqueado' : ''}
-            ${botonError === 'dificil' ? 'animacion-error' : ''}`
-            }
-            onClick={() => intentarJugar('dificil', 3)}
-            > {nivelesDesbloqueados < 3 ? '🔒 Nivel Dificil' : 'Nivel Dificil'}
-            </button>
-
-          </div>
-
-        </div>
-      )}
-
-      {/* Pantalla de juego */}
-      {pantalla === 'juego' && (
-    <>
-        <header className="juego-header">
-          <div className="header-izquierda">
-            <span className="logo-chico">MathLingo</span>
-          </div>
-  
-          <div className="header-centro">
-            <div className="contenedor-progreso">
-              <div className="barra-relleno" style={{ width: `${(progreso / TOTAL_PREGUNTAS) * 100}%` }}></div>
-            </div>
-          </div>
-
-          <div className="header-derecha">
-            <div className="stats">
-              <span>⏭️ {TOTAL_SKIPS - skips}</span>
-              <div className="tiempo-container">
-                  <span>⏳ {tiempo}s</span>
-                  {/* Si es true hazlo, si no, no */}
-                  {mostrarBonus && <span className="bonus">+3</span>}
-                </div>
-            </div>
-          </div>
-        </header>
-        <div className="juego-principal">
-
-      {/* main es aquello que no tocamos */} 
-      <main className = "information-card">
-        {/* Se muestran los numeros con los que trataremos */}
-          <h2>{mensaje}</h2>
-          <h3 className="expresion-matematica">{expresion}</h3>
-
-      </main>
-        {/* footer es aquello con lo que interactuamos */}
-        {/* onChange es el escuchador de eventos de React, e es evento */}
-        <footer className = "control-card">
-          <input 
-          className="input-respuesta"
-          type="number" 
-          placeholder="?"
-          value={respuesta} 
-          onChange={(event) => setRespuesta(event.target.value)}         
+        <PantallaMenu 
+          empezarJuego={empezarJuego}
+          intentarJugar={intentarJugar}
+          nivelesDesbloqueados={nivelesDesbloqueados}
+          botonError={botonError}
         />
-
-        <button onClick={comprobarEstado} className="boton-comprobar">Comprobar</button> 
-
-        <button className="boton-saltar" onClick={() => saltarPregunta() }>Saltar Pregunta</button>
-
-        </footer>
-        </div>
-    </>
       )}
 
-    {/* Pantalla de resultados */}
-    {pantalla === 'resultados' && (
-      <div className="pantalla-resultados animacion-entrada">
-          <header className="resultados-header">
-          <h1>{progreso >= TOTAL_PREGUNTAS / 2 ? '¡Buen trabajo!' : '¡Sigue practicando!'}</h1>
-          </header>
+      {pantalla === 'juego' && (
+        <PantallaJuego 
+          expresion={expresion}
+          respuesta={respuesta}
+          setRespuesta={setRespuesta}
+          comprobarEstado={comprobarEstado}
+          tiempo={tiempo}
+          progreso={progreso}
+          TOTAL_PREGUNTAS={TOTAL_PREGUNTAS}
+          skips={skips}
+          TOTAL_SKIPS={TOTAL_SKIPS}
+          mostrarBonus={mostrarBonus}
+          mensaje={mensaje}
+          resultado={resultado}
+          digitosRevelados={digitosRevelados}
+          inputRef={inputRef}
+          handleKeyDown={handleKeyDown}
+          saltarPregunta={saltarPregunta}
+        />
+      )}
 
-        <main className="resultados-principal">
-          <div className="tarjeta-stats">
-            <div className="stat-item">
-              <span className="stat-label">Puntaje</span>
-              <span className="stat-value">{progreso} / {TOTAL_PREGUNTAS}</span>
-            </div>
-            <div className="stat-item">
-                <span className="stat-label">Precisión</span>
-                <span className="stat-value">{Math.round((progreso / TOTAL_PREGUNTAS) * 100)}%</span>
-            </div>
-          </div>
-        </main>
-
-        <footer className="resultados-footer">
-          <button className="boton-reintentar" onClick={reiniciarJuego}>Intentar de nuevo</button>
-          <button className="boton-menu" onClick={volverAlMenu}>Volver al Menú</button>
-        </footer>
-      </div>
-    )}
+      {pantalla === 'resultados' && (
+        <PantallaResultados 
+          progreso={progreso}
+          TOTAL_PREGUNTAS={TOTAL_PREGUNTAS}
+          reiniciarJuego={reiniciarJuego}
+          volverAlMenu={volverAlMenu}
+        />
+      )}
 
   </div>
   ); 
