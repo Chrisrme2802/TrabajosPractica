@@ -7,6 +7,8 @@ import { interpreteExpresiones } from "./utils/interprete"
 import { generarNuevaPregunta } from "./utils/generador"
 //Imports de Constants
 import { GAME_CONFIG } from './constants/gameConfig';
+//Imports de hooks
+import { useTimer } from "./hooks/useTimer";
 //Imports de React
 import { useEffect, useState, useRef } from "react"   //Metodo hook y listener de React y referencia directa a espacio en pantalla
 //Imports de CSS
@@ -26,16 +28,21 @@ function App() {
   const [dificultadActual, setDificultadActual] = useState('facil');
   const [progreso, setProgreso] = useState(0);
   const [skips, setSkips] = useState(0);
-  const [tiempo, setTiempo] = useState(GAME_CONFIG.TIEMPO_INICIAL);
   const [mostrarBonus, setMostrarBonus] = useState(false);
   const [nivelesDesbloqueados, setNivelesDesbloqueados] = useState(1);
   const [botonError, setBotonError] = useState(null);
   const [digitosRevelados, setDigitosRevelados] = useState(0);
 
+  //Estados de los hooks
+  const { tiempo, añadirTiempo, setActivo, resetearTiempo, setTiempo } = useTimer(
+    GAME_CONFIG.TIEMPO_INICIAL, 
+    () => setPantalla('resultados') // <--- Aquí pasas la "nota" de qué hacer al terminar
+  );
+
   //useEffects() de la app
   //useEffect para la victoria de cada nivel
   useEffect(() => {
-  if (progreso === TOTAL_PREGUNTAS) {
+  if (progreso === GAME_CONFIG.TOTAL_PREGUNTAS) {
     setMensaje(`¡Nivel Completado! 🏆`);
     
     // Bloqueamos el juego un momento para mostrar el éxito
@@ -52,20 +59,7 @@ function App() {
       setDificultadActual('dificil');
     }
   }
-}, [progreso, TOTAL_PREGUNTAS]);
-
-  //useEffect que controla el tiempo
-  useEffect(() => {
-    if ((pantalla === 'juego')&&(tiempo > 0)) {
-      const timer = setInterval(() => {
-      setTiempo(prev => prev - 1);
-    }, 1000);
-    return () => clearInterval(timer);
-    } else if (tiempo === 0) {
-      setMensaje("¡Se acabó el tiempo! ⏰");
-      setPantalla('resultados');
-    }
-  }, [pantalla, tiempo]);
+}, [progreso, GAME_CONFIG.TOTAL_PREGUNTAS]);
 
   //useEffect que controla el numero de digitos revelados
   useEffect(() => {
@@ -97,7 +91,7 @@ function App() {
   //Funcion para reiniciar el juego
   const reiniciarJuego = () => {
     setProgreso(0);
-    setTiempo(GAME_CONFIG.TIEMPO_INICIAL);
+    resetearTiempo();
     setSkips(0);
     setRespuesta('');
     setMensaje('¡Prepárate!');
@@ -128,7 +122,7 @@ function App() {
 
   //Funcion para saltar una pregunta
   const saltarPregunta = () => {
-    if (skips < TOTAL_SKIPS) {
+    if (skips < GAME_CONFIG.TOTAL_SKIPS) {
       setSkips(prev => prev + 1);
       ponerNuevaPregunta();
       setMensaje("¡Pregunta saltada! ⏩");    
@@ -146,23 +140,25 @@ function App() {
     if (diferencia <= margenTolerancia) {
       setMensaje('Correcto! ✨');
       setProgreso(prev => prev + 1);      //prev es como react se refiere a su estado anterior
-      setTiempo(prev => Math.min(prev + GAME_CONFIG.BONUS_TIEMPO, GAME_CONFIG.TIEMPO_INICIAL));    //para que no supere el maximo de 30
       setMostrarBonus(true);            //animacion del +3 con su tiempo
-      setTimeout(() => setMostrarBonus(false), 1000);
+      añadirTiempo(GAME_CONFIG.BONUS_TIEMPO);
     } else {
       setMensaje(`Incorrecto... el resultado era ${resSistema}`)
     }
     //Un tiempo para la siguiente pregunta
-        setTimeout(() => {
-        ponerNuevaPregunta();
-      }, 2000);
-  }
+      if (progreso + 1 < GAME_CONFIG.TOTAL_PREGUNTAS) {
+    setTimeout(() => {
+      ponerNuevaPregunta();
+    }, 2000);
+    }
+  };
 
   //Funcion para comenzar juego de cierta dificultad
   const empezarJuego = (nivel) => {
   setDificultadSeleccionada(nivel);
   setPantalla('juego');
   ponerNuevaPregunta();
+  setActivo(true);
 };
 
   //Funcion para revisar si puedes jugar un nivel
@@ -196,9 +192,9 @@ function App() {
           comprobarEstado={comprobarEstado}
           tiempo={tiempo}
           progreso={progreso}
-          TOTAL_PREGUNTAS={TOTAL_PREGUNTAS}
+          TOTAL_PREGUNTAS={GAME_CONFIG.TOTAL_PREGUNTAS}
           skips={skips}
-          TOTAL_SKIPS={TOTAL_SKIPS}
+          TOTAL_SKIPS={GAME_CONFIG.TOTAL_SKIPS}
           mostrarBonus={mostrarBonus}
           mensaje={mensaje}
           resultado={resultado}
@@ -212,7 +208,7 @@ function App() {
       {pantalla === 'resultados' && (
         <PantallaResultados 
           progreso={progreso}
-          TOTAL_PREGUNTAS={TOTAL_PREGUNTAS}
+          TOTAL_PREGUNTAS={GAME_CONFIG.TOTAL_PREGUNTAS}
           reiniciarJuego={reiniciarJuego}
           volverAlMenu={volverAlMenu}
         />
