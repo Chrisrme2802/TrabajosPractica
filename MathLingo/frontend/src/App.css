@@ -1,13 +1,57 @@
 /* css de la app */
 .App {                          /* Posicion => Texto => Visual => Otros */
   display: flex;                /* Posicion = Posicionamiento => Capa => Coordenadas */
-  flex-direction: column;       /* Caja = Display => Alineaciones => Dimensiones => Margenes => Relleno */
+  flex-direction: row;       /* Caja = Display => Alineaciones => Dimensiones => Margenes => Relleno */
   align-items: center;          /* Texto = Fuente => Tamaño => Grosor => Alineacion => Color => Espaciado */
   justify-content: center;      /* Visuales = Fondo => Bordes => Efectos */
   gap: 20px;
-  min-height: 100vh;            /* vh es el porcentaje % de  altura de la pantalla que se este usando, vw lo mismo pero de ancho */
+  height: 100vh;            /* vh es el porcentaje % de  altura de la pantalla que se este usando, vw lo mismo pero de ancho */
   font-family: var(--fuente-principal);
   background-color: var(--color-fondo);
+}
+
+main, .pantallaJuego, .pantallaMenu {
+  flex: 1; /* Toma todo el espacio restante a la derecha */
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+}
+
+.user-bar {
+  width: 80px; /* Ancho fijo */
+  height: 100vh;
+  background-color: #ffffff;
+  border-right: 2px solid #e5e5e5;
+  display: flex;
+  flex-direction: column; /* Iconos hacia abajo */
+  align-items: center;
+  padding-top: 40px;
+  gap: 30px;
+  flex-shrink: 0; /* Evita que el juego aplaste la barra */
+}
+
+.stat-item {
+  display: flex;
+  flex-direction: column; /* Icono arriba, número abajo */
+  align-items: center;
+  gap: 5px;
+  font-weight: 800;
+  color: #4b4b4b;
+  font-size: 0.9rem;
+}
+
+.stat-item .emoji {
+  font-size: 1.5rem;
+}
+
+.stat-item span {
+  font-family: 'Open Sans', sans-serif;
+  font-weight: 800;
+  font-size: 0.8rem; 
+  color: #4b4b4b;
+  text-align: center;
 }
 
 .menu-principal {
@@ -161,10 +205,12 @@
 .stats {
   display: flex;
   justify-content: flex-end;
+  padding: 10px;
   font-weight: bold;
-  font-size: 0.9rem;
+  font-family: 'Open Sans', sans-serif;;
+  font-size: 1.1rem;
   color: var(--color-texto);
-  gap: 10px;
+  gap: 15px;
 }
 
 .information-card {
