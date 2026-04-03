@@ -106,7 +106,7 @@ function App() {
 
   //Funcion para volver al menu
   const volverAlMenu = () => {
-  setTiempo(GAME_CONFIG.TIEMPO_INICIAL);         
+  setActivo(false);         
   setProgreso(0);
   setSkips(0);        
   setPantalla('menu');   
@@ -139,19 +139,28 @@ function App() {
     if (skips < GAME_CONFIG.TOTAL_SKIPS) {
       setSkips(prev => prev + 1);
       ponerNuevaPregunta();
-      setMensaje("¡Pregunta saltada! ⏩");    
+      setMensaje("¡Pregunta saltada! ⏩");
+      setTimeout(() => {
+      setMensaje("¿Cuál es el resultado?");
+    }, 1500);
     } else {
       setMensaje("¡Te quedaste sin saltos! 🚫");
+      setTimeout(() => {
+      setMensaje("¿Cuál es el resultado?");
+    }, 1500);
     }
   }
 
   //Funcion para comprobar respuesta
   const comprobarEstado = () => {
+    if (respuesta.trim() === '') return;
+    const valorSistema = Number(resultado);
+    if (isNaN(valorSistema)) return;
+    
     const resUsuario = parseFloat(parseFloat(respuesta).toFixed(2));
-    const resSistema = parseFloat(resultado.toFixed(2));
+    const resSistema = parseFloat(valorSistema.toFixed(2));
     const diferencia = Math.abs(resUsuario - resSistema);
-    const margenTolerancia = 0.11;
-    if (diferencia <= margenTolerancia) {
+    if (diferencia <= GAME_CONFIG.MARGEN_ERROR) {
       setMensaje('Correcto! ✨ +2 🪙');
       setProgreso(prev => prev + 1);      //prev es como react se refiere a su estado anterior
       setMostrarBonus(true);            //animacion del +3 con su tiempo
@@ -192,11 +201,15 @@ function App() {
     empezarJuego(nivel);
 };
 
+  const barKey = pantalla === 'menu' ? 'animacion-entrada' : '';
+
   //Todo tiene que ir encerrado en una division gigante (asi son los comentarios en html)
   return (
   <div className="App">     
 
-      <UserBar stats={stats} />
+      <div className="contenedor-fijo-userbar">
+        <UserBar key={barKey} stats={stats} />
+      </div>
 
       {pantalla === 'menu' && (
         <PantallaMenu 

@@ -39,8 +39,8 @@ import { useState, useEffect } from 'react';
     const ganarRecompensas = ((monedasNuevas, expNueva) => {
         setStats(prev => ({
             ...prev,
-            monedas : prev.monedas + monedasNuevas,
-            experiencia : prev.experiencia + expNueva
+            monedas : (Number(prev.monedas) || 0) + monedasNuevas,
+            experiencia : (Number(prev.experiencia) || 0) + expNueva
         }));
     })
 
@@ -49,7 +49,7 @@ import { useState, useEffect } from 'react';
         if (monedasGastadas <= stats.monedas) {
             setStats(prev => ({
                 ...prev,
-                monedas : monedas - monedasGastadas
+                monedas : prev.monedas - monedasGastadas
             }));
             return true;
         } 

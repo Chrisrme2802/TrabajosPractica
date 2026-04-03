@@ -1,9 +1,10 @@
 /* css de la app */
 .App {                          /* Posicion => Texto => Visual => Otros */
+  position: relative;
   display: flex;                /* Posicion = Posicionamiento => Capa => Coordenadas */
   flex-direction: row;       /* Caja = Display => Alineaciones => Dimensiones => Margenes => Relleno */
   align-items: center;          /* Texto = Fuente => Tamaño => Grosor => Alineacion => Color => Espaciado */
-  justify-content: flex-start;      /* Visuales = Fondo => Bordes => Efectos */
+  justify-content: center;      /* Visuales = Fondo => Bordes => Efectos */
   gap: 20px;
   min-height: 100vh;            /* vh es el porcentaje % de  altura de la pantalla que se este usando, vw lo mismo pero de ancho */
   font-family: var(--fuente-principal);
@@ -26,17 +27,48 @@
   width: 100%;
 }
 
-.user-bar {
-  width: 90px;
-  background-color: #ffffff;
-  border-right: 2px solid #e5e5e5;
+.pantalla-resultados {
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center; /* 👈 centra contenido interno */
+  justify-content: center;
+  gap: 20px;
+  width: 100%;
+}
+
+.contenedor-fijo-userbar {
+  position: fixed;
+  left: 600px;
+  top: 50%;
+  transform: translateY(-65%);  
+  z-index: 100;
+  width: auto;
+}
+
+.user-bar {
+  left: 600px;
+  width: 140px;
+  background-color: #ffffff;
+  border-right: 2px solid #c0bbbb;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Nunito', 'Open Sans', sans-serif;
+  font-weight: 800; /* Extra negrita */
+  color: #4b4b4b; /* Un gris oscuro, evita el negro puro */
+  font-size: 0.9rem;
+  letter-spacing: 0.5px;
+  text-transform: uppercase; 
   padding: 20px 0;
   gap: 40px;
-  border-radius: 20px; /* opcional, se ve mejor */
+  border-radius: 20px; 
+  animation: entradaTitulo 0.6s cubic-bezier(0.17, 0.67, 0.83, 0.67); 
+}
+
+.user-bar span {
+  color: var(--color-primario);
+  text-shadow: 1px 1px 0px rgba(0,0,0,0.05);
 }
 
 .stat-item {
@@ -47,18 +79,6 @@
   font-weight: 700;
   color: #4b4b4b;
   font-size: 0.8rem;
-}
-
-.stat-item .emoji {
-  font-size: 1.5rem;
-}
-
-.stat-item span {
-  font-family: 'Open Sans', sans-serif;
-  font-weight: 800;
-  font-size: 0.8rem; 
-  color: #4b4b4b;
-  text-align: center;
 }
 
 .menu-principal {
@@ -206,17 +226,6 @@
   color: var(--color-primario-oscuro);
   font-size: 0.9rem;
   text-transform: lowercase;
-}
-
-.stats {
-  display: flex;
-  justify-content: flex-end;
-  padding: 10px;
-  font-weight: bold;
-  font-family: 'Open Sans', sans-serif;;
-  font-size: 1.1rem;
-  color: var(--color-texto);
-  gap: 15px;
 }
 
 .information-card {
@@ -378,17 +387,21 @@
   width: 100%;
   max-width: 400px;
   margin: 20px 0;
-  justify-content: space-around;
-  padding: 20px;
+  justify-content: space-between;
+  padding: 20px 40px;
   background: var(--color-blanco);
   border: 2px solid #e5e5e5;
   border-radius: 15px;
+  border-bottom: 5px solid #e5e5e5; 
+  border-radius: 20px
 }
 
 .stat-item {
   display: flex;
   flex-direction: column;
   align-items: center;
+  min-width: 120px; 
+  gap: 10px;
 }
 
 .stat-label {
