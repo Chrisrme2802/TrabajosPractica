@@ -9,3 +9,6 @@ npm-debug.log
 # Sistema
 .DS_Store
 Thumbs.db
+
+# Env
+.env
