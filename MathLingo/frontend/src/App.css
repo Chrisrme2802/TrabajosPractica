@@ -3,15 +3,14 @@
   display: flex;                /* Posicion = Posicionamiento => Capa => Coordenadas */
   flex-direction: row;       /* Caja = Display => Alineaciones => Dimensiones => Margenes => Relleno */
   align-items: center;          /* Texto = Fuente => Tamaño => Grosor => Alineacion => Color => Espaciado */
-  justify-content: center;      /* Visuales = Fondo => Bordes => Efectos */
+  justify-content: flex-start;      /* Visuales = Fondo => Bordes => Efectos */
   gap: 20px;
-  height: 100vh;            /* vh es el porcentaje % de  altura de la pantalla que se este usando, vw lo mismo pero de ancho */
+  min-height: 100vh;            /* vh es el porcentaje % de  altura de la pantalla que se este usando, vw lo mismo pero de ancho */
   font-family: var(--fuente-principal);
   background-color: var(--color-fondo);
 }
 
-main, .pantallaJuego, .pantallaMenu {
-  flex: 1; /* Toma todo el espacio restante a la derecha */
+.pantallaMenu {
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -19,27 +18,35 @@ main, .pantallaJuego, .pantallaMenu {
   padding: 20px;
 }
 
+.pantallaJuego {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center; 
+  width: 100%;
+}
+
 .user-bar {
-  width: 80px; /* Ancho fijo */
-  height: 100vh;
+  width: 90px;
   background-color: #ffffff;
   border-right: 2px solid #e5e5e5;
   display: flex;
-  flex-direction: column; /* Iconos hacia abajo */
+  flex-direction: column;
   align-items: center;
-  padding-top: 40px;
-  gap: 30px;
-  flex-shrink: 0; /* Evita que el juego aplaste la barra */
+  justify-content: center; /* 👈 centra contenido interno */
+  padding: 20px 0;
+  gap: 40px;
+  border-radius: 20px; /* opcional, se ve mejor */
 }
 
 .stat-item {
   display: flex;
-  flex-direction: column; /* Icono arriba, número abajo */
+  flex-direction: column;
   align-items: center;
-  gap: 5px;
-  font-weight: 800;
+  gap: 6px;
+  font-weight: 700;
   color: #4b4b4b;
-  font-size: 0.9rem;
+  font-size: 0.8rem;
 }
 
 .stat-item .emoji {
@@ -176,9 +183,8 @@ main, .pantallaJuego, .pantallaMenu {
   display: flex;
   align-items: center;  
   box-sizing: border-box;       /* Tamaño inalterable */
-  height: 90vh;
   max-width: 600px;
-  justify-content: flex-start;       /* Empuja el primero arriba y el último abajo */
+  justify-content: center;       /* Empuja el primero arriba y el último abajo */
   gap: 30px;
   padding: 20px;
   overflow: hidden;

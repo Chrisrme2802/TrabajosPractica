@@ -14,7 +14,7 @@ import { useState, useEffect } from 'react';
         const [stats, setStats] = useState(() => {
             const datosGuardados = localStorage.getItem('mathlingo_stats');
             //Si existe solamente lo pasamos a String lo que haya en datos guardados (JSON)
-            return datosGuardados? JSON.stringify(datosGuardados) : STATS_INICIALES;
+            return datosGuardados? JSON.parse(datosGuardados) : STATS_INICIALES;
         });
 
     //useEffect para actualizar el nivel cada que nivelesDesbloqueados cambie

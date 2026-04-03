@@ -19,6 +19,7 @@ export function PantallaJuego ({
     }) {
     return (
     <>
+      <div className="pantallaJuego">  
         <header className="juego-header">
           <div className="header-izquierda">
             <span className="logo-chico">MathLingo</span>
@@ -79,6 +80,7 @@ export function PantallaJuego ({
 
         </footer>
         </div>
+      </div>  
     </>
     );
 }

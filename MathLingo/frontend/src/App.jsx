@@ -12,7 +12,7 @@ import { GAME_CONFIG } from './constants/gameConfig';
 import { useTimer } from "./hooks/useTimer";
 import { useUserStats } from "./hooks/useUserStats";
 //Imports de React
-import { useEffect, useState, useRef, use } from "react"   //Metodo hook y listener de React y referencia directa a espacio en pantalla
+import { useEffect, useState, useRef } from "react"   //Metodo hook y listener de React y referencia directa a espacio en pantalla
 //Imports de CSS
 import './App.css'
 import './animations.css'
@@ -55,6 +55,7 @@ function App() {
     // Bloqueamos el juego un momento para mostrar el éxito
     setTimeout(() => {
       setPantalla('resultados');
+      setActivo(false);
     }, 2000);
 
     // Lógica de desbloqueo de niveles
@@ -100,6 +101,7 @@ function App() {
     setMensaje('¡Prepárate!');
     setPantalla('juego'); // Nos manda directo a jugar otra vez
     ponerNuevaPregunta();
+    setActivo(true);
   }
 
   //Funcion para volver al menu
@@ -175,6 +177,7 @@ function App() {
   setDificultadSeleccionada(dificultadSeleccionada);
   setPantalla('juego');
   ponerNuevaPregunta();
+  setTiempo(GAME_CONFIG.TIEMPO_INICIAL);
   setActivo(true);
 };
 
