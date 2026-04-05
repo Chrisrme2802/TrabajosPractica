@@ -587,3 +587,26 @@
   font-size: 0.9rem;
   color: var(--color-texto);
 }
+
+.perfil-info {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+}
+
+.boton-logout {
+  background: none;
+  border: none;
+  color: var(--color-secundario);
+  font-size: 0.7rem;
+  font-weight: 800;
+  cursor: pointer;
+  padding: 0;
+  text-transform: uppercase;
+  transition: opacity 0.2s;
+}
+
+.boton-logout:hover {
+  text-decoration: underline;
+  opacity: 0.8;
+}

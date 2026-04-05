@@ -1,5 +1,7 @@
 {/* Pantalla de menu HTML*/}
 export function PantallaMenu ({
+  usuario,
+  cerrarSesion,
   empezarJuego, 
   intentarJugar, 
   nivelesDesbloqueados, 
@@ -7,6 +9,18 @@ export function PantallaMenu ({
 }) {
     return (
         <div className="menu-principal">
+            <div className="perfil-esquina">
+                  <span className="perfil-nombre">{usuario.name}</span>
+                  <img 
+                    src={usuario.picture} 
+                    alt="Foto de perfil" 
+                    className="perfil-foto"
+                    referrerPolicy="no-referrer" /* Importante para que carguen las fotos de Google */
+                  />
+                  <button onClick={cerrarSesion} className="boton-logout">
+                    Salir
+                  </button>
+            </div>
           <div className="header-menu">
 
           <h1 className="logo-bonito">Math<span>Lingo</span></h1>

@@ -96,6 +96,11 @@ function App() {
   }
 };
 
+  //Funcion para cerrar sesion
+  const cerrarSesion = () => {
+  setUsuario(null);
+  };
+
   //Funcion para reiniciar el juego
   const reiniciarJuego = () => {
     setProgreso(0);
@@ -235,16 +240,6 @@ function App() {
       
     <>
 
-      <div className="perfil-esquina">
-        <span className="perfil-nombre">{usuario.name}</span>
-        <img 
-          src={usuario.picture} 
-          alt="Foto de perfil" 
-          className="perfil-foto"
-          referrerPolicy="no-referrer" /* Importante para que carguen las fotos de Google */
-        />
-      </div>
-
       <div className="contenedor-fijo-userbar">
         <UserBar key={barKey} stats={stats} />
       </div>
@@ -255,6 +250,8 @@ function App() {
           intentarJugar={intentarJugar}
           nivelesDesbloqueados={stats.nivelesDesbloqueados}
           botonError={botonError}
+          usuario={usuario}
+          cerrarSesion={cerrarSesion}
         />
       )}
 
