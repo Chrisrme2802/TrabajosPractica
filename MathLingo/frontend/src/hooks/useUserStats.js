@@ -6,7 +6,10 @@ import { useState, useEffect } from 'react';
       nivelesDesbloqueados: 1,
       monedas: 0,
       experiencia: 0,
-      rango: 'Principiante'
+      rango: 'Principiante',
+      nombre: "",
+      foto: null,
+      googleID: null
     };  
 
     //Constructor principal de las estadisticas
@@ -17,7 +20,7 @@ import { useState, useEffect } from 'react';
             return datosGuardados? JSON.parse(datosGuardados) : STATS_INICIALES;
         });
 
-    //useEffect para actualizar el nivel cada que nivelesDesbloqueados cambie
+    //useEffect para actualizar las stats cada que stats cambie
     useEffect(() => {
         localStorage.setItem('mathlingo_stats', JSON.stringify(stats));
         }, [stats]);
@@ -57,5 +60,5 @@ import { useState, useEffect } from 'react';
     }
 
     //Regreso las cosas que puedo mandar a llamar desde fuera
-    return { desbloquearNivel, stats, ganarRecompensas, gastarMonedas };
+    return { desbloquearNivel, stats, ganarRecompensas, gastarMonedas, setStats };
 }

@@ -3,6 +3,7 @@ import { PantallaMenu } from "./components/PantallaMenu";
 import { PantallaJuego } from "./components/PantallaJuego";
 import { PantallaResultados } from "./components/PantallaResultados";
 import { UserBar } from "./components/UserBar";
+import { PantallaLogin } from "./components/PantallaLogin";
 //Imports de Utils
 import { interpreteExpresiones } from "./utils/interprete"
 import { generarNuevaPregunta } from "./utils/generador"
@@ -21,6 +22,8 @@ function App() {
 
   //Primero se crean los estados de las cosas que usaremos
   const inputRef = useRef(null);        //Declarar la referencia para poder marcar referencias a cosas depende la pantalla
+  const [temaOscuro, setTemaOscuro] = useState(false);
+  const [usuario, setUsuario] = useState(null);
   const [expresion, setExpresion] = useState('')    //Primero declaras y lo segundo es con lo que alteras su valor
   const [respuesta, setRespuesta] = useState('')
   const [resultado, setResultado] = useState('');
@@ -43,7 +46,7 @@ function App() {
   );
 
   //Funciones del useUserStats
-  const { desbloquearNivel, ganarRecompensas, stats, gastarMonedas } = useUserStats();
+  const { desbloquearNivel, ganarRecompensas, stats, gastarMonedas, setStats } = useUserStats();
 
   //useEffects() de la app
   //useEffect para la victoria de cada nivel
@@ -92,6 +95,7 @@ function App() {
     comprobarEstado();
   }
 };
+
   //Funcion para reiniciar el juego
   const reiniciarJuego = () => {
     setProgreso(0);
@@ -203,9 +207,43 @@ function App() {
 
   const barKey = pantalla === 'menu' ? 'animacion-entrada' : '';
 
-  //Todo tiene que ir encerrado en una division gigante (asi son los comentarios en html)
+  //Todo tiene que ir encerrado en una division gigante
   return (
-  <div className="App">     
+  <div className={`App ${temaOscuro ? 'dark-mode' : ''}`}>
+
+    <button className="boton-tema"
+        onClick={() => setTemaOscuro(!temaOscuro)}
+      >
+        {temaOscuro ? '☀️ Modo Claro' : '🌙 Modo Oscuro'}
+      </button>    
+
+      {/* Logica para ver si sale Login */}
+      {!usuario ? (
+        <PantallaLogin 
+          onLoginSuccess={(datosDeGoogle) => {
+            setStats(prev => ({
+              ...prev,
+              nombre: datosDeGoogle.name,
+              foto: datosDeGoogle.picture,
+              googleID: datosDeGoogle.sub
+            }));
+            setUsuario(datosDeGoogle);
+            setPantalla('menu');
+          }} 
+        />
+      ) : (
+      
+    <>
+
+      <div className="perfil-esquina">
+        <span className="perfil-nombre">{usuario.name}</span>
+        <img 
+          src={usuario.picture} 
+          alt="Foto de perfil" 
+          className="perfil-foto"
+          referrerPolicy="no-referrer" /* Importante para que carguen las fotos de Google */
+        />
+      </div>
 
       <div className="contenedor-fijo-userbar">
         <UserBar key={barKey} stats={stats} />
@@ -249,7 +287,8 @@ function App() {
           volverAlMenu={volverAlMenu}
         />
       )}
-
+    </>
+    )}
   </div>
   ); 
 }
