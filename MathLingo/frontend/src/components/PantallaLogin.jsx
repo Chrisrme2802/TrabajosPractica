@@ -25,7 +25,11 @@ export function PantallaLogin({
                 //con fetch la pagina se comunica con el servidor node fetch('URL')
                 const respuesta = await fetch('http://localhost:5000/auth/google', {
                   method: 'POST', //Indico que mandare informacion
-                  headers: {      //Headers son las caracteristicas de lo que estoy mandando, Clave-Valor
+                  //Headers son las caracteristicas de lo que estoy mandando, Clave-Valor, son obligatorios al usar fetch
+                  //'Content-Type': application/json: Envías objetos de JavaScript convertidos a texto, text/plain: Texto simple, sin formato, multipart/form-data: archivos reales
+                  //Authorization: Bearer <token_de_google>: Sirve para verificacion constante
+                  //Accept: Es lo contrario al content-type tu pides que te mandne en cierto valor
+                  headers: {      
                     'Content-Type': 'application/json'
                   },
                   body: JSON.stringify({ token: decoded }) 
