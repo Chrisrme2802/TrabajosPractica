@@ -19,9 +19,23 @@ export function PantallaLogin({
           
           {/* El botón oficial de Google */}
           <GoogleLogin
-            onSuccess={credentialResponse => {
+            onSuccess={ async (credentialResponse) => {
               const decoded = jwtDecode(credentialResponse.credential);  //Decodeamos el webToken lo convierte a JS normal
-              onLoginSuccess(decoded);
+              try {
+                //con fetch la pagina se comunica con el servidor node fetch('URL')
+                const respuesta = await fetch('http://localhost:5000/auth/google', {
+                  method: 'POST', //Indico que mandare informacion
+                  headers: {      //Headers son las caracteristicas de lo que estoy mandando, Clave-Valor
+                    'Content-Type': 'application/json'
+                  },
+                  body: JSON.stringify({ token: decoded }) 
+                });
+                const datosUsuario = await respuesta.json();
+                console.log("Usuario en DB:", datosUsuario);    
+              } catch (error) {
+                console.error("Error al conectar con el backend:", error);
+                }
+              onLoginSuccess(decoded); 
             }}
             onError={() => {            //Cualquier error general
               alert("Hubo un problema al conectar con Google. Inténtalo de nuevo.");
