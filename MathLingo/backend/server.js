@@ -39,3 +39,35 @@ const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
     console.log(`✅ Servidor corriendo en http://localhost:${PORT}`);
 });
+
+//Rutas bien del servidor
+//Ruta pararecibir los datos de google
+app.post('/auth/google', async (req, res) => {
+    //Se abre el paquete que nos enviamos desde el frontend
+    const { google_id, nombre, foto } = req.body;
+    console.log(`Logeando a ${nombre} (${google_id})`);
+
+    try {
+        //Lo escribimos en la base de datos
+        const query = '
+        INSERT INTO usuarios (google_id, nombre, foto)
+        VALUES ($1, $2, $3)
+        ON CONFLICT (google_id)
+        DO UPDATE SET
+            nombre = EXCLUDED.nombre
+            foto = EXCLUDED.foto
+            RETURNING *;
+        ';
+
+        const values = [google_id, nombre, foto];
+        const result = await pool.query(query, values);
+
+        res.json({
+            succes: true,
+            usuario: result.rows[0]
+        });
+    }   catch (error) {
+        console.error("Error en la base de datos:", err.mensaje);
+        res.status(500).json({ error: "No se pudo procesar el Login "});
+    }
+})
