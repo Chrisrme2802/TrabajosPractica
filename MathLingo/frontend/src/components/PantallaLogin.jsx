@@ -41,7 +41,9 @@ export function PantallaLogin({
                 });
                 const datosUsuario = await respuesta.json();
                 console.log("Usuario en DB:", datosUsuario);
+                //.success lo cree yo dentro del paquete que estoy mandando entre servidores
                 if (datosUsuario.success) {
+                  //Son las cosas que estoy comunicando
                   onLoginSuccess(decoded, datosUsuario.usuario);
                   localStorage.setItem('token_mathlingo', datosUsuario.token);
                 }    

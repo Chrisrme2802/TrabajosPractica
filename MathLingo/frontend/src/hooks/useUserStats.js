@@ -43,8 +43,8 @@ import { useState, useEffect } from 'react';
                 nivelesDesbloqueados: nuevosStats.nivelesDesbloqueados
             })
         });
-    } catch (err) {
-        console.error("No se pudo sincronizar con la DB", err);
+    } catch (error) {
+        console.error("No se pudo sincronizar con la DB", error);
     }
 };
 

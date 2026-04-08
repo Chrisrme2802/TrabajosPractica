@@ -66,6 +66,24 @@ app.get('/test-db', async (req, res) => {
 });
 
 //Rutas de autenticacion (logIn)
+//Ruta para recuperar sesion inciada
+app.get('/auth/verify', verificarToken, async (req, res) => {
+    try {
+        const result = await pool.query(
+            'SELECT * FROM usuarios WHERE google_id = $1', 
+            [req.user.google_id]
+        );
+
+        if (result.rows.length === 0) {
+            return res.status(404).json({ error: "Usuario no encontrado" });
+        }
+
+        res.json({ success: true, usuario: result.rows[0] });
+    } catch (error) {
+        //Error al procesar una solicitud (general)
+        res.status(500).json({ error: "Error al verificar sesión" });
+    }
+});
 //Recibe los datos del logIn de google
 app.post('/auth/google', async (req, res) => {
     //Se abre el paquete que nos enviamos desde el frontend

@@ -88,6 +88,11 @@ function App() {
   }
 }, [expresion, pantalla]);
 
+  //useEffect que se ejecuta al principio de la aplicacion para recuperar sesion
+  useEffect(() => {
+      verificarSesion();
+  }, []);
+
   //Funciones de la app
   //Funcion para detectar input por teclado para respuesta
   const handleKeyDown = (event) => {
@@ -100,6 +105,48 @@ function App() {
   const cerrarSesion = () => {
   setUsuario(null);
   };
+
+  //Funcion para manejar el tema del logIn, se agrega al onLoginSuccess para que funciona pantallaLogin y se puede usar aqui ahora
+  const manejarLoginExitoso = (datosDeGoogle, datosDB) => {
+  setUsuario(datosDeGoogle || { name: datosDB.nombre, picture: datosDB.foto_url });
+  setStats({
+    googleID: datosDeGoogle?.sub || datosDB.google_id,
+    nombre: datosDB.nombre,
+    foto: datosDB.foto_url,
+    monedas: datosDB.monedas,
+    experiencia: datosDB.experiencia,
+    nivelesDesbloqueados: datosDB.nivel_desbloqueado
+  });
+  setPantalla('menu');
+};
+
+  //Funcion para recuperar sesion
+  const verificarSesion = async () => {
+          const token = localStorage.getItem('token_mathlingo');
+
+          if (!token) return;
+
+          try {
+              const respuesta = await fetch('http://localhost:5000/auth/verify', {
+                  headers: {
+                      'Authorization': `Bearer ${token}`
+                  }
+              });
+              
+              //Propiedad de las respuestas, .ok es que esta entre 200 y 299 (exito), es un booleano
+              //.status te da el numero exacto del error o el exito
+              if (respuesta.ok) {
+                  const datos = await respuesta.json();
+                  // La misma funcion del logIn exitoso pero sin el token porque  ya lo tengo dentro del localStorage
+                  manejarLoginExitoso(null, datos.usuario); 
+                  console.log("Sesión recuperada automáticamente");
+              } else {
+                  localStorage.removeItem('token_mathlingo');
+              }
+          } catch (error) {
+              console.error("Error al recuperar sesión", error);
+          }
+      };
 
   //Funcion para reiniciar el juego
   const reiniciarJuego = () => {
@@ -227,18 +274,7 @@ function App() {
       {/* Logica para ver si sale Login */}
       {!usuario ? (
         <PantallaLogin 
-          onLoginSuccess={(datosDeGoogle, datosDB) => {
-            setStats({
-              googleID: datosDeGoogle.sub,
-              nombre: datosDB.nombre,
-              foto: datosDB.foto_url,
-              monedas: datosDB.monedas,    
-              experiencia: datosDB.experiencia,
-              nivelesDesbloqueados: datosDB.niveles_desbloqueados || 1
-            });
-            setUsuario(datosDeGoogle);
-            setPantalla('menu');
-          }} 
+          onLoginSuccess={manejarLoginExitoso}
         />
       ) : (
       
