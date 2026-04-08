@@ -23,7 +23,27 @@ import { useState, useEffect } from 'react';
     //useEffect para actualizar las stats cada que stats cambie
     useEffect(() => {
         localStorage.setItem('mathlingo_stats', JSON.stringify(stats));
-        }, [stats]);
+        if (stats.googleID) {
+            sincronizarConDB(stats);
+        }
+    }, [stats]);
+
+    //Metodo para actualizar las stats en la base de datos
+    const sincronizarConDB = async (nuevosStats) => {
+    try {
+        await fetch('http://localhost:5000/auth/update-stats', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                google_id: nuevosStats.googleID,
+                monedas: nuevosStats.monedas,
+                experiencia: nuevosStats.experiencia
+            })
+        });
+    } catch (err) {
+        console.error("No se pudo sincronizar con la DB", err);
+    }
+};
 
     //Metodo para poder desbloquear niveles
     const desbloquearNivel = ((nivel) => {

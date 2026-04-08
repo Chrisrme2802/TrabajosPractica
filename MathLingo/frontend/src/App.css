@@ -1,8 +1,7 @@
 /* css de la app */
 .App {                          /* Posicion => Texto => Visual => Otros */
-  position: relative;
-  display: flex;                /* Posicion = Posicionamiento => Capa => Coordenadas */
-  flex-direction: column;       /* Caja = Display => Alineaciones => Dimensiones => Margenes => Relleno */
+  position: relative;           /* Posicion = Posicionamiento => Capa => Coordenadas */
+  display: flex;                /* Caja = Display => Alineaciones => Dimensiones => Margenes => Relleno */
   align-items: center;          /* Texto = Fuente => Tamaño => Grosor => Alineacion => Color => Espaciado */
   justify-content: center;      /* Visuales = Fondo => Bordes => Efectos */
   gap: 20px;
@@ -36,34 +35,43 @@
   width: 100%;
 }
 
-.contenedor-fijo-userbar {
-  position: fixed;
-  left: 600px;
-  top: 50%;
-  transform: translateY(-65%);  
-  z-index: 100;
-  width: auto;
-}
-
-.user-bar {
-  left: 600px;
-  width: 140px;
-  background-color: #ffffff;
-  border-right: 2px solid #c0bbbb;
+.area-derecha-juego {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  font-family: 'Nunito', 'Open Sans', sans-serif;
-  font-weight: 800; /* Extra negrita */
-  color: #4b4b4b; /* Un gris oscuro, evita el negro puro */
-  font-size: 0.9rem;
-  letter-spacing: 0.5px;
-  text-transform: uppercase; 
-  padding: 20px 0;
-  gap: 40px;
-  border-radius: 20px; 
-  animation: entradaTitulo 0.6s cubic-bezier(0.17, 0.67, 0.83, 0.67); 
+  width: 100%; 
+  min-height: 100vh;
+}
+
+.contenedor-fijo-userbar {
+  position: fixed;
+  left: 20px;
+  top: 0;
+  width: 250px;
+  height: 100vh;
+  background-color: transparent;
+  border: none; 
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  z-index: 100;
+  pointer-events: none;
+}
+
+.user-bar {
+  display: flex;
+  flex-direction: column;
+  align-items: center; 
+  gap: 25px;
+  background-color: white;
+  padding: 25px 15px;
+  border-radius: 20px;
+  width: 85%;  
+  box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+  border: 2px solid #e5e5e5;
+  animation: entradaTitulo 0.6s cubic-bezier(0.17, 0.67, 0.83, 0.67);
 }
 
 .user-bar span {
@@ -73,12 +81,10 @@
 
 .stat-item {
   display: flex;
-  flex-direction: column;
   align-items: center;
-  gap: 6px;
-  font-weight: 700;
-  color: #4b4b4b;
-  font-size: 0.8rem;
+  gap: 5px;
+  font-size: 0.9rem;
+  font-weight: bold;
 }
 
 .menu-principal {

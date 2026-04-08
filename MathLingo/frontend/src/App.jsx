@@ -115,10 +115,12 @@ function App() {
 
   //Funcion para volver al menu
   const volverAlMenu = () => {
-  setActivo(false);         
-  setProgreso(0);
-  setSkips(0);        
-  setPantalla('menu');   
+    console.log("Saliendo al menú principal...");
+    setActivo(false);         
+    setProgreso(0);
+    setSkips(0);    
+    setTiempo(GAME_CONFIG.TIEMPO_INICIAL);    
+    setPantalla('menu');   
 };
 
   //Funcion para poner una pregunta
@@ -225,13 +227,15 @@ function App() {
       {/* Logica para ver si sale Login */}
       {!usuario ? (
         <PantallaLogin 
-          onLoginSuccess={(datosDeGoogle) => {
-            setStats(prev => ({
-              ...prev,
-              nombre: datosDeGoogle.name,
-              foto: datosDeGoogle.picture,
-              googleID: datosDeGoogle.sub
-            }));
+          onLoginSuccess={(datosDeGoogle, datosDB) => {
+            setStats({
+              googleID: datosDeGoogle.sub,
+              nombre: datosDB.nombre,
+              foto: datosDB.foto_url,
+              monedas: datosDB.monedas,    
+              experiencia: datosDB.experiencia,
+              nivelesDesbloqueados: datosDB.niveles_desbloqueados || 1
+            });
             setUsuario(datosDeGoogle);
             setPantalla('menu');
           }} 
@@ -243,6 +247,8 @@ function App() {
       <div className="contenedor-fijo-userbar">
         <UserBar key={barKey} stats={stats} />
       </div>
+
+      <div className="area-derecha-juego">
 
       {pantalla === 'menu' && (
         <PantallaMenu 
@@ -284,6 +290,7 @@ function App() {
           volverAlMenu={volverAlMenu}
         />
       )}
+      </div>
     </>
     )}
   </div>

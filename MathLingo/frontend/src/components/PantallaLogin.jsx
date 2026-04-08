@@ -32,14 +32,21 @@ export function PantallaLogin({
                   headers: {      
                     'Content-Type': 'application/json'
                   },
-                  body: JSON.stringify({ token: decoded }) 
+                  //Aqui es donde indico como se construye el paquete
+                  body: JSON.stringify({ 
+                    google_id: decoded.sub, //.sub es el google_id
+                    nombre: decoded.name,
+                    foto_url: decoded.picture
+                  }) 
                 });
                 const datosUsuario = await respuesta.json();
-                console.log("Usuario en DB:", datosUsuario);    
+                console.log("Usuario en DB:", datosUsuario);
+                if (datosUsuario.success) {
+                  onLoginSuccess(decoded, datosUsuario.usuario); 
+                }    
               } catch (error) {
                 console.error("Error al conectar con el backend:", error);
                 }
-              onLoginSuccess(decoded); 
             }}
             onError={() => {            //Cualquier error general
               alert("Hubo un problema al conectar con Google. Inténtalo de nuevo.");
