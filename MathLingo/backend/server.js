@@ -2,6 +2,7 @@
 const express = require('express');
 const cors = require('cors');
 const pool = require('./db');
+const jwt = require('jsonwebtoken');
 require ('dotenv').config();
 
 //Instancio app con la libreria express para temas de enrutamiento
@@ -39,30 +40,39 @@ app.get('/test-db', async (req, res) => {
 //Recibe los datos del logIn de google
 app.post('/auth/google', async (req, res) => {
     //Se abre el paquete que nos enviamos desde el frontend
-    const { google_id, nombre, foto_url } = req.body;
+    const { google_id, nombre, foto_url, nivelesDesbloqueados } = req.body;
     console.log(`Logeando a ${nombre} (${google_id})`);
 
     try {
         //Lo escribimos en la base de datos
         const query = `
-        INSERT INTO usuarios (google_id, nombre, foto_url)
-        VALUES ($1, $2, $3)
+        INSERT INTO usuarios (google_id, nombre, foto_url, nivel_desbloqueado)
+        VALUES ($1, $2, $3, $4)
         ON CONFLICT (google_id)
         DO UPDATE SET
             nombre = EXCLUDED.nombre,
             foto_url = EXCLUDED.foto_url
+            nivel_desbloqueado = EXCLUDED.nivel_desbloqueado
             RETURNING *;    
         `;
         //ON CONFLICT es de que ya existe el google_id, entonces el INSERT INTO no se puede realizar asi que pasamos a DO UPDATE SET
         //EXCLUDED es porque ya los intentaste escribir una vez, entonces ahora es con las cosas que no se pudieron escribir
         //Returning * es obligatorio para confirmar los datos
         //Values son espacios reservados que se llenan aqui (si importa el orden)
-        const values = [google_id, nombre, foto_url];
+        const values = [google_id, nombre, foto_url, nivelesDesbloqueados];
         const result = await pool.query(query, values);
+
+    //Generamos el webToken
+    const token = jwt.sign(
+            { google_id: usuario.google_id }, 
+            process.env.JWT_SECRET, 
+            { expiresIn: '7d' } // El gafete dura 7 días
+    );
 
         res.json({
             success: true,
-            usuario: result.rows[0]
+            usuario: result.rows[0],
+            token: token
         });
     }   catch (error) {
         console.error("Error en la base de datos:", error);
@@ -73,15 +83,15 @@ app.post('/auth/google', async (req, res) => {
 //Rutas de juego del servidor
 //Actualiza monedas y exp en la base de datos
 app.post('/auth/update-stats', async (req, res) => {
-    const { google_id, monedas, experiencia } = req.body;
+    const { google_id, monedas, experiencia, nivelesDesbloqueados } = req.body;
     try {
         const query = `
             UPDATE usuarios 
-            SET monedas = $2, experiencia = $3 
+            SET monedas = $2, experiencia = $3, nivel_desbloqueado = $4
             WHERE google_id = $1 
             RETURNING *;
         `;
-        const values = [google_id, monedas, experiencia];
+        const values = [google_id, monedas, experiencia, nivelesDesbloqueados];
         const result = await pool.query(query, values);
 
         res.json({ success: true, usuario: result.rows[0] });

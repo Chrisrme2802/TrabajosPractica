@@ -6,7 +6,6 @@ import { useState, useEffect } from 'react';
       nivelesDesbloqueados: 1,
       monedas: 0,
       experiencia: 0,
-      rango: 'Principiante',
       nombre: "",
       foto: null,
       googleID: null
@@ -37,7 +36,8 @@ import { useState, useEffect } from 'react';
             body: JSON.stringify({
                 google_id: nuevosStats.googleID,
                 monedas: nuevosStats.monedas,
-                experiencia: nuevosStats.experiencia
+                experiencia: nuevosStats.experiencia,
+                nivelesDesbloqueados: nuevosStats.nivelesDesbloqueados
             })
         });
     } catch (err) {
