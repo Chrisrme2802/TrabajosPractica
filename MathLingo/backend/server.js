@@ -14,8 +14,37 @@ const app = express();
 //.listen escuchar a un puerto
 
 //Midlewares, aquelos que usan .use, sirven para capas de seguridad o traduccion
-app.use(cors());
 app.use(express.json());
+app.use(cors());
+app.use((req, res, next) => {
+    //Variaciones: unsafe-none (defecto): permite cualquier cosa es menos seguro
+    //same-origin: Cualquier pop up externo a la pagina la rompe, no puedes usar logins externos
+    //same-origin-allow-popups: Aisla de otras pestañas, pero los pop ups que tu abriste si los deja pasar
+  res.setHeader('Cross-Origin-Opener-Policy', 'same-origin-allow-popups');
+  next();
+});
+
+//Funcion verificar token
+//El next se usa en metodos dentro de otros metodos, sin este no sigue corriendo (verificaciones mayormente)
+const verificarToken = (req, res, next) => {
+    const authHeader = req.headers['authorization'];
+    const token = authHeader && authHeader.split(' ')[1]; // Separamos "[Bearer],[TOKEN]"
+
+    if (!token) {
+        //Error 401 es falta de cosa para autenticar credenciales
+        return res.status(401).json({ error: "No hay token, acceso denegado" });
+    }
+
+    try {
+        const cifrado = jwt.verify(token, process.env.JWT_SECRET);
+        //Creo en request una propiedad del objeto
+        req.user = cifrado;
+        next();
+    } catch (error) {
+        //Error 403 es denegacion por credenciales distintas o expiradas
+        res.status(403).json({ error: "Token no válido o expirado" });
+    }
+};
 
 //Rutas de prueba de servidor
 //request es lo que mandas
@@ -51,7 +80,7 @@ app.post('/auth/google', async (req, res) => {
         ON CONFLICT (google_id)
         DO UPDATE SET
             nombre = EXCLUDED.nombre,
-            foto_url = EXCLUDED.foto_url
+            foto_url = EXCLUDED.foto_url,
             nivel_desbloqueado = EXCLUDED.nivel_desbloqueado
             RETURNING *;    
         `;
@@ -61,17 +90,20 @@ app.post('/auth/google', async (req, res) => {
         //Values son espacios reservados que se llenan aqui (si importa el orden)
         const values = [google_id, nombre, foto_url, nivelesDesbloqueados];
         const result = await pool.query(query, values);
+        //Es el objeto que regreso con todas las stats
+        const usuario = result.rows[0];
 
-    //Generamos el webToken
-    const token = jwt.sign(
-            { google_id: usuario.google_id }, 
-            process.env.JWT_SECRET, 
-            { expiresIn: '7d' } // El gafete dura 7 días
-    );
+        //Generamos el webToken
+        const token = jwt.sign(
+                //Este es el atributo que tendra user, luego de descifrarlo
+                { google_id: usuario.google_id }, 
+                process.env.JWT_SECRET, 
+                { expiresIn: '7d' } // El gafete dura 7 días
+        );
 
         res.json({
             success: true,
-            usuario: result.rows[0],
+            usuario: usuario,
             token: token
         });
     }   catch (error) {
@@ -82,8 +114,10 @@ app.post('/auth/google', async (req, res) => {
 
 //Rutas de juego del servidor
 //Actualiza monedas y exp en la base de datos
-app.post('/auth/update-stats', async (req, res) => {
-    const { google_id, monedas, experiencia, nivelesDesbloqueados } = req.body;
+app.post('/auth/update-stats', verificarToken, async (req, res) => {
+    const idDelToken = req.user.google_id;
+    const { monedas, experiencia, nivelesDesbloqueados } = req.body;
+
     try {
         const query = `
             UPDATE usuarios 
@@ -91,8 +125,12 @@ app.post('/auth/update-stats', async (req, res) => {
             WHERE google_id = $1 
             RETURNING *;
         `;
-        const values = [google_id, monedas, experiencia, nivelesDesbloqueados];
+        const values = [idDelToken, monedas, experiencia, nivelesDesbloqueados];
         const result = await pool.query(query, values);
+
+        if (result.rows.length === 0) {
+            return res.status(404).json({ error: "Usuario no encontrado" });
+        }
 
         res.json({ success: true, usuario: result.rows[0] });
     } catch (error) {

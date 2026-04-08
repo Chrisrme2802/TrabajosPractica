@@ -29,12 +29,15 @@ import { useState, useEffect } from 'react';
 
     //Metodo para actualizar las stats en la base de datos
     const sincronizarConDB = async (nuevosStats) => {
+    const token = localStorage.getItem('token_mathlingo');
     try {
         await fetch('http://localhost:5000/auth/update-stats', {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            headers:  {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            },
             body: JSON.stringify({
-                google_id: nuevosStats.googleID,
                 monedas: nuevosStats.monedas,
                 experiencia: nuevosStats.experiencia,
                 nivelesDesbloqueados: nuevosStats.nivelesDesbloqueados

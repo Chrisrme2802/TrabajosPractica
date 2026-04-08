@@ -42,7 +42,8 @@ export function PantallaLogin({
                 const datosUsuario = await respuesta.json();
                 console.log("Usuario en DB:", datosUsuario);
                 if (datosUsuario.success) {
-                  onLoginSuccess(decoded, datosUsuario.usuario); 
+                  onLoginSuccess(decoded, datosUsuario.usuario);
+                  localStorage.setItem('token_mathlingo', datosUsuario.token);
                 }    
               } catch (error) {
                 console.error("Error al conectar con el backend:", error);
