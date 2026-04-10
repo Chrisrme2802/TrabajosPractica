@@ -8,7 +8,8 @@ import { useState, useEffect } from 'react';
       experiencia: 0,
       nombre: "",
       foto: null,
-      googleID: null
+      googleID: null,
+      racha: 0
     };  
 
     //Constructor principal de las estadisticas
@@ -25,13 +26,13 @@ import { useState, useEffect } from 'react';
         if (stats.googleID) {
             sincronizarConDB(stats);
         }
-    }, [stats]);
+    }, [stats.monedas, stats.experiencia, stats.nivelesDesbloqueados]); //Se actualizara solamente cuando cambien estos valores para evitar bucles
 
     //Metodo para actualizar las stats en la base de datos
     const sincronizarConDB = async (nuevosStats) => {
     const token = localStorage.getItem('token_mathlingo');
     try {
-        await fetch('http://localhost:5000/auth/update-stats', {
+        const respuesta = await fetch('http://localhost:5000/auth/update-stats', {
             method: 'POST',
             headers:  {
                 'Content-Type': 'application/json',
@@ -43,6 +44,17 @@ import { useState, useEffect } from 'react';
                 nivelesDesbloqueados: nuevosStats.nivelesDesbloqueados
             })
         });
+    if (respuesta.ok) {
+        const datosRespuesta = await respuesta.json();
+        const datosUsuario = datosRespuesta.usuario;
+        setStats(prev => ({
+            ...prev,
+            monedas: datosUsuario.monedas,
+            experiencia: datosUsuario.experiencia,
+            nivelesDesbloqueados: datosUsuario.niveles_desbloqueados,
+            racha: datosUsuario.racha_actual
+        }));
+    }
     } catch (error) {
         console.error("No se pudo sincronizar con la DB", error);
     }

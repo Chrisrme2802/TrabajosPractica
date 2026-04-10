@@ -11,11 +11,16 @@ export function UserBar({ stats }) {
     const { nombre, color } = calcularRango(experiencia);
     
     {/* nav es como un div, navigation, caja especializada para que se ubique el usuario*/}
+    {/* aside es como un div, caja relacionada pero no esencial para la pantalla, vinculada pero no esencial*/}
     return (
         <aside className="user-bar">
-          <div className="stat-monedas animar-cambio">🪙 {monedas}</div>
-          <div className="stat-rango animar-cambio" style={{ color: color }} >{nombre}</div>
-          <div className="stat-exp animar-cambio">⭐ {experiencia} XP</div>
+            <div className="stat-monedas animar-cambio">🪙 {monedas}</div>
+            <div className="stat-rango animar-cambio" style={{ color: color }} >{nombre}</div>
+            <div className="stat-exp animar-cambio">⭐ {experiencia} XP</div>
+            <div className="racha-container ${stats.racha > 0 ? 'racha-activa' : 'racha-inactiva'}">
+              <span className="icono-fuego">{stats.racha > 0 ? '🔥' : '💀'}</span>
+              <span className="numero-racha">{stats.racha}</span>
+            </div>
         </aside>
     );
 }

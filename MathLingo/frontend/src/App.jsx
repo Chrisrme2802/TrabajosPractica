@@ -115,7 +115,8 @@ function App() {
     foto: datosDB.foto_url,
     monedas: datosDB.monedas,
     experiencia: datosDB.experiencia,
-    nivelesDesbloqueados: datosDB.nivel_desbloqueado
+    nivelesDesbloqueados: Number(datosDB.nivel_desbloqueado) || 1,
+    racha: datosDB.racha_actual
   });
   setPantalla('menu');
 };

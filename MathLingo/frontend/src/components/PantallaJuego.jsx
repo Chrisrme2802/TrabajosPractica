@@ -65,7 +65,7 @@ export function PantallaJuego ({
             onChange={(event) => setRespuesta(event.target.value)}         
             />
             <div className="pista-revelada">
-              {/* .split('') me divide todo el String en un array con cada valor por separado */}
+              {/* .split('') me divide todo el String en un array con cada valor por separado, char es el caracter que trato, index el numero total de caracteres */}
               {resultado.toString().split('').map((char, index) => (
                 <span key={index} style={{ margin: '0 5px', fontSize: '1.5rem', fontWeight: 'bold' }}>
                   {index < digitosRevelados? char : '_' }

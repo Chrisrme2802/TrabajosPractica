@@ -46,6 +46,26 @@ const verificarToken = (req, res, next) => {
     }
 };
 
+//Funcion para verificar los dias de racha del usuario
+const verificarRacha = async () => {
+    const token = localStorage.getItem('token_mathlingo');
+    if (!token) return;
+
+    try {
+        const respuesta = await fetch('http://localhost:5000/auth/verify', {
+            headers: { 'Authorization': `Bearer ${token}` }
+        });
+        
+        if (respuesta.ok) {
+            const datos = await respuesta.json();
+            manejarLoginExitoso(null, datos.usuario); 
+            console.log("Sesión recuperada y racha validada");
+        }
+    } catch (error) {
+        console.error("Error al recuperar sesión", error);
+    }
+}
+
 //Rutas de prueba de servidor
 //request es lo que mandas
 //response es lo que recibes
@@ -69,6 +89,15 @@ app.get('/test-db', async (req, res) => {
 //Ruta para recuperar sesion inciada
 app.get('/auth/verify', verificarToken, async (req, res) => {
     try {
+        // Limpiamos desde que iniciamos sesion la racha
+        const limpiaRachaQuery = `
+            UPDATE usuarios 
+            SET racha_actual = 0 
+            WHERE google_id = $1 
+            AND ultima_conexion < CURRENT_DATE - INTERVAL '1 day'
+        `;
+        await pool.query(limpiaRachaQuery, [req.user.google_id]);
+
         const result = await pool.query(
             'SELECT * FROM usuarios WHERE google_id = $1', 
             [req.user.google_id]
@@ -139,7 +168,13 @@ app.post('/auth/update-stats', verificarToken, async (req, res) => {
     try {
         const query = `
             UPDATE usuarios 
-            SET monedas = $2, experiencia = $3, nivel_desbloqueado = $4
+            SET monedas = $2, experiencia = $3, nivel_desbloqueado = $4,
+            racha_actual = CASE 
+            WHEN ultima_conexion = CURRENT_DATE - INTERVAL '1 day' THEN racha_actual + 1
+            WHEN ultima_conexion = CURRENT_DATE THEN racha_actual
+            ELSE 1 
+                END,
+            ultima_conexion = CURRENT_DATE
             WHERE google_id = $1 
             RETURNING *;
         `;
