@@ -39,9 +39,9 @@ import { useState, useEffect } from 'react';
                 'Authorization': `Bearer ${token}`
             },
             body: JSON.stringify({
-                monedas: nuevosStats.monedas,
-                experiencia: nuevosStats.experiencia,
-                nivelesDesbloqueados: nuevosStats.nivelesDesbloqueados
+                monedas: Number(nuevosStats.monedas) || 0,
+                experiencia: Number(nuevosStats.experiencia) || 0,
+                nivelesDesbloqueados: Number(nuevosStats.nivelesDesbloqueados) || 1
             })
         });
     if (respuesta.ok) {
@@ -51,7 +51,7 @@ import { useState, useEffect } from 'react';
             ...prev,
             monedas: datosUsuario.monedas,
             experiencia: datosUsuario.experiencia,
-            nivelesDesbloqueados: datosUsuario.niveles_desbloqueados,
+            nivelesDesbloqueados: datosUsuario.nivel_desbloqueado,
             racha: datosUsuario.racha_actual
         }));
     }

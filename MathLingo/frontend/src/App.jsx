@@ -91,6 +91,7 @@ function App() {
   //useEffect que se ejecuta al principio de la aplicacion para recuperar sesion
   useEffect(() => {
       verificarSesion();
+      verificarRacha();
   }, []);
 
   //Funciones de la app
@@ -148,6 +149,26 @@ function App() {
               console.error("Error al recuperar sesión", error);
           }
       };
+
+//Funcion para verificar los dias de racha del usuario
+const verificarRacha = async () => {
+    const token = localStorage.getItem('token_mathlingo');
+    if (!token) return;
+
+    try {
+        const respuesta = await fetch('http://localhost:5000/auth/verify', {
+            headers: { 'Authorization': `Bearer ${token}` }
+        });
+        
+        if (respuesta.ok) {
+            const datos = await respuesta.json();
+            manejarLoginExitoso(null, datos.usuario); 
+            console.log("Sesión recuperada y racha validada");
+        }
+    } catch (error) {
+        console.error("Error al recuperar sesión", error);
+    }
+}
 
   //Funcion para reiniciar el juego
   const reiniciarJuego = () => {

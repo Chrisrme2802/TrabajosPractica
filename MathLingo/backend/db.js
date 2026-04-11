@@ -1,7 +1,5 @@
 //Importamos la herramienta Pool de la libreria "pg" postgreSQL
 const { Pool } = require('pg');
-//Cargamos las variables de entorno del .env (contraseñas por ejemplo)
-require('dotenv').config();
 
 //Configuracion de la Pool (casi siempre es la misma)
 //max: Cuántas "líneas telefónicas" (conexiones) permites abiertas al mismo tiempo (por defecto son 10).
