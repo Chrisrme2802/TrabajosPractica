@@ -2,14 +2,15 @@
 //Importamos las cosas que necesitamos
 const pool = require('../db');
 const jwt = require('jsonwebtoken');
+const logger = require('../middleware/logger');
+const AppError = require('../utils/AppError');
+const catchAsync = require('../utils/CatchAsync');
 
 //Recibe los datos del logIn de google
-exports.loginGoogle =  async (req, res) => {
+exports.loginGoogle =  catchAsync (async (req, res, next) => {
     //Se abre el paquete que nos enviamos desde el frontend
     const { google_id, nombre, foto_url, nivelesDesbloqueados } = req.body;
-    console.log(`Logeando a ${nombre} (${google_id})`);
 
-    try {
         //Lo escribimos en la base de datos
         const query = `
         INSERT INTO usuarios (google_id, nombre, foto_url, nivel_desbloqueado)
@@ -38,20 +39,18 @@ exports.loginGoogle =  async (req, res) => {
                 { expiresIn: '7d' } // El gafete dura 7 días
         );
 
+        logger.info(`Cuenta loggeada para usuario: ${google_id}`);
+
         res.json({
             success: true,
             usuario: usuario,
             token: token
         });
-    }   catch (error) {
-        console.error("Error en la base de datos:", error);
-        res.status(500).json({ error: "No se pudo procesar el Login "});
-    }
-};
+});
 
 //Ruta para recuperar sesion inciada
-exports.verificarSesion = async (req, res) => {
-    try {
+exports.verificarSesion = catchAsync (async (req, res, next) => {
+    const idDelToken = req.user.google_id;
         // Limpiamos desde que iniciamos sesion la racha
         const limpiaRachaQuery = `
             UPDATE usuarios 
@@ -67,23 +66,19 @@ exports.verificarSesion = async (req, res) => {
         );
 
         if (result.rows.length === 0) {
-            return res.status(404).json({ error: "Usuario no encontrado" });
+            return next(new AppError('Usuario no encontrado en la base de datos', 404));
         }
 
-        res.json({ success: true, usuario: result.rows[0] });
-    } catch (error) {
-        //Error al procesar una solicitud (general)
-        res.status(500).json({ error: "Error al verificar sesión" });
-    }
-};
+        logger.info(`Cuenta recuperada para usuario: ${idDelToken}`);
+        res.status(200).json({ success: true, usuario: result.rows[0] });
+});
 
 
 //Actualiza estadisticas en la base de datos
-exports.updateStats = async (req, res) => {
+exports.updateStats = catchAsync (async (req, res) => {
     const idDelToken = req.user.google_id;
     const { monedas, experiencia, nivelesDesbloqueados } = req.body;
 
-    try {
         const query = `
             UPDATE usuarios 
                 SET monedas = $2, 
@@ -103,12 +98,9 @@ exports.updateStats = async (req, res) => {
         const result = await pool.query(query, values);
 
         if (result.rows.length === 0) {
-            return res.status(404).json({ error: "Usuario no encontrado" });
+            return next(new AppError('Usuario no encontrado en la base de datos', 404));
         }
 
-        res.json({ success: true, usuario: result.rows[0] });
-    } catch (error) {
-        console.error("Error al actualizar stats:", error);
-        res.status(500).json({ error: "Error de servidor al guardar progreso" });
-    }
-};
+        logger.info(`Stats actualizados para usuario: ${idDelToken}`);
+        res.status(200).json({ success: true, usuario: result.rows[0] });
+});

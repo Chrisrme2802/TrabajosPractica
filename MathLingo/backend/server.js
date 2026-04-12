@@ -1,6 +1,8 @@
 //Importamos todo lo necesario para el server
 //Tema de enrutamiento, middleware entre backend y frontend
 const express = require('express');
+//Muchos middlewares que protegen la exposicion de cabeceras
+const helmet = require('helmet');
 //Seguridad para comunicarse entre puertos, dominios o esquemas
 const cors = require('cors');
 //Middleware de registro (logging) intercepta el evento final y lo pasa a stdout
@@ -9,6 +11,8 @@ const morgan = require('morgan');
 require ('dotenv').config();
 //Importaciones de rutas
 const authRoutes = require('./routes/authRoutes');
+//Importamos el logger general
+const logger = require('./middleware/logger');
 
 //Instancio app con la libreria express para temas de enrutamiento
 const app = express();
@@ -20,6 +24,7 @@ const app = express();
 
 //Midlewares globales, aquelos que usan .use, sirven para capas de seguridad o traduccion
 app.use(express.json());
+app.use(helmet());
 app.use(cors());
 app.use(morgan('dev'));
 app.use((req, res, next) => {
@@ -32,6 +37,39 @@ app.use((req, res, next) => {
 
 //Montaje de rutas
 app.use('/auth', authRoutes);
+
+//Middleware global para manejo de errores, Error Handling Middleware (4 parametros), hay uno default pero esta muy equis
+app.use((err, req, res, next) => {
+    err.statusCode = err.statusCode || 500;
+    err.status = err.status || 'error';
+    // Registramos el error con Winston, method: POST, GET, PUT, DELETE, originalUrl: la ruta que detono el error, ip: la ip de la computadora que detono el error
+    logger.error(`${err.status || 500} - ${err.message} - ${req.originalUrl} - ${req.method} - ${req.ip}`);
+
+    //Modo development
+    if (process.env.NODE_ENV === 'development') {
+        res.status(err.statusCode).json({
+            status: err.status,
+            error: err,
+            message: err.message,
+            stack: err.stack  //.stack te dice todo acerca del error (estructura de carpetas y direcciones)
+        });
+    } else {
+        //Modo production
+        if (err.isOperational) {
+            //Errores previsto
+            res.status(err.statusCode).json({
+                status: err.status,
+                message: err.message
+            });
+        } else {
+            //Errores genericos
+            res.status(500).json({
+                status: 'error',
+                message: 'Algo salió mal. Por favor intenta más tarde.'
+            });
+        }
+    }
+});
 
 //Rutas de prueba de servidor
 //request es lo que mandas
@@ -55,5 +93,5 @@ app.get('/test-db', async (req, res) => {
 //Puerto
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
-    console.log(`✅ Servidor corriendo en http://localhost:${PORT}`);
+    logger.info(`✅ Servidor corriendo en el puerto ${PORT} en modo ${process.env.NODE_ENV || 'development'}`);
 });
