@@ -1,6 +1,6 @@
 //Importamos la herramienta Pool de la libreria "pg" postgreSQL
 const { Pool } = require('pg');
-
+    
 //Configuracion de la Pool (casi siempre es la misma)
 //max: Cuántas "líneas telefónicas" (conexiones) permites abiertas al mismo tiempo (por defecto son 10).
 //idleTimeoutMillis: Cuánto tiempo esperar antes de cerrar una línea que nadie está usando.
