@@ -94,22 +94,6 @@ function App() {
       verificarRacha();
   }, []);
 
-  //useEffect para evitar sobrellamar a google al momento de iniciar sesion
-  useEffect(() => {
-    /* global google */
-    if (window.google) {
-        google.accounts.id.initialize({
-            client_id: "import.meta.env.VITE_GOOGLE_CLIENT_ID.apps.googleusercontent.com",
-            callback: handleCallbackResponse
-        });
-
-        google.accounts.id.renderButton(
-            document.getElementById("signInDiv"),
-            { theme: "outline", size: "large" }
-        );
-    }
-}, []);
-
   //Funciones de la app
   //Funcion para detectar input por teclado para respuesta
   const handleKeyDown = (event) => {
