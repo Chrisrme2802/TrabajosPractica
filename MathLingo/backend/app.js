@@ -33,7 +33,7 @@ const app = express();
 //.listen escuchar a un puerto
 //Midlewares globales, aquelos que usan .use, sirven para capas de seguridad o traduccion
 //(Limitar el tamaño de los bodys para evitar textos gigantescos (DoS))
-app.use(express.json({ limit: '10kb' }));
+app.use(express.json({ limit: '1000kb' }));
 app.use(helmet());
 app.use(cors());
 app.use(morgan('dev'));
