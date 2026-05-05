@@ -21,7 +21,10 @@ const statsSchema = Joi.object({
 // Función técnica que valida (Middleware)
 const validarCuerpo = (schema) => {
     return (req, res, next) => {
-        const { error } = schema.validate(req.body);
+        const { error } = schema.validate(req.body, {
+            abortEarly: false, // Revisa todo el molde y te manda todos los errores de una
+            stripUnknown: true // Elimina las propiedades que no esten en el esquema
+        });
         if (error) {
             //El error especifico
             console.log("DETALLE DEL ERROR JOI:", error.details[0].message);

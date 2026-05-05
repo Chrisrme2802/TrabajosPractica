@@ -99,7 +99,7 @@ exports.updateStats = catchAsync (async (req, res) => {
 
         if (result.rows.length === 0) {
             return next(new AppError('Usuario no encontrado en la base de datos', 404));
-        }
+        }   
 
         logger.info(`Stats actualizados para usuario: ${idDelToken}`);
         res.status(200).json({ success: true, usuario: result.rows[0] });

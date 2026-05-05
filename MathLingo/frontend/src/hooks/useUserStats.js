@@ -49,9 +49,6 @@ import { useState, useEffect } from 'react';
         const datosUsuario = datosRespuesta.usuario;
         setStats(prev => ({
             ...prev,
-            monedas: datosUsuario.monedas,
-            experiencia: datosUsuario.experiencia,
-            nivelesDesbloqueados: datosUsuario.nivel_desbloqueado,
             racha: datosUsuario.racha_actual
         }));
     }
