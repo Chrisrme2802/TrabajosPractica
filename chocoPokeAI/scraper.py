@@ -2,8 +2,6 @@
 #Import de librerias
 from playwright.sync_api import sync_playwright
 import json
-#import requests
-#from bs4 import BeautifulSoup
 
 #Funcion pasar datos lineas a objeto
 def parsear_pokemon(datosCrudos):
@@ -24,13 +22,42 @@ def parsear_pokemon(datosCrudos):
         }
     }
 
+def parsear_movimiento(datosCrudos):
+    lineas = datosCrudos.split('\n')
+    return {
+        'nombre': lineas[0],
+        'tipo': lineas[1],
+        'categoria': lineas[2],
+        'poder': lineas[3].replace('Poder: ', ''),
+        'precision': lineas[4].replace('Prec: ', ''),
+        'pp': lineas[5].replace('PP: ', '')
+    }
+
 # Funcion para extraer datos de una pagina
 def scrape_trainer(url):
     with sync_playwright() as p:
-        browser = p.chromium.launch()
+        browser = p.chromium.launch(headless=False)
         page = browser.new_page()
         page.goto(url)
         page.wait_for_timeout(3000)
+
+        def scrape_movement(movimiento):
+            page.goto('https://www.fakedex.es/anil/movimientos')
+            page.wait_for_timeout(2000)
+            
+            #Asi me refiero al id de algo html
+            page.fill('#search', movimiento)
+            page.press('#search', 'Enter')
+            page.wait_for_timeout(1000)
+
+            tarjetas = page.query_selector_all('[data-slot="card"]')
+            for tarjeta in tarjetas:
+                if tarjeta.is_visible():
+                    texto = tarjeta.inner_text()
+                    if texto.split('\n')[0] == movimiento:
+                        return texto
+                
+            return None
 
         #Sacamos datos
         page.click('text=Versión 3')
@@ -52,38 +79,38 @@ def scrape_trainer(url):
                 tarjeta = h3.evaluate_handle('el => el.closest(".bg-card")')
                 datosTarjeta = tarjeta.inner_text()
                 datosCrudos = datosTarjeta.split('\n')
-                pokemon ['datos'] = parsear_pokemon(datosCrudos)
+                pokemon.update(parsear_pokemon(datosCrudos))
 
                 pokemones.append(pokemon)
+
+        #Lista que elimina duplicados
+        movimientos_unicos = set()
+        for pokemon in pokemones:
+            for mov in pokemon['movimientos']:
+                movimientos_unicos.add(mov)
+
+        #Saco los datos de los movimientos
+        datos_movimientos = {}
+        for mov in movimientos_unicos:
+            datos_movimientos[mov] = scrape_movement(mov)
+        
+        #Actualizamos diccionario
+        for pokemon in pokemones:
+            pokemon['movimientos'] = [
+                #** explota el diccionario y lo agrega automatico
+                { 'nombre': mov, **parsear_movimiento(datos_movimientos[mov])}
+                for mov in pokemon['movimientos']
+                if datos_movimientos.get(mov) is not None
+            ]
 
         #Cerramos
         browser.close()
 
         return {
             "entrenador": nombre_entrenador,
-            "pokemones": pokemones
+            "pokemones": pokemones,
         }
 
-    #response = requests.get(url)
-    #soup = BeautifulSoup(response.text, 'html.parser')
-
-    #Extraemos nombre
-    #nombre = soup.find('h1', class_='text-2xl font-bold').text.strip()
-    #print(response.text[:3000])
-
-    #Extraemos cada pokemon
-    #pokemones = []
-    #tarjetas = soup.find_all('h3')
-
-    #for tarjeta in tarjetas:
-    #    pokemon = {}
-    #    pokemon['nombre'] = tarjeta.text.strip()
-    #    pokemones.append(pokemon)
-
-    #return {
-    #    "entrenador": nombre,
-    #    "pokemones": pokemones
-    #}
 
 #Prueba
 datos = scrape_trainer('https://www.fakedex.es/anil/entrenadores/lider7-blaine')
