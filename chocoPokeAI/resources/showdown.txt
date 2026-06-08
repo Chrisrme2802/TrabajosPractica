@@ -1,0 +1,67 @@
+Cristina (Primarina) (F) @ Sitrus Berry
+Ability: Torrent
+Level: 55
+EVs: 78 HP / 127 Atk / 56 Def / 92 SpA / 36 SpD / 121 Spe
+IVs: 20 HP / 27 Def / 2 SpA / 26 SpD / 27 Spe
+Adamant Nature
+- Surf
+- Aqua Jet
+- Icy Wind
+- Moonblast
+
+Larela (Gastrodon) (F) @ Leftovers
+Ability: Storm Drain
+Level: 55
+EVs: 45 HP / 96 Atk / 37 Def / 56 SpA / 29 SpD / 59 Spe
+IVs: 30 HP / 5 Atk / 25 Def / 20 SpA / 7 SpD / 8 Spe
+Relaxed Nature
+- Rock Slide
+- Recover
+- Surf
+- Earth Power
+
+Mercy (Jolteon) (F) @ Air Balloon
+Ability: Volt Absorb
+Level: 55
+EVs: 72 HP / 129 Atk / 46 Def / 89 SpA / 37 SpD / 107 Spe
+IVs: 23 HP / 20 Atk / 19 Def / 25 SpA / 24 SpD / 29 Spe
+Impish Nature
+- Thunder
+- Overdrive
+- Signal Beam
+- Volt Switch
+
+Tartarina (Tinkaton) (F)
+Ability: Mold Breaker
+Level: 55
+EVs: 67 HP / 132 Atk / 44 Def / 100 SpA / 37 SpD / 130 Spe
+IVs: 3 HP / 13 Atk / 18 Def / 14 SpA / 9 SpD / 5 Spe
+Timid Nature
+- Play Rough
+- Gigaton Hammer
+- Ice Hammer
+- Crabhammer
+
+Arturo (Dragonite) (M)
+Ability: Inner Focus
+Level: 55
+Happiness: 210
+EVs: 38 HP / 65 Atk / 23 Def / 46 SpA / 23 SpD / 45 Spe
+IVs: 18 HP / 3 Atk / 12 Def / 25 SpA / 4 SpD / 9 Spe
+Timid Nature
+- Dragon Dance
+- Protect
+- Aqua Tail
+- Dragon Rush
+
+Renato (Pelipper) (M) @ Terrain Extender
+Ability: Drizzle
+Level: 55
+Happiness: 254
+EVs: 56 HP / 114 Atk / 37 Def / 80 SpA / 42 SpD / 97 Spe
+IVs: 15 HP / 5 Atk / 11 Def / 28 SpA / 11 SpD / 30 Spe
+Quirky Nature
+- Surf
+- Flip Turn
+- Protect
+- Hurricane
