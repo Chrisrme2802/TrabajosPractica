@@ -21,7 +21,7 @@ def parsear_pokemon(datosCrudos):
 def parsear_stats_base(texto):
     lineas = texto.split('\n')
     #indice de Stats
-    idx = lineas.index('Stats')
+    idx = lineas.index('Estadísticas')
     return {
         'HP': int(lineas[idx + 3]),
         'Atk': int(lineas[idx + 5]),

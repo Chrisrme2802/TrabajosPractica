@@ -14,15 +14,18 @@ def obtener_traduccion(nombre_ingles):
         return traducciones[nombre_ingles]
     
     #    datos['names'] = {"language": {"name": "es"}, "name": "Terremoto"},
-    response = requests.get(f'https://pokeapi.co/api/v2/move/{nombre_ingles.lower().replace(' ','-')}')
-    print(response.status_code)
-    print(nombre_ingles.lower().replace(" ", "-"))
+    response = requests.get(f'https://pokeapi.co/api/v2/move/{nombre_ingles.lower().replace(' ','-')}', headers={'Accept-Charset': 'utf-8'})
+
+    if response.status_code != 200:
+        return nombre_ingles
+    
     datos = response.json()
 
     for nombre in datos['names']:
-        if nombre['language']['name'] == 'es-latn':
+        if nombre['language']['name'] == 'es':
             traducciones[nombre_ingles] = nombre['name']
-            with open('data/traducciones.json', 'w') as f:
+            traducciones[nombre['name']] = nombre['name']
+            with open('data/traducciones.json', 'w', encoding='utf-8') as f:
                 json.dump(traducciones, f, indent=2, ensure_ascii=False)
             return nombre['name']
     

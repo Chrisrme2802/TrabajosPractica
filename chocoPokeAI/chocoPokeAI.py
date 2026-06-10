@@ -13,7 +13,7 @@ with sync_playwright() as p:
         pokemonDatosCrudos = parsear_showdown('resources/showdown.txt', 'ChocoChris')
 
         for pokemon in pokemonDatosCrudos['pokemones']:
-                stats_base = parsear_stats_base(scrape_pokemon(page, pokemon['nombre']))
+                stats_base = scrape_pokemon(page, pokemon['nombre'])
                 pokemon['stats'] = calcular_stats(pokemon['nivel'], pokemon['naturaleza'], pokemon['evs'], pokemon['ivs'], stats_base)
                 # limpiamos evs e ivs
                 del pokemon['evs']
@@ -23,7 +23,7 @@ with sync_playwright() as p:
                 for movimiento in pokemon['movimientos']:
                         datos = scrape_movement(page, movimiento)
                         if datos:
-                                movimientos.append({'nombre': movimiento, **parsear_movimiento(datos)})
+                                movimientos.append({'nombre': movimiento, **datos})
                 pokemon['movimientos'] = movimientos
 
         browser.close()

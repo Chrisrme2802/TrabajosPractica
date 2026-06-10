@@ -1,0 +1,218 @@
+{
+  "Surf": {
+    "nombre": "Surf",
+    "tipo": "Agua",
+    "categoria": "Especial",
+    "poder": "90",
+    "precision": "100",
+    "pp": "15"
+  },
+  "Acua Jet": {
+    "nombre": "Acua Jet",
+    "tipo": "Agua",
+    "categoria": "Físico",
+    "poder": "40",
+    "precision": "100",
+    "pp": "20"
+  },
+  "Viento Hielo": {
+    "nombre": "Viento Hielo",
+    "tipo": "Hielo",
+    "categoria": "Especial",
+    "poder": "55",
+    "precision": "95",
+    "pp": "15"
+  },
+  "Fuerza Lunar": {
+    "nombre": "Fuerza Lunar",
+    "tipo": "Hada",
+    "categoria": "Especial",
+    "poder": "95",
+    "precision": "100",
+    "pp": "15"
+  },
+  "Avalancha": {
+    "nombre": "Avalancha",
+    "tipo": "Roca",
+    "categoria": "Físico",
+    "poder": "80",
+    "precision": "95",
+    "pp": "10"
+  },
+  "Tierra Viva": {
+    "nombre": "Tierra Viva",
+    "tipo": "Tierra",
+    "categoria": "Especial",
+    "poder": "90",
+    "precision": "100",
+    "pp": "10"
+  },
+  "Trueno": {
+    "nombre": "Trueno",
+    "tipo": "Eléctrico",
+    "categoria": "Especial",
+    "poder": "110",
+    "precision": "70",
+    "pp": "10"
+  },
+  "Amplificador": {
+    "nombre": "Amplificador",
+    "tipo": "Eléctrico",
+    "categoria": "Especial",
+    "poder": "100",
+    "precision": "100",
+    "pp": "10"
+  },
+  "Voltiocambio": {
+    "nombre": "Voltiocambio",
+    "tipo": "Eléctrico",
+    "categoria": "Especial",
+    "poder": "70",
+    "precision": "100",
+    "pp": "20"
+  },
+  "Aqua Jet": {
+    "nombre": "Acua Jet",
+    "tipo": "Agua",
+    "categoria": "Físico",
+    "poder": "40",
+    "precision": "100",
+    "pp": "20"
+  },
+  "Icy Wind": {
+    "nombre": "Viento Hielo",
+    "tipo": "Hielo",
+    "categoria": "Especial",
+    "poder": "55",
+    "precision": "95",
+    "pp": "15"
+  },
+  "Moonblast": {
+    "nombre": "Fuerza Lunar",
+    "tipo": "Hada",
+    "categoria": "Especial",
+    "poder": "95",
+    "precision": "100",
+    "pp": "15"
+  },
+  "Rock Slide": {
+    "nombre": "Avalancha",
+    "tipo": "Roca",
+    "categoria": "Físico",
+    "poder": "80",
+    "precision": "95",
+    "pp": "10"
+  },
+  "Earth Power": {
+    "nombre": "Tierra Viva",
+    "tipo": "Tierra",
+    "categoria": "Especial",
+    "poder": "90",
+    "precision": "100",
+    "pp": "10"
+  },
+  "Thunder": {
+    "nombre": "Trueno",
+    "tipo": "Eléctrico",
+    "categoria": "Especial",
+    "poder": "110",
+    "precision": "70",
+    "pp": "10"
+  },
+  "Overdrive": {
+    "nombre": "Amplificador",
+    "tipo": "Eléctrico",
+    "categoria": "Especial",
+    "poder": "100",
+    "precision": "100",
+    "pp": "10"
+  },
+  "Volt Switch": {
+    "nombre": "Voltiocambio",
+    "tipo": "Eléctrico",
+    "categoria": "Especial",
+    "poder": "70",
+    "precision": "100",
+    "pp": "20"
+  },
+  "Recover": {
+    "nombre": "Recuperación",
+    "tipo": "Normal",
+    "categoria": "Estado",
+    "poder": "Prec: —",
+    "precision": "PP: 5",
+    "pp": ""
+  },
+  "Play Rough": {
+    "nombre": "Carantoña",
+    "tipo": "Hada",
+    "categoria": "Físico",
+    "poder": "90",
+    "precision": "90",
+    "pp": "10"
+  },
+  "Ice Hammer": {
+    "nombre": "Martillo Hielo",
+    "tipo": "Hielo",
+    "categoria": "Físico",
+    "poder": "100",
+    "precision": "90",
+    "pp": "10"
+  },
+  "Crabhammer": {
+    "nombre": "Martillazo",
+    "tipo": "Agua",
+    "categoria": "Físico",
+    "poder": "100",
+    "precision": "90",
+    "pp": "10"
+  },
+  "Dragon Dance": {
+    "nombre": "Danza Dragón",
+    "tipo": "Dragón",
+    "categoria": "Estado",
+    "poder": "Prec: —",
+    "precision": "PP: 20",
+    "pp": ""
+  },
+  "Protect": {
+    "nombre": "Protección",
+    "tipo": "Normal",
+    "categoria": "Estado",
+    "poder": "Prec: —",
+    "precision": "PP: 10",
+    "pp": ""
+  },
+  "Aqua Tail": {
+    "nombre": "Acua Cola",
+    "tipo": "Agua",
+    "categoria": "Físico",
+    "poder": "95",
+    "precision": "90",
+    "pp": "10"
+  },
+  "Dragon Rush": {
+    "nombre": "Carga Dragón",
+    "tipo": "Dragón",
+    "categoria": "Físico",
+    "poder": "100",
+    "precision": "75",
+    "pp": "10"
+  },
+  "Flip Turn": {
+    "nombre": "Viraje",
+    "tipo": "Agua",
+    "categoria": "Físico",
+    "poder": "60",
+    "precision": "100",
+    "pp": "20"
+  },
+  "Hurricane": {
+    "nombre": "Vendaval",
+    "tipo": "Volador",
+    "categoria": "Especial",
+    "poder": "110",
+    "precision": "70",
+    "pp": "10"
+  }
+}
