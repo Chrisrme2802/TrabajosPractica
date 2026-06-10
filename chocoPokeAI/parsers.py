@@ -1,5 +1,3 @@
-#Import de modulos
-
 
 #Funcion pasar pokemon lineas a objeto
 def parsear_pokemon(datosCrudos):
@@ -25,12 +23,12 @@ def parsear_stats_base(texto):
     #indice de Stats
     idx = lineas.index('Stats')
     return {
-        'hp': int(lineas[idx + 3]),
-        'ataque': int(lineas[idx + 5]),
-        'defensa': int(lineas[idx + 7]),
-        'at_esp': int(lineas[idx + 9]),
-        'def_esp': int(lineas[idx + 11]),
-        'velocidad': int(lineas[idx + 13])
+        'HP': int(lineas[idx + 3]),
+        'Atk': int(lineas[idx + 5]),
+        'Def': int(lineas[idx + 7]),
+        'SpA': int(lineas[idx + 9]),
+        'SpD': int(lineas[idx + 11]),
+        'Spe': int(lineas[idx + 13])
     }
 
 #Funcion pasar movimientos lineas a objeto
@@ -46,14 +44,14 @@ def parsear_movimiento(datosCrudos):
     }
 
 #Funcion de apoyo de EVs y IVs
-def parsear_evs_ivs(stat):
-      statOrdenados = {}
-      partes = stat.split('/')
+def parsear_evs_ivs(stats):
+      statsOrdenados = {}
+      partes = stats.split('/')
       for parte in partes:
             #El [0] y [1] se agregan a las dos variables
-            valor, stat = parte.split(' ').strip()
-            statOrdenados[stat] = int(valor)
-            return statOrdenados
+            valor, stat = parte.strip().split(' ')
+            statsOrdenados[stat] = int(valor)
+      return statsOrdenados
 
 #Funcion para parsear un showdown
 def parsear_showdown(archivo, nombre):
@@ -72,13 +70,15 @@ def parsear_showdown(archivo, nombre):
                   #Lineas fijas
                   habilidad = lineas[1].replace('Ability: ', '')
                   nivel = int(lineas[2].replace('Level: ', ''))
-                  naturaleza = lineas[5].replace(' Nature', '')
+                  evs_linea = next(l for l in lineas if l.startswith('EVs:'))
+                  ivs_linea = next(l for l in lineas if l.startswith('IVs:'))
+                  naturaleza_linea = next(l for l in lineas if l.endswith('Nature'))
                   movimientos = [l.replace('- ', '') for l in lineas[-4:]]
 
                   #EVs y IVs
-                  evs = parsear_evs_ivs(lineas[3].replace('EVs: ', ''))
-                  ivs = parsear_evs_ivs(lineas[4].replace('IVs: ', ''))
-                  stats = calcular_stats(nombre_pokemon, nivel, naturaleza, evs, ivs)
+                  evs = parsear_evs_ivs(evs_linea.replace('EVs: ', ''))
+                  ivs = parsear_evs_ivs(ivs_linea.replace('IVs: ', ''))
+                  naturaleza = naturaleza_linea.replace(' Nature', '')
 
                   pokemones.append({
                         'nombre': nombre_pokemon,
@@ -87,11 +87,12 @@ def parsear_showdown(archivo, nombre):
                         'habilidad': habilidad,
                         'naturaleza': naturaleza,
                         'movimientos': movimientos,
-                        'stats': stats
+                        'evs': evs,
+                        'ivs': ivs
                     })
                   
-                  return {
-                    "nombre": nombre,
-                    "pokemones": pokemones    
-                  } 
+            return {
+              "nombre": nombre,
+              "pokemones": pokemones    
+            } 
 

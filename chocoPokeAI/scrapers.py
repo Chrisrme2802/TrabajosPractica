@@ -2,6 +2,7 @@
 from playwright.sync_api import sync_playwright
 #Import de modulos
 from parsers import parsear_pokemon, parsear_movimiento
+from utils import obtener_traduccion
 
 #Funcion para extraer datos de movimiento
 def scrape_movement(page, movimiento):
@@ -19,6 +20,10 @@ def scrape_movement(page, movimiento):
             texto = tarjeta.inner_text()
             if texto.split('\n')[0] == movimiento:
                 return texto
+            
+    nombre_es = obtener_traduccion(movimiento)
+    if nombre_es != movimiento:
+        return scrape_movement(page, nombre_es)
         
     return None
 
