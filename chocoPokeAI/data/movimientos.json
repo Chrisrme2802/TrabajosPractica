@@ -214,5 +214,85 @@
     "poder": "110",
     "precision": "70",
     "pp": "10"
+  },
+  "Arenas Ardientes": {
+    "nombre": "Arenas Ardientes",
+    "tipo": "Tierra",
+    "categoria": "Especial",
+    "poder": "70",
+    "precision": "100",
+    "pp": "10"
+  },
+  "Trampa Rocas": {
+    "nombre": "Trampa Rocas",
+    "tipo": "Roca",
+    "categoria": "Estado",
+    "poder": "Acc: —",
+    "precision": "PP: 20",
+    "pp": ""
+  },
+  "Machada": {
+    "nombre": "Machada",
+    "tipo": "Lucha",
+    "categoria": "Físico",
+    "poder": "100",
+    "precision": "90",
+    "pp": "10"
+  },
+  "Día Soleado": {
+    "nombre": "Día Soleado",
+    "tipo": "Fuego",
+    "categoria": "Estado",
+    "poder": "Acc: —",
+    "precision": "PP: 5",
+    "pp": ""
+  },
+  "Fulgor Semilla": {
+    "nombre": "Fulgor Semilla",
+    "tipo": "Planta",
+    "categoria": "Especial",
+    "poder": "120",
+    "precision": "85",
+    "pp": "5"
+  },
+  "Estallido": {
+    "nombre": "Estallido",
+    "tipo": "Fuego",
+    "categoria": "Especial",
+    "poder": "150",
+    "precision": "100",
+    "pp": "5"
+  },
+  "Humareda": {
+    "nombre": "Humareda",
+    "tipo": "Fuego",
+    "categoria": "Especial",
+    "poder": "80",
+    "precision": "100",
+    "pp": "15"
+  },
+  "Pulso Dragón": {
+    "nombre": "Pulso Dragón",
+    "tipo": "Dragón",
+    "categoria": "Especial",
+    "poder": "85",
+    "precision": "100",
+    "pp": "10"
+  },
+  "Lanzallamas": {
+    "nombre": "Lanzallamas",
+    "tipo": "Fuego",
+    "categoria": "Especial",
+    "poder": "90",
+    "precision": "100",
+    "pp": "15"
+  },
+  "Sofoco": {
+    "nombre": "Sofoco",
+    "tipo": "Fuego",
+    "categoria": "Especial",
+    "poder": "130",
+    "precision": "90",
+    "pp": "5"
   }
 }

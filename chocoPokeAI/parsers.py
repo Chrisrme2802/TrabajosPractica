@@ -73,7 +73,7 @@ def parsear_showdown(archivo, nombre):
                   evs_linea = next(l for l in lineas if l.startswith('EVs:'))
                   ivs_linea = next(l for l in lineas if l.startswith('IVs:'))
                   naturaleza_linea = next(l for l in lineas if l.endswith('Nature'))
-                  movimientos = [l.replace('- ', '') for l in lineas[-4:]]
+                  movimientos = [l.replace('- ', '') for l in lineas[-4:] if l.strip()]
 
                   #EVs y IVs
                   evs = parsear_evs_ivs(evs_linea.replace('EVs: ', ''))
@@ -95,4 +95,3 @@ def parsear_showdown(archivo, nombre):
               "nombre": nombre,
               "pokemones": pokemones    
             } 
-

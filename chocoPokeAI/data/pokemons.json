@@ -46,5 +46,131 @@
     "SpA": 95,
     "SpD": 70,
     "Spe": 65
+  },
+  "Torkoal": {
+    "nombre": "Torkoal",
+    "nivel": 56,
+    "objeto": "Roca Calor",
+    "habilidad": "Sequía",
+    "naturaleza": "Modesta",
+    "movimientos": [
+      "Humareda",
+      "Rayo Solar",
+      "Tierra Viva",
+      "Trampa Rocas"
+    ],
+    "stats": {
+      "HP": 169,
+      "Atk": 112,
+      "Def": 187,
+      "SpA": 149,
+      "SpD": 108,
+      "Spe": 52
+    }
+  },
+  "Darmanitan": {
+    "nombre": "Darmanitan",
+    "nivel": 57,
+    "objeto": "Vidasfera",
+    "habilidad": "Potencia Bruta",
+    "naturaleza": "Firme",
+    "movimientos": [
+      "Envite Ígneo",
+      "Terremoto",
+      "Machada",
+      "Avalancha"
+    ],
+    "stats": {
+      "HP": 212,
+      "Atk": 209,
+      "Def": 93,
+      "SpA": 57,
+      "SpD": 93,
+      "Spe": 138
+    }
+  },
+  "Turtonator": {
+    "nombre": "Turtonator",
+    "nivel": 57,
+    "objeto": "Hierba Blanca",
+    "habilidad": "Caparazón",
+    "naturaleza": "Rara",
+    "movimientos": [
+      "Pulso Dragón",
+      "Arenas Ardientes",
+      "Sofoco",
+      "Rayo Solar"
+    ],
+    "stats": {
+      "HP": 161,
+      "Atk": 119,
+      "Def": 184,
+      "SpA": 134,
+      "SpD": 127,
+      "Spe": 71
+    }
+  },
+  "Sunflora": {
+    "nombre": "Sunflora",
+    "nivel": 58,
+    "objeto": "Roca Calor",
+    "habilidad": "Sequía",
+    "naturaleza": "Firme",
+    "movimientos": [
+      "Lanzallamas",
+      "Fulgor Semilla",
+      "Tierra Viva",
+      "Día Soleado"
+    ],
+    "stats": {
+      "HP": 181,
+      "Atk": 129,
+      "Def": 106,
+      "SpA": 147,
+      "SpD": 141,
+      "Spe": 65
+    }
+  },
+  "Typhlosion": {
+    "nombre": "Typhlosion",
+    "nivel": 58,
+    "objeto": "Chaleco Asalto",
+    "habilidad": "Cólera",
+    "naturaleza": "Modesta",
+    "movimientos": [
+      "Estallido",
+      "Tierra Viva",
+      "Lanzallamas",
+      "Onda Certera"
+    ],
+    "stats": {
+      "HP": 184,
+      "Atk": 104,
+      "Def": 121,
+      "SpA": 172,
+      "SpD": 129,
+      "Spe": 158
+    }
+  },
+  "Houndoom": {
+    "nombre": "Houndoom",
+    "nivel": 59,
+    "objeto": "Houndoomita",
+    "habilidad": "Madrugar",
+    "naturaleza": "Modesta",
+    "movimientos": [
+      "Pulso Umbrío",
+      "Llamarada",
+      "Rayo Solar",
+      "Maquinación"
+    ],
+    "stats": {
+      "HP": 184,
+      "Atk": 123,
+      "Def": 90,
+      "SpA": 177,
+      "SpD": 125,
+      "Spe": 143
+    }
   }
 }
