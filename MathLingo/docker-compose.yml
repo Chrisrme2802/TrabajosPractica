@@ -1,0 +1,99 @@
+version: '3.8'
+# docker-compose up -d
+
+services:
+  # Base de Datos
+  database:
+    image: postgres:15-alpine
+    container_name: mathlingo_db_container
+    restart: unless-stopped
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_NAME}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  #Redis
+  redis:
+    image: redis:7-alpine
+    container_name: mathlingo_redis_container
+    restart: always
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+
+  # Backend Spring Boot
+  backend:
+    build: ./backend
+    container_name: mathlingo_backend_container
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://database:5432/${DB_NAME}
+      - SPRING_DATASOURCE_USERNAME=${DB_USER}
+      - SPRING_DATASOURCE_PASSWORD=${DB_PASSWORD}
+    depends_on:
+      - database
+
+  # Frontend Angular
+  frontend:
+    build: ./frontend
+    container_name: mathlingo_frontend_container
+    restart: unless-stopped
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+
+  auth-service:
+    build: ./auth-service
+    ports:
+      - "4001:4001"
+    environment:
+      - DB_USER=${DB_USER}
+      - DB_HOST=auth-db
+      - DB_NAME=mathlingo_auth
+      - DB_PASSWORD=${DB_PASSWORD}
+      - DB_PORT=5432
+      - JWT_SECRET=${JWT_SECRET}
+    depends_on:
+      - auth-db
+
+  auth-db:
+    image: postgres:16-alpine
+    environment:
+      - POSTGRES_USER=${DB_USER}
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
+      - POSTGRES_DB=mathlingo_auth
+    volumes:
+      - ./auth-service/init.sql:/docker-entrypoint-initdb.d/init.sql
+      - auth-db-data:/var/lib/postgresql/data
+
+  backend:
+    build: ./backend
+    ports:
+      - "3000:3000"
+    environment:
+      - DB_USER=${DB_USER}
+      - DB_HOST=backend-db
+      - DB_NAME=mathlingo
+      - DB_PASSWORD=${DB_PASSWORD}
+      - DB_PORT=5432
+      # Esta es la variable clave: la URL donde el backend encuentra al
+      # auth-service DENTRO de la red interna de docker-compose. El nombre
+      # "auth-service" funciona como hostname porque asi se llama el
+      # servicio de arriba -- docker-compose crea DNS interno automatico.
+      - AUTH_SERVICE_URL=http://auth-service:4001
+    depends_on:
+      - backend-db
+      - auth-service
+
+volumes:
+  postgres_data:
+  redis_data:
+  auth-db-data:

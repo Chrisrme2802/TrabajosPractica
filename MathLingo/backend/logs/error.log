@@ -49,3 +49,6 @@
 {"level":"error","message":"error - Cannot set property query of #<IncomingMessage> which has only a getter - /auth/update-stats - POST - ::1","timestamp":"2026-05-04 21:45:26"}
 {"level":"error","message":"error - Cannot set property query of #<IncomingMessage> which has only a getter - /auth/update-stats - POST - ::1","timestamp":"2026-05-04 21:45:27"}
 {"level":"error","message":"error - Cannot set property query of #<IncomingMessage> which has only a getter - /auth/google - POST - ::1","timestamp":"2026-05-04 21:45:30"}
+{"level":"error","message":"error -  - /auth/google - POST - ::ffff:127.0.0.1","timestamp":"2026-07-07 22:22:21"}
+{"level":"error","message":"error -  - /auth/google - POST - ::ffff:127.0.0.1","timestamp":"2026-07-07 22:22:27"}
+{"level":"error","message":"error - relation \"usuarios\" does not exist - /auth/google - POST - ::ffff:127.0.0.1","timestamp":"2026-07-07 22:34:55"}
