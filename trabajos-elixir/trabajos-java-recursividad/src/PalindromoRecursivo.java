@@ -10,11 +10,14 @@ public class PalindromoRecursivo {
     }
 
     public static boolean esPalindromoAux(String palabra, int inicio, int fin) {
+        // Caso base (Condicion de salida)
         if (inicio >= fin) {
             return true;
         } else if (palabra.charAt(inicio) != (palabra.charAt(fin-1))) {
             return false;
         }
+        
+        // Caso recursivo
         return esPalindromoAux(palabra, inicio+1, fin-1);
     }
 }
