@@ -1,0 +1,15 @@
+@import "tailwindcss";
+
+body {
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  background-color: #0d0f17;
+  color: #e2e8f0;
+  user-select: none;
+}
+
+canvas {
+  display: block;
+  touch-action: none;
+}
