@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Métodos de Transporte - Investigación de Operaciones</title>
+  <link rel="stylesheet" href="./src/style.css" />
+</head>
+<body class="bg-slate-100 text-slate-800 font-sans min-h-screen p-4 md:p-8">
+  <div class="max-w-6xl mx-auto flex flex-col gap-8">
+    
+    <!-- Encabezado Principal -->
+    <header class="text-center space-y-2">
+      <h1 class="text-3xl md:text-4xl font-extrabold text-slate-900">Métodos de Transporte</h1>
+      <p class="text-slate-600">Investigación de Operaciones — Esquina Noroeste, Costo Mínimo y Vogel</p>
+    </header>
+
+    <!-- Panel de Control y Selección de Método -->
+    <section class="bg-white p-4 md:p-6 rounded-xl shadow-md border border-slate-200 flex flex-col sm:flex-row gap-4 items-center justify-between">
+      <div class="flex items-center gap-3 w-full sm:w-auto">
+        <label for="select-method" class="font-bold text-slate-700 whitespace-nowrap">Método:</label>
+        <select id="select-method" class="w-full sm:w-auto bg-slate-50 border border-slate-300 font-semibold text-slate-800 rounded-lg p-2 focus:ring-2 focus:ring-emerald-500 outline-none">
+          <option value="vogel">Aproximación de Vogel</option>
+          <option value="minimum-cost">Costo Mínimo</option>
+          <option value="northwest">Esquina Noroeste</option>
+        </select>
+      </div>
+
+      <button id="btn-solve" class="w-full sm:w-auto px-6 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-lg shadow transition">
+      Resolver Problema
+      </button>
+    </section>
+
+    <!-- Alerta de Error -->
+    <div id="error-alert" class="hidden bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg text-sm font-semibold"></div>
+
+    <!-- Contenedor de la Tabla Editable -->
+    <section id="table-container"></section>
+
+    <!-- Contenedor de la Animación Passo a Paso -->
+    <section id="visualizer-container"></section>
+
+  </div>
+
+  <script type="module" src="./src/main.ts"></script>
+</body>
+</html>

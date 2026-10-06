@@ -1,0 +1,26 @@
+{
+  "compilerOptions": {
+    /* Estructura de archivos */
+    "rootDir": "./src",
+    "outDir": "./dist",
+
+    /* Configuración del Entorno Node.js */
+    "module": "nodenext",
+    "moduleResolution": "nodenext",
+    "target": "es2022",
+    "types": ["node"],
+    "esModuleInterop": true,
+
+    /* Mapas y Salidas */
+    "sourceMap": true,
+    "declaration": true,
+    "declarationMap": true,
+
+    /* Opciones de Tipado */
+    "strict": true,
+    "verbatimModuleSyntax": false,
+    "isolatedModules": true,
+    "skipLibCheck": true
+  },
+  "include": ["src/**/*"]
+}
