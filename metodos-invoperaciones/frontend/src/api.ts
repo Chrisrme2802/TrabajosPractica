@@ -1,6 +1,6 @@
-import { TransportProblemInput, TransportSolutionResponse } from './types/transport.js';
+import { TransportInput, TransportResult } from './types/transport.js';
 
-export async function solveProblem(data: TransportProblemInput): Promise<TransportSolutionResponse> {
+export async function solveProblem(data: TransportInput): Promise<TransportResult> {
   const response = await fetch('http://localhost:3000/api/solve', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },

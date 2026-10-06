@@ -11,6 +11,11 @@ document.addEventListener('DOMContentLoaded', () => {
   const solveBtn = document.getElementById('btn-solve') as HTMLButtonElement;
   const errorAlert = document.getElementById('error-alert') as HTMLElement;
 
+  methodSelect?.addEventListener('change', () => {
+    const selectedMethod = (methodSelect.value || 'vogel') as TransportMethod;
+    tableManager.setMethod(selectedMethod);
+  });
+
   solveBtn?.addEventListener('click', async () => {
     errorAlert.classList.add('hidden');
     errorAlert.textContent = '';
@@ -18,12 +23,23 @@ document.addEventListener('DOMContentLoaded', () => {
     const selectedMethod = (methodSelect?.value || 'vogel') as TransportMethod;
     const payload = tableManager.getData(selectedMethod);
 
-    // Validación básica antes de enviar
-    const { balanced } = tableManager.state.isBalanced();
-    if (!balanced) {
-      errorAlert.textContent = 'La suma total de la Oferta debe ser igual a la suma total de la Demanda.';
-      errorAlert.classList.remove('hidden');
-      return;
+    const numRows = payload.sources.length;
+    const numCols = payload.destinations.length;
+
+    // Validaciones de entrada por método
+    if (selectedMethod === 'hungarian') {
+      if (numRows !== numCols) {
+        errorAlert.textContent = `El Método Húngaro requiere una matriz cuadrada (N x N). Actualmente tienes ${numRows} filas y ${numCols} columnas. Agrega o elimina filas/columnas para igualarlas.`;
+        errorAlert.classList.remove('hidden');
+        return;
+      }
+    } else {
+      const { balanced } = tableManager.state.isBalanced();
+      if (!balanced) {
+        errorAlert.textContent = 'La suma total de la Oferta debe ser igual a la suma total de la Demanda.';
+        errorAlert.classList.remove('hidden');
+        return;
+      }
     }
 
     try {
@@ -44,7 +60,7 @@ document.addEventListener('DOMContentLoaded', () => {
       errorAlert.classList.remove('hidden');
     } finally {
       solveBtn.disabled = false;
-      solveBtn.textContent = '🚀 Resolver Problema';
+      solveBtn.textContent = 'Resolver Problema';
     }
   });
 });

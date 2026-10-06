@@ -1,4 +1,4 @@
-import type { TransportProblemInput } from '../types/transport.js';
+import type { TransportInput, TransportMethod } from '../types/transport.js';
 
 export class TableState {
   public sources: string[] = ['Origen 1', 'Origen 2', 'Origen 3'];
@@ -45,7 +45,7 @@ export class TableState {
     return { balanced: totalSupply === totalDemand, totalSupply, totalDemand };
   }
 
-  public toPayload(method: 'northwest' | 'minimum-cost' | 'vogel'): TransportProblemInput {
+  public toPayload(method: TransportMethod): TransportInput {
     return {
       sources: [...this.sources],
       destinations: [...this.destinations],

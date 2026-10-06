@@ -3,11 +3,12 @@ import { TransportInput } from '../types/transport.js';
 import { solveNorthwestCorner } from '../services/northwestCorner.js';
 import { solveMinimumCost } from '../services/minimumCost.js';
 import { solveVogel } from '../services/vogel.js';
+import { solveHungarian } from '../services/hungarian.js';
 
 export const solveTransportProblem = (req: Request, res: Response) => {
   const input: TransportInput = req.body;
 
-  if (!input || !input.costs || !input.supply || !input.demand) {
+  if (!input || !input.costs) {
     return res.status(400).json({ error: 'Faltan datos obligatorios en la matriz.' });
   }
 
@@ -22,6 +23,9 @@ export const solveTransportProblem = (req: Request, res: Response) => {
         break;
       case 'vogel':
         result = solveVogel(input);
+        break;
+      case 'hungarian':
+        result = solveHungarian(input);
         break;
       default:
         return res.status(400).json({ error: 'Método no válido.' });

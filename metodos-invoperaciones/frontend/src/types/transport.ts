@@ -1,13 +1,4 @@
-export type TransportMethod = 'northwest' | 'minimum-cost' | 'vogel';
-
-export interface TransportProblemInput {
-  sources: string[];
-  destinations: string[];
-  costs: number[][];
-  supply: number[];
-  demand: number[];
-  method: TransportMethod;
-}
+export type TransportMethod = 'northwest' | 'minimum-cost' | 'vogel' | 'hungarian';
 
 export interface StepCell {
   row: number;
@@ -24,9 +15,20 @@ export interface TransportStep {
   remainingDemand: number[];
   rowPenalties?: (number | null)[];
   colPenalties?: (number | null)[];
+  coveredRows?: boolean[];
+  coveredCols?: boolean[];
 }
 
-export interface TransportSolutionResponse {
+export interface TransportInput {
+  sources: string[];
+  destinations: string[];
+  costs: number[][];
+  supply: number[];
+  demand: number[];
+  method: TransportMethod;
+}
+
+export interface TransportResult {
   totalCost: number;
   allocations: number[][];
   steps: TransportStep[];

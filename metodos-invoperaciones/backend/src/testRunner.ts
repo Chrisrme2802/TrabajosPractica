@@ -2,6 +2,7 @@ import { TransportInput } from './types/transport.js';
 import { solveNorthwestCorner } from './services/northwestCorner.js';
 import { solveMinimumCost } from './services/minimumCost.js';
 import { solveVogel } from './services/vogel.js';
+import { solveHungarian } from './services/hungarian.js';
 
 const mockInput: TransportInput = {
   sources: ['Planta A', 'Planta B', 'Planta C'],
@@ -19,7 +20,7 @@ const mockInput: TransportInput = {
 console.log('====================================');
 console.log('====================================\n');
 
-// Probar Vogel
+//Probar Vogel
 console.log('--- APROXIMACIÓN DE VOGEL ---');
 const vogelResult = solveVogel(mockInput);
 console.log(`Pasos generados: ${vogelResult.steps.length}`);
@@ -30,12 +31,31 @@ console.log('\nMatriz Resultante:');
 console.table(vogelResult.allocations);
 console.log(`💰 Costo Total Z = $${vogelResult.totalCost}\n`);
 
-// Probar Costo Mínimo
+//Probar Costo Mínimo
 console.log('--- COSTO MÍNIMO ---');
 const minCostResult = solveMinimumCost(mockInput);
 console.log(`💰 Costo Total Z = $${minCostResult.totalCost}\n`);
 
-// Probar Esquina Noroeste
+//Probar Esquina Noroeste
 console.log('--- ESQUINA NOROESTE ---');
 const northwestResult = solveNorthwestCorner(mockInput);
 console.log(`💰 Costo Total Z = $${northwestResult.totalCost}\n`);
+
+//Probar Metodo Hungaro
+console.log('--- MÉTODO HÚNGARO ---');
+const hungarianResult = solveHungarian({
+  sources: ['Trabajo 1', 'Trabajo 2', 'Trabajo 3'],
+  destinations: ['Persona A', 'Persona B', 'Persona C'],
+  costs: [
+    [9, 2, 7],
+    [6, 4, 3],
+    [5, 8, 1]
+  ],
+  supply: [1, 1, 1],
+  demand: [1, 1, 1],
+  method: 'hungarian'
+});
+
+console.log(`Pasos generados: ${hungarianResult.steps.length}`);
+console.table(hungarianResult.allocations);
+console.log(`Costo Total Z = $${hungarianResult.totalCost}\n`);
