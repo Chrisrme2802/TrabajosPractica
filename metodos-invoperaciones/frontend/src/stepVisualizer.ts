@@ -1,5 +1,6 @@
 import type { TransportStep, TransportResult } from './types/transport.js';
 import { THEME } from './theme.js';
+import { sfx } from './sfx.js';
 
 export class StepVisualizer {
   private container: HTMLElement;
@@ -37,22 +38,27 @@ export class StepVisualizer {
       return;
     }
     this.currentStepIndex++;
+    sfx.playStep();
     this.render();
   }
 
   public prevStep(): void {
     if (!this.response || this.currentStepIndex <= 0) return;
     this.currentStepIndex--;
+    sfx.playStep();
     this.render();
   }
 
   public toggleAutoPlay(): void {
+    sfx.playClick();
     if (this.autoPlayInterval) {
       this.stopAutoPlay();
     } else {
       this.autoPlayInterval = window.setInterval(() => {
         if (this.response && this.currentStepIndex < this.response.steps.length - 1) {
-          this.nextStep();
+          this.currentStepIndex++;
+          sfx.playStep();
+          this.render();
         } else {
           this.stopAutoPlay();
         }
@@ -85,6 +91,10 @@ export class StepVisualizer {
                         currentStep.coveredCols !== undefined || 
                         this.response.steps.some(s => s.coveredRows !== undefined);
     const isLastStep = this.currentStepIndex === this.response.steps.length - 1;
+
+    if (isLastStep) {
+      sfx.playSuccess();
+    }
 
     const stepMatrix = currentStep.currentAllocations;
     const numRows = stepMatrix.length;
@@ -307,6 +317,7 @@ export class StepVisualizer {
 
   private attachEvents(): void {
     this.container.querySelector('#btn-first')?.addEventListener('click', () => {
+      sfx.playStep();
       this.currentStepIndex = 0;
       this.render();
     });
@@ -314,6 +325,7 @@ export class StepVisualizer {
     this.container.querySelector('#btn-next')?.addEventListener('click', () => this.nextStep());
     this.container.querySelector('#btn-last')?.addEventListener('click', () => {
       if (this.response) {
+        sfx.playStep();
         this.currentStepIndex = this.response.steps.length - 1;
         this.render();
       }
