@@ -14,5 +14,5 @@ app.post('/api/dijkstra', DijkstraController.calculate);
 
 // Inicio del servidor
 app.listen(PORT, () => {
-  console.log(`🚀 Servidor corriendo en http://localhost:${PORT}`);
+  console.log(`Servidor corriendo en http://localhost:${PORT}`);
 });

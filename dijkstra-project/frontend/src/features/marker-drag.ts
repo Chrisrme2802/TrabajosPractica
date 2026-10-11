@@ -1,0 +1,79 @@
+import * as d3 from 'd3';
+import type { GraphRenderer } from '../core/graph-renderer.js';
+import type { GraphNode } from '../types/dijkstra-types.js';
+
+export class MarkerDrag {
+  private renderer: GraphRenderer;
+  private dragPreview: HTMLDivElement | null = null;
+
+  constructor(renderer: GraphRenderer) {
+    this.renderer = renderer;
+    // Usamos los IDs exactos de tu HTML
+    this.initMarkerEvents('drag-start', 'start');
+    this.initMarkerEvents('drag-target', 'target');
+  }
+
+  private initMarkerEvents(elementId: string, type: 'start' | 'target'): void {
+    const element = document.getElementById(elementId);
+    if (!element) return;
+
+    const svg = this.renderer.getSvg();
+    const svgNode = svg.node();
+    if (!svgNode) return;
+
+    d3.select(element).call(
+      d3
+        .drag<HTMLElement, unknown>()
+        .on('start', (event) => {
+          this.dragPreview = document.createElement('div');
+          this.dragPreview.className = `fixed pointer-events-none z-50 rounded-full px-3 py-1 text-xs font-bold shadow-lg border transform -translate-x-1/2 -translate-y-1/2 ${
+            type === 'start'
+              ? 'bg-amber-500/90 border-amber-400 text-amber-950'
+              : 'bg-emerald-500/90 border-emerald-400 text-emerald-950'
+          }`;
+          this.dragPreview.innerText = type === 'start' ? 'INICIO' : 'META';
+
+          const srcEvent = event.sourceEvent as MouseEvent;
+          this.dragPreview.style.left = `${srcEvent.clientX}px`;
+          this.dragPreview.style.top = `${srcEvent.clientY}px`;
+          document.body.appendChild(this.dragPreview);
+
+          element.style.opacity = '0.4';
+        })
+        .on('drag', (event) => {
+          if (!this.dragPreview) return;
+          const srcEvent = event.sourceEvent as MouseEvent;
+          this.dragPreview.style.left = `${srcEvent.clientX}px`;
+          this.dragPreview.style.top = `${srcEvent.clientY}px`;
+        })
+        .on('end', (event) => {
+          if (this.dragPreview) {
+            this.dragPreview.remove();
+            this.dragPreview = null;
+          }
+          element.style.opacity = '1';
+
+          // Calculamos las coordenadas del soltado sobre el SVG
+          const [x, y] = d3.pointer(event.sourceEvent, svgNode);
+          const node = this.findNodeAtPosition(x, y);
+
+          if (node) {
+            if (type === 'start') {
+              this.renderer.setStartNode(node.id);
+            } else {
+              this.renderer.setTargetNode(node.id);
+            }
+          }
+        })
+    );
+  }
+
+  private findNodeAtPosition(x: number, y: number): GraphNode | undefined {
+    const radius = this.renderer.nodeRadius + 15;
+    return this.renderer.getNodes().find((node) => {
+      const dx = x - node.x;
+      const dy = y - node.y;
+      return Math.sqrt(dx * dx + dy * dy) <= radius;
+    });
+  }
+}

@@ -1,4 +1,3 @@
-// Estructura de nodos y aristas para D3 (con coordenadas visuales para el lienzo)
 export interface GraphNode {
   id: string;
   x: number;
@@ -13,7 +12,7 @@ export interface GraphEdge {
   weight: number;
 }
 
-//Las mismas del backend
+// Las mismas del backend
 export interface Node {
   id: string;
   label?: string;
@@ -39,6 +38,7 @@ export interface Step {
   previous: Record<string, string | null>;
   visited: string[];
   description: string;
+  activeEdge?: { from: string; to: string };
 }
 
 export interface DijkstraResponse {
