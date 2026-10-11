@@ -2,7 +2,7 @@ let logo
 let size = 100
 let x = 0
 let y = 0
-let vel = 10
+let vel = 1
 let r,g,b
 let esq = 0
 let velY
@@ -84,7 +84,7 @@ function draw() {
     noTint()
     fill(0)
     textSize(24)
-    text("ESquinas: " + esq, 20, 40)
+    text("Esquinas: " + esq, 20, 40)
 }
 
 function cambiarColor() {

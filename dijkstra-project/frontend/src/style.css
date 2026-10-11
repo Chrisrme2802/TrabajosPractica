@@ -1,0 +1,35 @@
+@import "tailwindcss";
+
+@theme {
+  --color-brand-primary: #6366f1;
+  --color-brand-secondary: #06b6d4;
+  --color-node-default: #1e293b;
+  --color-node-visited: #f59e0b;
+  --color-node-active: #10b981;
+  --color-edge-default: #334155;
+  --color-edge-active: #10b981;
+}
+
+/* Efectos de resaltado para nodos en SVG */
+.node-start {
+  stroke: #f59e0b !important;
+  stroke-width: 3px !important;
+  filter: drop-shadow(0 0 6px rgba(245, 158, 11, 0.8));
+}
+
+.node-target {
+  stroke: #10b981 !important;
+  stroke-width: 3px !important;
+  filter: drop-shadow(0 0 6px rgba(16, 185, 129, 0.8));
+}
+
+.node-visited {
+  fill: #f59e0b !important;
+  transition: fill 0.3s ease;
+}
+
+.node-path {
+  fill: #10b981 !important;
+  filter: drop-shadow(0 0 8px rgba(16, 185, 129, 0.9));
+  transition: all 0.3s ease;
+}
