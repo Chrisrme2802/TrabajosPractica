@@ -13,11 +13,9 @@ export class GraphInteractions {
   private tempLine: d3.Selection<SVGLineElement, unknown, HTMLElement, any> | null = null;
   private sourceNode: GraphNode | null = null;
   
-  // Rectángulo de Selección (Marquee)
   private selectionBox: d3.Selection<SVGRectElement, unknown, HTMLElement, any> | null = null;
   private startSelectionCoords: [number, number] | null = null;
 
-  // Navegación Pan & Zoom
   private zoomBehavior: d3.ZoomBehavior<SVGSVGElement, unknown>;
   private isAltPressed: boolean = false;
 
@@ -29,9 +27,7 @@ export class GraphInteractions {
 
     this.zoomBehavior = d3.zoom<SVGSVGElement, unknown>()
       .scaleExtent([0.3, 3])
-      .filter((event) => {
-        return event.type === 'wheel' || (this.isAltPressed && event.button === 0);
-      })
+      .filter((event) => event.type === 'wheel' || (this.isAltPressed && event.button === 0))
       .on('zoom', (event) => {
         const mainGroup = this.renderer.getSvg().select('g.main-group');
         mainGroup.attr('transform', event.transform);
@@ -61,10 +57,20 @@ export class GraphInteractions {
     });
   }
 
+  private isOverTrash(clientX: number, clientY: number): boolean {
+    if (!this.trashElement) return false;
+    const rect = this.trashElement.getBoundingClientRect();
+    return (
+      clientX >= rect.left &&
+      clientX <= rect.right &&
+      clientY >= rect.top &&
+      clientY <= rect.bottom
+    );
+  }
+
   private initCanvasEvents(): void {
     const svg = this.renderer.getSvg();
 
-    // Doble clic para crear nodo
     svg.on('dblclick', async (event: MouseEvent) => {
       event.preventDefault();
       if (event.shiftKey || this.isAltPressed) return;
@@ -72,7 +78,6 @@ export class GraphInteractions {
       await this.promptAddNode(x, y);
     });
 
-    // Clic en fondo limpia la selección o inicia el rectángulo de selección
     svg.on('mousedown', (event: MouseEvent) => {
       const target = event.target as HTMLElement;
       const isBackground = target.tagName === 'svg' || target.classList.contains('canvas-bg');
@@ -174,6 +179,24 @@ export class GraphInteractions {
 
     nodeGroups.on('.drag', null);
 
+    // Clic derecho para eliminar nodo
+    nodeGroups.on('contextmenu', async (event: MouseEvent, d) => {
+      event.preventDefault();
+      event.stopPropagation();
+
+      const confirmed = await this.ui.showConfirm({
+        title: 'Eliminar Nodo',
+        subtitle: `¿Deseas eliminar el nodo "${d.id}"?`,
+      });
+
+      if (confirmed) {
+        this.renderer.removeNode(d.id);
+        this.sounds?.playDelete();
+        this.ui.showToast(`Nodo "${d.id}" eliminado`, 'info');
+      }
+    });
+
+    // Clic simple para seleccionar / renombrar
     nodeGroups.on('click', async (event: MouseEvent, d) => {
       event.stopPropagation();
       if (this.isAltPressed) return;
@@ -232,9 +255,20 @@ export class GraphInteractions {
           });
 
           this.renderer.render();
+
+          // Resaltar papelera si se sobrevuela
+          const isHovering = this.isOverTrash(
+            event.sourceEvent.clientX,
+            event.sourceEvent.clientY
+          );
+          if (isHovering) {
+            this.trashElement?.classList.add('trash-active');
+          } else {
+            this.trashElement?.classList.remove('trash-active');
+          }
         }
       })
-      .on('end', async (event, _) => {
+      .on('end', async (event, d) => {
         if (this.tempLine) {
           this.tempLine.remove();
           this.tempLine = null;
@@ -250,6 +284,26 @@ export class GraphInteractions {
           this.sourceNode = null;
         } else {
           this.trashElement?.classList.remove('trash-visible', 'trash-active');
+
+          // Borrar si se soltó sobre la papelera
+          const droppedInTrash = this.isOverTrash(
+            event.sourceEvent.clientX,
+            event.sourceEvent.clientY
+          );
+
+          if (droppedInTrash) {
+            // Eliminar todos los nodos seleccionados que cayeron en la papelera
+            const selected = this.renderer.getNodes().filter((n) => n.selected);
+            if (selected.length > 0) {
+              selected.forEach((n) => this.renderer.removeNode(n.id));
+              this.sounds?.playDelete();
+              this.ui.showToast(`Nodos eliminados`, 'info');
+            } else {
+              this.renderer.removeNode(d.id);
+              this.sounds?.playDelete();
+              this.ui.showToast(`Nodo "${d.id}" eliminado`, 'info');
+            }
+          }
         }
       });
 
@@ -317,7 +371,6 @@ export class GraphInteractions {
     this.renderer.render();
   }
 
-  // MÉTODO PÚBLICO AGREGADO PARA RE-ENGANCHAR LOS EVENTOS D3 TRAS PEGAR
   public rebindNodeEvents(): void {
     this.initNodeEvents();
   }

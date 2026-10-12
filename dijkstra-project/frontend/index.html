@@ -14,7 +14,7 @@
       
       <!-- Controles de Modo / Estado -->
       <div class="flex items-center gap-4">
-        <span id="status-indicator" class="text-xs px-2.5 py-1 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 font-mono">
+        <span id="status-indicator" class="status-editing">
           Modo Edición
         </span>
         <button id="btn-execute" class="bg-indigo-600 hover:bg-indigo-500 text-white text-sm px-4 py-1.5 rounded-lg font-medium transition cursor-pointer">
@@ -50,14 +50,18 @@
           </div>
         </div>
 
+        <!-- Instrucciones Actualizadas -->
         <div class="border-t border-slate-800 pt-3 text-xs text-slate-400 flex flex-col gap-1">
           <div><span class="font-bold text-slate-300">Doble Clic:</span> Crear nodo</div>
-          <div><span class="font-bold text-slate-300">Arrastrar:</span> Mover nodo</div>
+          <div><span class="font-bold text-slate-300">Clic Simple:</span> Seleccionar / Renombrar</div>
+          <div><span class="font-bold text-slate-300">Arrastrar:</span> Mover nodo(s) / Selección caja</div>
           <div><span class="font-bold text-slate-300">Shift + Arrastrar:</span> Conectar nodos</div>
-          <div><span class="font-bold text-slate-300">Clic Derecho:</span> Eliminar nodo</div>
+          <div><span class="font-bold text-slate-300">Alt + Arrastrar:</span> Mover lienzo (Mano)</div>
+          <div><span class="font-bold text-slate-300">Ctrl + C / V:</span> Copiar y Pegar</div>
+          <div><span class="font-bold text-slate-300">Clic Derecho / Papelera:</span> Eliminar nodo</div>
         </div>
 
-        <!-- Tabla de Seguimiento de Nodos y Distancias (DENTRO DEL ASIDE) -->
+        <!-- Tabla de Seguimiento de Nodos y Distancias -->
         <div class="border-t border-slate-800 pt-3 flex flex-col gap-2">
           <div class="flex items-center justify-between">
             <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400">Tabla de Distancias</span>

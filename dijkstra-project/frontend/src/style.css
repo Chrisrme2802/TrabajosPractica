@@ -174,3 +174,20 @@
   stroke-width: 3.5px !important;
   filter: drop-shadow(0 0 10px rgba(56, 189, 248, 0.9)) !important;
 }
+
+/* Estados del indicador superior */
+.status-editing {
+  @apply text-xs px-2.5 py-1 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 font-mono transition-all;
+}
+
+.status-running {
+  @apply text-xs px-2.5 py-1 rounded-full bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 font-mono transition-all;
+}
+
+.status-paused {
+  @apply text-xs px-2.5 py-1 rounded-full bg-amber-500/10 text-amber-400 border border-amber-500/20 font-mono transition-all;
+}
+
+.status-completed {
+  @apply text-xs px-2.5 py-1 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 font-mono transition-all;
+}
