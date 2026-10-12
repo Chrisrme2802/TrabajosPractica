@@ -24,6 +24,8 @@ export class AnimationController {
   private summaryPathText: HTMLElement | null;
   private summaryDistanceText: HTMLElement | null;
 
+  private tableBody: HTMLElement | null;
+
   constructor(renderer: GraphRenderer, sounds: SoundEffects) {
     this.renderer = renderer;
     this.sounds = sounds;
@@ -39,6 +41,8 @@ export class AnimationController {
     this.pathSummary = document.getElementById('path-summary');
     this.summaryPathText = document.getElementById('summary-path-text');
     this.summaryDistanceText = document.getElementById('summary-distance-text');
+
+    this.tableBody = document.getElementById('node-distance-table-body');
 
     this.initEvents();
   }
@@ -83,7 +87,7 @@ export class AnimationController {
     if (this.btnPlay) this.btnPlay.textContent = 'Pausar';
     if (this.statusIndicator) {
       this.statusIndicator.textContent = 'Ejecutando...';
-      this.statusIndicator.className = 'text-xs px-2.5 py-1 rounded-full bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 font-mono';
+      this.statusIndicator.className = 'status-running';
     }
 
     this.timer = window.setInterval(() => {
@@ -104,7 +108,7 @@ export class AnimationController {
     if (this.btnPlay) this.btnPlay.textContent = 'Reproducir';
     if (this.statusIndicator) {
       this.statusIndicator.textContent = 'Pausado';
-      this.statusIndicator.className = 'text-xs px-2.5 py-1 rounded-full bg-amber-500/10 text-amber-400 border border-amber-500/20 font-mono';
+      this.statusIndicator.className = 'status-paused';
     }
   }
 
@@ -119,7 +123,7 @@ export class AnimationController {
   public stepForward(): void {
     if (this.currentStepIndex < this.steps.length - 1) {
       this.currentStepIndex++;
-      this.sounds.playStep(); // Sonido en cada paso hacia adelante
+      this.sounds.playStep();
       this.renderCurrentStep();
     } else {
       this.highlightFinalPath();
@@ -129,9 +133,58 @@ export class AnimationController {
   public stepBackward(): void {
     if (this.currentStepIndex > 0) {
       this.currentStepIndex--;
-      this.sounds.playStep(); // Sonido en cada paso hacia atrás
+      this.sounds.playStep();
       this.renderCurrentStep();
     }
+  }
+
+  private renderDistanceTable(step: Step): void {
+    if (!this.tableBody) return;
+
+    const nodes = this.renderer.getNodes();
+    if (nodes.length === 0) {
+      this.tableBody.innerHTML = `
+        <tr>
+          <td colspan="3" class="table-empty-cell">
+            No hay nodos en el lienzo.
+          </td>
+        </tr>`;
+      return;
+    }
+
+    this.tableBody.innerHTML = nodes
+      .map((node) => {
+        const dist = step.distances[node.id];
+        const isInfinity = dist === Infinity || dist === undefined;
+        const distText = isInfinity ? '∞' : dist;
+        const prevText = step.previous[node.id] || '-';
+
+        const isCurrent = step.currentNode === node.id;
+        const isVisited = step.visited?.includes(node.id);
+
+        let rowClass = 'table-row-base';
+        if (isCurrent) {
+          rowClass = 'table-row-current';
+        } else if (isVisited) {
+          rowClass = 'table-row-visited';
+        }
+
+        const distClass = isInfinity ? 'table-dist-infinity' : 'table-dist-value';
+
+        return `
+          <tr class="${rowClass}">
+            <td class="table-cell-node">
+              <span>${node.id}</span>
+              ${isCurrent ? '<span class="pulse-dot"></span>' : ''}
+            </td>
+            <td class="table-cell-dist ${distClass}">
+              ${distText}
+            </td>
+            <td class="table-cell-prev">${prevText}</td>
+          </tr>
+        `;
+      })
+      .join('');
   }
 
   private renderCurrentStep(): void {
@@ -148,20 +201,21 @@ export class AnimationController {
     }
 
     this.renderer.renderStepState(step);
+    this.renderDistanceTable(step);
     this.updateControlsState();
   }
 
   private highlightFinalPath(): void {
     if (this.statusIndicator) {
       this.statusIndicator.textContent = 'Ruta Calculada';
-      this.statusIndicator.className = 'text-xs px-2.5 py-1 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 font-mono';
+      this.statusIndicator.className = 'status-completed';
     }
 
     if (this.pathSummary && this.summaryPathText && this.summaryDistanceText) {
       if (this.finalPath.length > 0) {
         this.summaryPathText.textContent = this.finalPath.join(' ➔ ');
         this.summaryDistanceText.textContent = `Costo Total Mínimo: ${this.totalDistance}`;
-        this.sounds.playSuccess(); // Acorde de éxito al completar la ruta
+        this.sounds.playSuccess();
       } else {
         this.summaryPathText.textContent = 'No existe ruta alcanzable';
         this.summaryDistanceText.textContent = 'Distancia: ∞';
@@ -173,8 +227,16 @@ export class AnimationController {
   }
 
   private updateControlsState(): void {
-    if (this.btnPrev) this.btnPrev.disabled = this.currentStepIndex <= 0;
-    if (this.btnNext) this.btnNext.disabled = this.currentStepIndex >= this.steps.length - 1;
+    const hasSteps = this.steps.length > 0;
+    if (this.btnPlay) {
+      this.btnPlay.disabled = !hasSteps;
+    }
+    if (this.btnPrev) {
+      this.btnPrev.disabled = !hasSteps || this.currentStepIndex <= 0;
+    }
+    if (this.btnNext) {
+      this.btnNext.disabled = !hasSteps || this.currentStepIndex >= this.steps.length - 1;
+    }
   }
 
   public reset(): void {
@@ -183,6 +245,15 @@ export class AnimationController {
     this.finalPath = [];
     this.totalDistance = 0;
     this.currentStepIndex = -1;
+
+    if (this.tableBody) {
+      this.tableBody.innerHTML = `
+        <tr>
+          <td colspan="3" class="table-empty-cell">
+            Sin datos de ejecución.
+          </td>
+        </tr>`;
+    }
 
     if (this.pathSummary) this.pathSummary.classList.add('hidden');
     if (this.stepCounter) this.stepCounter.textContent = 'Paso 0 / 0';
