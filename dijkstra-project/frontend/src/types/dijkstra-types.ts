@@ -3,6 +3,7 @@ export interface GraphNode {
   x: number;
   y: number;
   label?: string;
+  selected?: boolean;
 }
 
 export interface GraphEdge {

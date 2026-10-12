@@ -83,6 +83,7 @@ export class GraphRenderer {
 
   public render(): void {
     let mainGroup = this.svg.select<SVGGElement>('g.main-group');
+
     if (mainGroup.empty()) {
       mainGroup = this.svg.append('g').attr('class', 'main-group');
       mainGroup.append('g').attr('class', 'edges-layer');
@@ -136,7 +137,9 @@ export class GraphRenderer {
         .attr('class', 'path-edge-marker');
     }
 
-    // Edges
+    // -------------------------------------------------------------
+    // EDGES (ARISTAS)
+    // -------------------------------------------------------------
     const edgesLayer = mainGroup.select<SVGGElement>('g.edges-layer');
 
     const edgeSelection = edgesLayer
@@ -199,7 +202,9 @@ export class GraphRenderer {
         .text(d.weight);
     });
 
-    // Nodos
+    // -------------------------------------------------------------
+    // NODOS
+    // -------------------------------------------------------------
     const nodesLayer = mainGroup.select<SVGGElement>('g.nodes-layer');
 
     const nodeSelection = nodesLayer
@@ -227,13 +232,24 @@ export class GraphRenderer {
 
     nodeUpdate.attr('transform', (d) => `translate(${d.x}, ${d.y})`);
 
-    // Prioridad de clases visuales en el orden de renderizado
+    // Asignar estado base (Procesando > Inicio > Meta > Visitado > Default)
     nodeUpdate.attr('class', (d) => {
-      if (d.id === this.currentNodeProcessing) return 'node-group node-processing cursor-grab';
-      if (d.id === this.startNodeId) return 'node-group node-start cursor-grab';
-      if (d.id === this.targetNodeId) return 'node-group node-target cursor-grab';
-      if (this.currentVisitedNodes.includes(d.id)) return 'node-group node-visited cursor-grab';
-      return 'node-group node-default cursor-grab';
+      let baseClass = 'node-default';
+
+      if (d.id === this.currentNodeProcessing) {
+        baseClass = 'node-processing';
+      } else if (d.id === this.startNodeId) {
+        baseClass = 'node-start';
+      } else if (d.id === this.targetNodeId) {
+        baseClass = 'node-target';
+      } else if (this.currentVisitedNodes.includes(d.id)) {
+        baseClass = 'node-visited';
+      }
+
+      // Si el nodo está seleccionado en la caja, se le concatena la clase node-selected
+      const selectedClass = d.selected ? ' node-selected' : '';
+
+      return `node-group ${baseClass}${selectedClass} cursor-grab`;
     });
   }
-}
+} 

@@ -159,3 +159,18 @@
 .toast-success {
   @apply bg-emerald-950/90 border-emerald-500/40 text-emerald-200 shadow-emerald-500/10;
 }
+
+/* Seleccion feature */
+.selection-box {
+  fill: rgba(99, 102, 241, 0.15);
+  stroke: #818cf8;
+  stroke-width: 1.5px;
+  stroke-dasharray: 4 4;
+  pointer-events: none;
+}
+
+.node-selected circle {
+  stroke: #38bdf8 !important;
+  stroke-width: 3.5px !important;
+  filter: drop-shadow(0 0 10px rgba(56, 189, 248, 0.9)) !important;
+}

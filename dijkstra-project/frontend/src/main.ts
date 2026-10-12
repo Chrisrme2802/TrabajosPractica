@@ -5,6 +5,7 @@ import { AnimationController } from './core/animation-controller.js';
 import { DijkstraApi } from './services/dijkstra-api.js';
 import { SoundEffects } from './services/sound-effects.js';
 import { UIFeedback } from './features/ui-feedback.js';
+import { SelectionClipboard } from './core/selection-clipboard.js';
 
 document.addEventListener('DOMContentLoaded', () => {
   // Instanciar servicios globales
@@ -16,6 +17,8 @@ document.addEventListener('DOMContentLoaded', () => {
   const markerDrag = new MarkerDrag(renderer);
   const animController = new AnimationController(renderer, sounds);
 
+  // Sistema de portapapeles (Ctrl+C / Ctrl+V)
+  const clipboard = new SelectionClipboard(renderer, interactions, ui, sounds);
   const btnExecute = document.getElementById('btn-execute');
 
   btnExecute?.addEventListener('click', async () => {
