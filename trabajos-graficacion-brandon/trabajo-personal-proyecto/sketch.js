@@ -1,27 +1,25 @@
-let riverMatrix = []
-let riverRows = 5
-let riverCols = 15
-let riverSize = 30
+let matrix = []
+let rows = 16
+let cols = 16
+let size = 30
 
 function setup() {
     createCanvas(550, 500)
-    initializeRiver()
+    initializeMap()
+    initializeObstacles()
 }
 
 function draw() {
     background(255,255,255)
-    drawRiver()
+    drawMap()
 
-    if (frameCount % 30 === 0) {
-        updateElements()
-    }
 }
 
-function initializeRiver() {
-    for (let i = 0; i < riverRows; i++) {
+function initializeMap() {
+    for (let i = 0; i < rows; i++) {
         let cellRow = []
-        riverMatrix.push(cellRow)
-        for (let j = 0; i < riverCols; j++) {
+        matrix.push(cellRow)
+        for (let j = 0; j < cols; j++) {
             const voidElement = new MapElement("none", i, j, "#ffffff")
             const cell = new Cell()
             cell.voidElement = voidElement
@@ -30,26 +28,16 @@ function initializeRiver() {
     }
 }
 
-function drawRiver() {
-    array.forEach(cellRow => {
+function drawMap() {
+    matrix.forEach(cellRow => {
         cellRow.forEach(cell => {
-            let element = cell.MapElement
+            let element = cell.mapElement
             if(!element) { element = cell.voidElement }
-            rect(element.posX*riverSize, element.posY*riverSize, riverSize, riverSize)
+            rect(element.posX*size, element.posY*size, size, size)
         });
     });
 }
 
-function spawnElements() {
-    let spawnRow = floor(random(0, maxRows1))
-    let righDirection = random() > 0.5
-    if (righDirection) {
-        let 
-    }
-    let elementType = random(["fish", "time", "powerUp"])
-
-}
-
-function updateElements() {
-
+function initializeObstacles() {
+    
 }
