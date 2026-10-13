@@ -5,10 +5,27 @@
   <title>Trabajo personal bomberman</title>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.4/p5.min.js"></script>
 
-  <script src="objects/mapElementClass.js"></script>
-  <script src="objects/cellClass.js"></script>
+  <!-- global -->
+  <script src="colors.js"></script>
+
+  <!-- map -->
+  <script src="src/map/mapElementClass.js"></script>
+  <script src="src/map/cellClass.js"></script>
+  <script src="src/map/mapManagerClass.js"></script>
+
+  <!-- entities -->
+  <script src="src/entities/playerClass.js"></script>
+  <script src="src/entities/enemyClass.js"></script>
+  <script src="src/entities/qLearningEnemyClass.js"></script>
+  <script src="src/entities/bombClass.js"></script>
   
-  <!-- script final -->
+  <!-- items -->
+  <script src="src/items/itemClass.js"></script>
+  <script src="src/items/itemTypes.js"></script>
+
+  <!-- ui -->
+  <script src="src/ui/screenManagerClass.js"></script>
+
   <script src="sketch.js"></script>
 </head>
 <body>
