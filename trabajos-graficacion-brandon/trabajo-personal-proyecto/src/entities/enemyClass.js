@@ -1,25 +1,26 @@
-class Enemy {
+class Enemy extends Entity{
     constructor(gridX, gridY) {
-        this.gridX = gridX;
-        this.gridY = gridY;
-        this.color = COLORS.ENEMY;
+        super("enemy", gridX, gridY, COLORS.ENEMY, false);
         this.moveInterval = 30; // movimiento cada 30 frames
     }
 
     draw() {
+        if (this.shouldSkipDraw()) return;
+        
         fill(this.color);
         noStroke();
         // temporal
         rect(
-            this.gridX * size + size * 0.1,
-            this.gridY * size + size * 0.1,
-            size * 0.8,
-            size * 0.8,
+            this.gridX * CONFIG.SIZE + CONFIG.SIZE * 0.1,
+            this.gridY * CONFIG.SIZE + CONFIG.SIZE * 0.1,
+            CONFIG.SIZE * 0.8,
+            CONFIG.SIZE * 0.8,
             5
         );
     }
 
     update() {
+        this.updateEntity();
         if (frameCount % this.moveInterval === 0) {
             this.moveAutonomously();
         }
@@ -57,7 +58,7 @@ class Enemy {
     }
 
     checkPlayerCollision() {
-        if (player && this.gridX === player.gridX && this.gridY === player.gridY) {
+        if (player && !player.isInvincible && this.gridX === player.gridX && this.gridY === player.gridY) {
             console.log("Contacto con enemigo");
             lives--;
             player.respawn();

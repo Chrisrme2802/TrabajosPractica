@@ -12,6 +12,11 @@ const COLORS = Object.freeze({
     VISOR: "#FFFFFF",
     ENEMY: "#EF4444",
     QENEMY: "#A855F7",
+    DAMAGE: "#FF0000",
+
+    // extra
+    HPBACKGROUND: "#374151",
+    HP: "#22C55E",
 
     // items
     ITEM_BOMB_UP: "#3B82F6",
@@ -19,6 +24,7 @@ const COLORS = Object.freeze({
     ITEM_SPEED_UP: "#34D399",
     ITEM_TIME_ADD: "#22C55E",
     ITEM_TIME_SUB: "#EAB308",
+    ITEM_GHOST: "RAINBOW",
     
     // bomba
     BOMB: "#1F2937",

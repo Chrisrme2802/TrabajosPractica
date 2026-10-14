@@ -6,10 +6,13 @@ class QLearningEnemy extends Enemy {
         // parametros
         this.alpha = 0.1;   // Learning rate
         this.gamma = 0.9;   // Discount factor
-        this.epsilon = 0.2; // 20% exploración, 80% explotación
+        this.epsilon = 0.15; // 20% exploración, 80% explotación
         
-        // { "estado_str": [q_up, q_down, q_left, q_right] }
-        this.qTable = {};
+        this.qTable = this.loadQTable() || {};
+        this.stepCounter = 0;
+
+        this.hp = 3;
+        this.maxHp = 3;
         
         this.actions = [
             { dx: 0, dy: -1 }, // 0: UP
@@ -17,6 +20,52 @@ class QLearningEnemy extends Enemy {
             { dx: -1, dy: 0 }, // 2: LEFT
             { dx: 1, dy: 0 }   // 3: RIGHT
         ];
+    }
+
+    draw() {
+        if (this.shouldSkipDraw()) return;
+
+        push();
+        noStroke();
+        let px = this.gridX * CONFIG.SIZE + CONFIG.SIZE / 2;
+        let py = this.gridY * CONFIG.SIZE + CONFIG.SIZE / 2;
+
+        if (this.hitTimer > 0) {
+            fill(COLORS.DAMAGE);
+        } else {
+            fill(this.color);
+        }
+
+        rectMode(CENTER);
+        rect(px, py, CONFIG.SIZE * 0.75, CONFIG.SIZE * 0.75, 6);
+
+        // ojos
+        fill(255);
+        rect(px - 5, py - 3, 4, 6);
+        rect(px + 5, py - 3, 4, 6);
+
+        // barra de vida
+        let barWidth = CONFIG.SIZE * 0.8;
+        let barHeight = 4;
+        let barY = py - CONFIG.SIZE / 2 - 6;
+
+        fill(COLORS.HPBACKGROUND);
+        rect(px, barY, barWidth, barHeight, 2);
+
+        fill(COLORS.HP);
+        let currentBarWidth = (this.hp / this.maxHp) * barWidth;
+        rectMode(CORNER);
+        rect(px - barWidth / 2, barY - barHeight / 2, currentBarWidth, barHeight, 2);
+
+        pop();
+    }
+
+    update() {
+        this.updateEntity();
+        if (frameCount % this.moveInterval === 0) {
+            this.stepLearning();
+        }
+        this.checkPlayerCollision();
     }
 
     // simplificacion de datos (negativo, neutro, positivo)
@@ -49,13 +98,6 @@ class QLearningEnemy extends Enemy {
             let qValues = this.getQValues(state);
             return qValues.indexOf(Math.max(...qValues)); // Mejor acción (Explotación)
         }
-    }
-
-    update() {
-        if (frameCount % this.moveInterval === 0) {
-            this.stepLearning();
-        }
-        this.checkPlayerCollision();
     }
 
     stepLearning() {
@@ -97,6 +139,11 @@ class QLearningEnemy extends Enemy {
             this.gridY = nextY;
         }
 
+        let standingOnBomb = bombs.some(b => !b.exploded && b.gridX === this.gridX && b.gridY === this.gridY);
+        if (standingOnBomb) {
+            reward -= 50; 
+        }
+
         // calcular nuevo estado y actualizar
         let nextState = this.getState();
         let currentQ = this.getQValues(currentState)[actionIndex];
@@ -104,5 +151,45 @@ class QLearningEnemy extends Enemy {
 
         // Ecuación Bellman de Q-Learning
         this.qTable[currentState][actionIndex] = currentQ + this.alpha * (reward + this.gamma * maxNextQ - currentQ);
+
+        if (this.stepCounter % 50 === 0) {
+            this.saveQTable();
+        }
     }
+
+    takeDamage(amount = 1) {
+        this.hp -= amount;
+        this.hitTimer = 15;
+        console.log(` Vida ${this.hp}/${this.maxHp}`);
+        return this.hp <= 0; // true si muere
+    }
+
+    saveQTable() {
+        try {
+            localStorage.setItem("bomberman_qtable", JSON.stringify(this.qTable));
+            console.log("QTable guardada");
+        } catch (e) {
+            console.error("Error al guardar QTable:", e);
+        }
+    }
+
+    loadQTable() {
+        try {
+            let saved = localStorage.getItem("bomberman_qtable");
+            if (saved) {
+                console.log("QTable previa cargada");
+                return JSON.parse(saved);
+            }
+        } catch (e) {
+            console.error("Error al cargar QTable:", e);
+        }
+        return null;
+    }
+
+    resetBrain() {
+        this.qTable = {};
+        localStorage.removeItem("bomberman_qtable");
+        console.log("Memoria borrada");
+    }
+
 }

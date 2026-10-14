@@ -60,7 +60,7 @@ class MapManager {
                 if (r === 0 || r === this.rows - 1 || c === 0 || c === this.cols - 1 || (r % 2 === 0 && c % 2 === 0)) {
                     this.matrix[r][c].mapElement = new MapElement("wall", c, r, COLORS.WALL, true);
                 } 
-                // zona de spawn
+                // zona de spadaniwn
                 else if (dist(c, r, this.playerSpawn.c, this.playerSpawn.r) <= 1.5) {
                     this.matrix[r][c].mapElement = null;
                 } 
@@ -73,6 +73,18 @@ class MapManager {
         }
         if (boxCells.length > 0) {
             this.exitPosition = random(boxCells);
+        }
+    }
+
+    clearAreaAround(gridX, gridY, radius = 1) {
+        for (let r = gridY - radius; r <= gridY + radius; r++) {
+            for (let c = gridX - radius; c <= gridX + radius; c++) {
+                if (r > 0 && r < this.rows - 1 && c > 0 && c < this.cols - 1) {
+                    if (this.matrix[r][c].mapElement && this.matrix[r][c].mapElement.label === "box") {
+                        this.matrix[r][c].mapElement = null;
+                    }
+                }
+            }
         }
     }
 
@@ -92,6 +104,7 @@ class MapManager {
             let isFarFromPlayer = dist(c, r, playerX, playerY) > 4;
 
             if (isEmpty && isFarFromPlayer) {
+                this.clearAreaAround(c, r, 1);
                 if (spawned === 0) {
                     enemies.push(new QLearningEnemy(c, r));
                 } else {

@@ -14,10 +14,10 @@ class ExplosionTile {
         fill(COLORS.EXPLOSION);
         noStroke();
         rect(
-            this.gridX * size + size * 0.05,
-            this.gridY * size + size * 0.05,
-            size * 0.9,
-            size * 0.9,
+            this.gridX * CONFIG.SIZE + CONFIG.SIZE * 0.05,
+            this.gridY * CONFIG.SIZE + CONFIG.SIZE * 0.05,
+            CONFIG.SIZE * 0.9,
+            CONFIG.SIZE * 0.9,
             4
         );
         pop();
@@ -43,9 +43,9 @@ class Bomb {
         
         // temporal
         circle(
-            this.gridX * size + size / 2,
-            this.gridY * size + size / 2,
-            size * 0.7 + pulse
+            this.gridX * CONFIG.SIZE + CONFIG.SIZE / 2,
+            this.gridY * CONFIG.SIZE + CONFIG.SIZE / 2,
+            CONFIG.SIZE * 0.7 + pulse
         );
     }
 
@@ -108,7 +108,17 @@ class Bomb {
                     }
 
                     // colision enemigo bomba
-                    enemies = enemies.filter(enemy => !(enemy.gridX === targetX && enemy.gridY === targetY));
+                    enemies = enemies.filter(enemy => {
+                    if (enemy.gridX === targetX && enemy.gridY === targetY) {
+                        if (enemy instanceof QLearningEnemy) {
+                            let isDead = enemy.takeDamage(1);
+                            return !isDead;
+                            } else {
+                                return false;
+                            }
+                    }
+                    return true;
+                    });
                 }
             }
         });

@@ -23,5 +23,10 @@ const ITEM_TYPES = Object.freeze({
         id: "TIME_SUB",
         name: "Trampa de Tiempo (-5s)",
         color: COLORS.ITEM_TIME_SUB
+    },
+    GHOST: {
+        id: "GHOST",
+        name: "Romper todo a su paso",
+        color: COLORS.ITEM_GHOST
     }
 });

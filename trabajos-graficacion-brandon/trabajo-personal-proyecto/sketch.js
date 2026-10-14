@@ -1,35 +1,43 @@
-let rows = 16;
-let cols = 16;
-let size = 30;
-let gameMap;
+const CONFIG = {
+    ROWS: 16,
+    COLS: 16,
+    SIZE: 30,
+    INITIAL_LIVES: 3,
+    INITIAL_TIMER: 120,
+    ENEMY_COUNT: 4,
+    HUD_HEIGHT: 40
+};
 
+let gameMap;
 let player;
 let bombs = [];
 let explosions = [];
 let enemies = [];
 
-let gameState = "PLAYING";
-let lives = 3;
-let timer = 120;
+let gameState = "START";
+let lives = CONFIG.INITIAL_LIVES
+let timer = CONFIG.INITIAL_TIMER
 let lastTimerCheck = 0;
 
 function setup() {
-    createCanvas(cols * size, rows * size + 40);
+    createCanvas(CONFIG.COLS * CONFIG.SIZE, CONFIG.ROWS * CONFIG.SIZE + 40);
 
-    gameMap = new MapManager(rows, cols, size);
+    gameMap = new MapManager(CONFIG.ROWS, CONFIG.COLS, CONFIG.SIZE);
     gameMap.initializeMap();
     gameMap.initializeObstacles();
 
     player = new Player(gameMap.playerSpawn.c, gameMap.playerSpawn.r);
 
-    enemies = gameMap.spawnEnemies(2, player.gridX, player.gridY);
+    enemies = gameMap.spawnEnemies(CONFIG.ENEMY_COUNT, player.gridX, player.gridY);
     lastTimerCheck = millis();
 }
 
 function draw() {
     background(COLORS.BG);
-    
-    if (gameState === "PLAYING") {
+    if (gameState === "START") {
+        ScreenManager.drawStartScreen();
+    } else if (gameState === "PLAYING") {
+        player.update();
         updateTimer();
         checkGameRules();
 
@@ -80,6 +88,8 @@ function draw() {
         ScreenManager.drawGameOver();
     } else if (gameState === "WIN") {
         ScreenManager.drawWin();
+    } else if (gameState === "PAUSED") {
+        ScreenManager.drawPauseScreen();
     }
 }
 
@@ -87,6 +97,7 @@ function checkGameRules() {
     // checar vidas
     if (lives <= 0 || timer <= 0) {
         gameState = "GAME_OVER";
+        saveAllQEnemies();
     }
 
     // checar victoria
@@ -94,6 +105,7 @@ function checkGameRules() {
         let currentCell = gameMap.matrix[player.gridY][player.gridX];
         if (currentCell.mapElement && currentCell.mapElement.label === "exit") {
             gameState = "WIN";
+            saveAllQEnemies();
         }
     }
 }
@@ -134,8 +146,8 @@ function drawHUD() {
 }
 
 function resetGame() {
-    lives = 3;
-    timer = 60;
+    lives = CONFIG.INITIAL_LIVES;
+    timer = CONFIG.INITIAL_TIMER;
     gameState = "PLAYING";
     bombs = [];
     explosions = [];
@@ -152,8 +164,22 @@ function resetGame() {
 function keyPressed() {
     if (!player) return;
 
+    // inicio
+    if (gameState === "START") {
+        if (keyCode === ENTER || keyCode === 13 || key === "Enter") {
+            resetGame();
+        }
+        return;
+    }
+
+    // pausa
+    if ((key === 'p' || key === 'P') && (gameState === "PLAYING" || gameState === "PAUSED")) {
+        gameState = (gameState === "PLAYING") ? "PAUSED" : "PLAYING";
+        return;
+    }
+
     // reset
-    if (gameState !== "PLAYING") {
+    if (gameState === "GAME_OVER" || gameState === "WIN") {
         if (key === 'r' || key === 'R') {
             resetGame();
         }
@@ -169,4 +195,13 @@ function keyPressed() {
             bombs.push(new Bomb(player.gridX, player.gridY, player.bombRange));
         }
     }
+}
+
+function saveAllQEnemies() {
+    enemies.forEach(enemy => {
+        if (enemy instanceof QLearningEnemy) {
+            enemy.saveQTable();
+        }
+    });
+    console.log("Todas las QTable guardadas")
 }
