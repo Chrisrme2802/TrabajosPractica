@@ -2,7 +2,6 @@ import * as d3 from 'd3';
 import type { GraphRenderer } from '../core/graph-renderer.js';
 import type { GraphNode } from '../types/dijkstra-types.js';
 
-// Centralizamos los estilos en constantes limpias
 const PREVIEW_BASE = 'fixed pointer-events-none z-50 rounded-full px-3 py-1 text-xs font-bold shadow-lg border -translate-x-1/2 -translate-y-1/2';
 const PREVIEW_START = `${PREVIEW_BASE} bg-amber-500/90 border-amber-400 text-amber-950`;
 const PREVIEW_TARGET = `${PREVIEW_BASE} bg-emerald-500/90 border-emerald-400 text-emerald-950`;
