@@ -7,7 +7,7 @@ export class DijkstraController {
     try {
       const body = req.body as DijkstraRequest;
 
-      // Validación básica del body
+      // validación básica del body
       if (!body.nodes || !body.edges || !body.startNode || !body.targetNode) {
         res.status(400).json({
           error: 'Faltan parámetros requeridos: nodes, edges, startNode, targetNode'
@@ -15,10 +15,10 @@ export class DijkstraController {
         return;
       }
 
-      // Invocamos al servicio con los datos de la petición
+      // invocamos al servicio con los datos de la petición
       const result = DijkstraService.solve(body);
 
-      // Respondemos con el JSON del resultado (path, totalDistance, steps)
+      // respondemos con el JSON del resultado (path, totalDistance, steps)
       res.json(result);
     } catch (error) {
       console.error('Error procesando Dijkstra:', error);

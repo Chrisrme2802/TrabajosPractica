@@ -5,14 +5,14 @@ import { DijkstraController } from './controllers/dijkstra-controller.js';
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// Middlewares
+// middlewares
 app.use(cors());
 app.use(express.json());
 
-// Endpoint de la API
+// endpoint de la API
 app.post('/api/dijkstra', DijkstraController.calculate);
 
-// Inicio del servidor
+// inicio del servidor
 app.listen(PORT, () => {
   console.log(`Servidor corriendo en http://localhost:${PORT}`);
 });

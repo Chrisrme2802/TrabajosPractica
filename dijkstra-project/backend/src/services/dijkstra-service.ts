@@ -1,10 +1,11 @@
 import type { DijkstraRequest, DijkstraResponse, Step } from '../types/dijkstra-types.js';
+import { MinHeap } from '../utils/min-heap.js';
 
 export class DijkstraService {
   public static solve(data: DijkstraRequest): DijkstraResponse {
     const { nodes, edges, startNode, targetNode } = data;
 
-    // 1. Construir lista de adyacencia
+    // lista de adyacencia
     const adjacencyList: Record<string, { node: string; weight: number }[]> = {};
     
     nodes.forEach(node => {
@@ -13,47 +14,44 @@ export class DijkstraService {
 
     edges.forEach(edge => {
       adjacencyList[edge.from]?.push({ node: edge.to, weight: edge.weight });
-      // Si el grafo fuera NO dirigido, agregarías también la arista inversa:
-      // adjacencyList[edge.to]?.push({ node: edge.from, weight: edge.weight });
     });
 
-    // 2. Inicializar HashMaps y conjuntos
+    // inicializar HashMaps y conjuntos
     const distances: Record<string, number> = {};
     const previous: Record<string, string | null> = {};
-    const unvisited = new Set<string>();
-    const visited: string[] = [];
+    const visitedSet = new Set<string>();
+    const visitedOrder: string[] = [];
     const steps: Step[] = [];
 
     nodes.forEach(node => {
       distances[node.id] = Infinity;
       previous[node.id] = null;
-      unvisited.add(node.id);
     });
 
-    // La distancia al nodo origen siempre es 0
+    // distancia al nodo origen siempre es 0
     distances[startNode] = 0;
+
+    const pq = new MinHeap();
+    pq.push({ node: startNode, priority: 0 });
+
     let stepCount = 1;
 
-    // 3. Bucle principal de Dijkstra
-    while (unvisited.size > 0) {
-      // Buscar el nodo no visitado con la menor distancia acumulada
-      let current: string | null = null;
-      let minDistance = Infinity;
+    // bucle principal de Dijkstra
+    while (!pq.isEmpty()) {
+      const currentItem = pq.pop();
+      if (!currentItem) break;
 
-      for (const node of unvisited) {
-        const dist = distances[node] ?? Infinity;
-        if (dist < minDistance) {
-          minDistance = dist;
-          current = node;
-        }
-      }
+      // buscar el nodo no visitado con la menor distancia acumulada
+      const current = currentItem.node;
 
-      // Si no hay nodos alcanzables restantes, rompemos
-      if (current === null || minDistance === Infinity) break;
+      // si ya es definitivo se ignora
+      if (visitedSet.has(current)) continue;
 
-      // Marcar el nodo como permanente/visitado
-      unvisited.delete(current);
-      visited.push(current);
+      // marcar como visitado
+      visitedSet.add(current);
+      visitedOrder.push(current);
+
+      const currentDist = distances[current] ?? Infinity;
 
       // Guardar el estado actual en la bitácora de pasos (para el frontend)
       steps.push({
@@ -61,31 +59,32 @@ export class DijkstraService {
         currentNode: current,
         distances: { ...distances },
         previous: { ...previous },
-        visited: [...visited],
-        description: `Se selecciona el nodo '${current}' con distancia acumulada de ${minDistance}.`
+        visited: [...visitedOrder],
+        description: `Se selecciona el nodo '${current}' con distancia acumulada de ${currentDist}.`
       });
 
-      // Si alcanzamos el objetivo, podemos terminar la búsqueda temprana
+      // terminar si alcanzamos al objetivo
       if (current === targetNode) break;
 
-      // Evaluar los vecinos del nodo actual
+      // vecinos del nodo actual
       const neighbors = adjacencyList[current] || [];
       for (const neighbor of neighbors) {
-        if (!unvisited.has(neighbor.node)) continue; // Ignorar nodos que ya son permanentes
+        if (visitedSet.has(neighbor.node)) continue; // ignorar permanentes
 
-        const currentDist = distances[current] ?? 0;
         const newDist = currentDist + neighbor.weight;
         const neighborDist = distances[neighbor.node] ?? Infinity;
 
-        // Actualizar si encontramos un camino más corto
+        // actualizar si encontramos un camino más corto
         if (newDist < neighborDist) {
           distances[neighbor.node] = newDist;
           previous[neighbor.node] = current;
+          // actualizar cola de prioridad
+          pq.push({ node: neighbor.node, priority: newDist });
         }
       }
     }
 
-    // 4. Reconstruir el camino óptimo hacia atrás (Backtracking)
+    // backtracking para el camino optimo
     const path: string[] = [];
     let curr: string | null = targetNode;
 

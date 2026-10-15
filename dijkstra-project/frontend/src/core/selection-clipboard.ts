@@ -64,6 +64,7 @@ export class SelectionClipboard {
       y: n.y,
     }));
 
+    // solo aristas que tengan tanto inicio como final seleccionado
     this.copiedEdges = allEdges
       .filter((e) => selectedIds.has(e.from) && selectedIds.has(e.to))
       .map((e) => ({
@@ -87,14 +88,21 @@ export class SelectionClipboard {
     const currentEdges = this.renderer.getEdges();
 
     const idMap = new Map<string, string>();
+    
+    // deseleccionar
     currentNodes.forEach((n) => (n.selected = false));
 
     const OFFSET = 40;
 
-    // 1. Crear copias de los nodos
+    const existingIds = new Set(currentNodes.map((n) => n.id));
+
+    // copias de nodos
     this.copiedNodes.forEach((oldNode) => {
-      const newId = this.generateUniqueId(oldNode.id, currentNodes);
+      const newId = this.generateUniqueId(oldNode.id, existingIds);
       idMap.set(oldNode.id, newId);
+      
+      // nuevo ID
+      existingIds.add(newId);
 
       const newNode: GraphNode = {
         id: newId,
@@ -107,7 +115,7 @@ export class SelectionClipboard {
       currentNodes.push(newNode);
     });
 
-    // 2. Crear copias de las aristas internas
+    // copias de edges
     this.copiedEdges.forEach((oldEdge) => {
       const newFrom = idMap.get(oldEdge.from);
       const newTo = idMap.get(oldEdge.to);
@@ -124,21 +132,18 @@ export class SelectionClipboard {
 
     this.sounds?.playPop();
 
-    // Redibujar el SVG
     this.renderer.render();
 
-    // VINCULAR EVENTOS D3 EN LOS NUEVOS NODOS CREADOS
+    // vincular estos nodos a los eventos
     this.interactions.rebindNodeEvents();
 
     this.ui.showToast(`Pegados ${this.copiedNodes.length} nodos`, 'success');
   }
 
-  private generateUniqueId(baseId: string, existingNodes: GraphNode[]): string {
+  private generateUniqueId(baseId: string, existingIds: Set<string>): string {
     const cleanBase = baseId.replace(/_\d+$/, '');
     let counter = 1;
     let candidate = `${cleanBase}_${counter}`;
-
-    const existingIds = new Set(existingNodes.map((n) => n.id));
 
     while (existingIds.has(candidate)) {
       counter++;

@@ -77,9 +77,18 @@ class QLearningEnemy extends Enemy {
         let dy = Math.sign(player.gridY - this.gridY); // -1, 0, 1
 
         // detectar bombas
-        let nearBomb = bombs.some(b => dist(b.gridX, b.gridY, this.gridX, this.gridY) <= 2) ? "DANGER" : "SAFE";
+        let nearBomb = this.getNearestBomb() ? "DANGER" : "SAFE";
 
         return `${dx}_${dy}_${nearBomb}`;
+    }
+
+    getNearestBomb() {
+        return bombs.find(b => {
+            if (b.exploded) return false;
+            let inSameRow = b.gridY === this.gridY && Math.abs(b.gridX - this.gridX) <= 3;
+            let inSameCol = b.gridX === this.gridX && Math.abs(b.gridY - this.gridY) <= 3;
+            return inSameRow || inSameCol;
+        }) || null;
     }
 
     getQValues(state) {
@@ -101,6 +110,8 @@ class QLearningEnemy extends Enemy {
     }
 
     stepLearning() {
+        this.stepCounter++;
+
         let currentState = this.getState();
         let actionIndex = this.chooseAction(currentState);
         let action = this.actions[actionIndex];
@@ -134,14 +145,22 @@ class QLearningEnemy extends Enemy {
             if (newDist === 0) reward += 100;     // atrapar
         }
 
+        // interaccion con bombas
+        let currentBomb = this.getNearestBomb();
+        if (currentBomb) {
+            let oldBombDist = dist(this.gridX, this.gridY, currentBomb.gridX, currentBomb.gridY);
+            let newBombDist = dist(nextX, nextY, currentBomb.gridX, currentBomb.gridY);
+
+            if (newBombDist > oldBombDist) {
+                reward += 15; // Recompensa por alejarse de la bomba
+            } else if (newBombDist <= oldBombDist) {
+                reward -= 20; // Castigo por acercarse o quedarse en el peligro
+            }
+        }
+
         if (isValidMove) {
             this.gridX = nextX;
             this.gridY = nextY;
-        }
-
-        let standingOnBomb = bombs.some(b => !b.exploded && b.gridX === this.gridX && b.gridY === this.gridY);
-        if (standingOnBomb) {
-            reward -= 50; 
         }
 
         // calcular nuevo estado y actualizar

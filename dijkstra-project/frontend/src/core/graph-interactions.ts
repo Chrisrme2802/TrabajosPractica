@@ -18,6 +18,8 @@ export class GraphInteractions {
 
   private zoomBehavior: d3.ZoomBehavior<SVGSVGElement, unknown>;
   private isAltPressed: boolean = false;
+  
+  private isRenderingFrame: boolean = false;
 
   constructor(renderer: GraphRenderer, ui: UIFeedback, sounds?: SoundEffects) {
     this.renderer = renderer;
@@ -38,12 +40,23 @@ export class GraphInteractions {
     this.initNodeEvents();
   }
 
+  // limitar renderizado
+  private requestOptimizedRender(): void {
+    if (!this.isRenderingFrame) {
+      this.isRenderingFrame = true;
+      requestAnimationFrame(() => {
+        this.renderer.render();
+        this.isRenderingFrame = false;
+      });
+    }
+  }
+
   private initPanZoomEvents(): void {
     const svg = this.renderer.getSvg();
     svg.call(this.zoomBehavior);
 
     window.addEventListener('keydown', (e) => {
-      if (e.key === 'Alt') {
+      if (e.key === 'Alt' && !this.isAltPressed) {
         this.isAltPressed = true;
         svg.classed('cursor-grab', true);
       }
@@ -85,7 +98,7 @@ export class GraphInteractions {
       if (isBackground && !this.isAltPressed && event.button === 0) {
         if (!event.ctrlKey && !event.metaKey) {
           this.renderer.getNodes().forEach((n) => (n.selected = false));
-          this.renderer.render();
+          this.renderer.render(); // Redibujado síncrono al iniciar clics sueltos
         }
 
         const coords = d3.pointer(event, svg.select('g.main-group').node());
@@ -126,7 +139,7 @@ export class GraphInteractions {
             node.y <= y + height;
         });
 
-        this.renderer.render();
+        this.requestOptimizedRender();
       }
     });
 
@@ -135,6 +148,8 @@ export class GraphInteractions {
         this.selectionBox.remove();
         this.selectionBox = null;
         this.startSelectionCoords = null;
+
+        this.renderer.render();
       }
     });
   }
@@ -145,8 +160,9 @@ export class GraphInteractions {
       subtitle: `Ingresa un nuevo nombre para "${node.id}".`,
       defaultValue: node.id,
       validate: (val) => {
-        if (!val) return 'El identificador no puede estar vacío.';
-        const upper = val.toUpperCase();
+        const cleanVal = val.trim();
+        if (!cleanVal) return 'El identificador no puede estar vacío.';
+        const upper = cleanVal.toUpperCase();
         if (upper !== node.id && this.renderer.getNodes().some((n) => n.id === upper)) {
           return `Ya existe un nodo con el nombre "${upper}".`;
         }
@@ -178,8 +194,10 @@ export class GraphInteractions {
     const nodeGroups = svg.selectAll<SVGGElement, GraphNode>('g.node-group');
 
     nodeGroups.on('.drag', null);
+    nodeGroups.on('contextmenu', null);
+    nodeGroups.on('click', null);
 
-    // Clic derecho para eliminar nodo
+    // click derecho eliminar nodo
     nodeGroups.on('contextmenu', async (event: MouseEvent, d) => {
       event.preventDefault();
       event.stopPropagation();
@@ -196,7 +214,7 @@ export class GraphInteractions {
       }
     });
 
-    // Clic simple para seleccionar / renombrar
+    // click simple seleccionar / renombrar
     nodeGroups.on('click', async (event: MouseEvent, d) => {
       event.stopPropagation();
       if (this.isAltPressed) return;
@@ -254,9 +272,9 @@ export class GraphInteractions {
             }
           });
 
-          this.renderer.render();
+          this.requestOptimizedRender();
 
-          // Resaltar papelera si se sobrevuela
+          // papelera activa
           const isHovering = this.isOverTrash(
             event.sourceEvent.clientX,
             event.sourceEvent.clientY
@@ -285,14 +303,12 @@ export class GraphInteractions {
         } else {
           this.trashElement?.classList.remove('trash-visible', 'trash-active');
 
-          // Borrar si se soltó sobre la papelera
           const droppedInTrash = this.isOverTrash(
             event.sourceEvent.clientX,
             event.sourceEvent.clientY
           );
 
           if (droppedInTrash) {
-            // Eliminar todos los nodos seleccionados que cayeron en la papelera
             const selected = this.renderer.getNodes().filter((n) => n.selected);
             if (selected.length > 0) {
               selected.forEach((n) => this.renderer.removeNode(n.id));
@@ -304,6 +320,9 @@ export class GraphInteractions {
               this.ui.showToast(`Nodo "${d.id}" eliminado`, 'info');
             }
           }
+          
+          // Aseguramos que quede perfectamente renderizado al soltar
+          this.renderer.render();
         }
       });
 
@@ -339,7 +358,8 @@ export class GraphInteractions {
     return this.renderer.getNodes().find((node) => {
       const dx = x - node.x;
       const dy = y - node.y;
-      return Math.sqrt(dx * dx + dy * dy) <= radius;
+      // Uso de Math.hypot, es ligeramente más rápido y limpio matemáticamente
+      return Math.hypot(dx, dy) <= radius;
     });
   }
 

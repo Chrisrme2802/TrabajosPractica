@@ -3,7 +3,7 @@ export class SoundEffects {
   private enabled: boolean = true;
 
   constructor() {
-    // Inicialización perezosa (lazy) del AudioContext en el primer clic del usuario
+    // lazy de audioContext en primer click
     const initAudio = () => {
       if (!this.ctx) {
         const AudioCtx = window.AudioContext || (window as any).webkitAudioContext;
@@ -23,7 +23,7 @@ export class SoundEffects {
     return this.enabled;
   }
 
-  // 1. Pop suave al crear nodo o conexión
+  // pop suave
   public playPop(): void {
     if (!this.enabled || !this.ctx) return;
 
@@ -31,7 +31,7 @@ export class SoundEffects {
     const gain = this.ctx.createGain();
 
     osc.type = 'sine';
-    osc.frequency.setValueAtTime(440, this.ctx.currentTime); // Nota A4
+    osc.frequency.setValueAtTime(440, this.ctx.currentTime); // A4
     osc.frequency.exponentialRampToValueAtTime(880, this.ctx.currentTime + 0.08); // Rampa rápida hacia A5
 
     gain.gain.setValueAtTime(0.15, this.ctx.currentTime);
@@ -44,7 +44,7 @@ export class SoundEffects {
     osc.stop(this.ctx.currentTime + 0.08);
   }
 
-  // 2. Tick/Step discreto para los pasos del algoritmo
+  // tick para steps
   public playStep(): void {
     if (!this.enabled || !this.ctx) return;
 
@@ -64,7 +64,7 @@ export class SoundEffects {
     osc.stop(this.ctx.currentTime + 0.05);
   }
 
-  // 3. Acorde de éxito cuando se encuentra la ruta óptima final
+  // exito
   public playSuccess(): void {
     if (!this.enabled || !this.ctx) return;
 
@@ -90,7 +90,7 @@ export class SoundEffects {
     });
   }
 
-  // 4. Sonido sutil para papelera / borrar
+  // papelera
   public playDelete(): void {
     if (!this.enabled || !this.ctx) return;
 

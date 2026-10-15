@@ -8,18 +8,22 @@ import { UIFeedback } from './features/ui-feedback.js';
 import { SelectionClipboard } from './core/selection-clipboard.js';
 
 document.addEventListener('DOMContentLoaded', () => {
-  // Instanciar servicios globales
+  // global
   const sounds = new SoundEffects();
   const ui = new UIFeedback();
 
+  // visual
   const renderer = new GraphRenderer('graph-canvas');
-  const interactions = new GraphInteractions(renderer, ui, sounds);
-  const markerDrag = new MarkerDrag(renderer);
   const animController = new AnimationController(renderer, sounds);
 
-  // Sistema de portapapeles (Ctrl+C / Ctrl+V)
-  const clipboard = new SelectionClipboard(renderer, interactions, ui, sounds);
-  const btnExecute = document.getElementById('btn-execute');
+  // autonomos sin asignar a variables
+  const interactions = new GraphInteractions(renderer, ui, sounds);
+  new SelectionClipboard(renderer, interactions, ui, sounds);
+  new GraphInteractions(renderer, ui, sounds);
+  new MarkerDrag(renderer);
+  new SelectionClipboard(renderer, interactions, ui, sounds); // Aquí necesitas pasar 'interactions', así que ajustaremos esto:  
+
+  const btnExecute = document.getElementById('btn-execute') as HTMLButtonElement | null;
 
   btnExecute?.addEventListener('click', async () => {
     const startNode = renderer.getStartNodeId();
@@ -38,16 +42,23 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     try {
+      // bloquear raton para evitar multiples clicks a la api
+      btnExecute.disabled = true;
       btnExecute.textContent = 'Calculando...';
+      btnExecute.classList.add('opacity-50', 'cursor-not-allowed');
+
       const response = await DijkstraApi.solve(requestData);
 
       ui.showToast('Ruta calculada con éxito', 'success');
       animController.loadExecution(response);
       animController.play();
+      
     } catch (error: any) {
       ui.showToast(error.message || 'Error al conectar con el servidor', 'error');
     } finally {
+      btnExecute.disabled = false;
       btnExecute.textContent = 'Calcular Ruta';
+      btnExecute.classList.remove('opacity-50', 'cursor-not-allowed');
     }
   });
 });

@@ -2,13 +2,17 @@ import * as d3 from 'd3';
 import type { GraphRenderer } from '../core/graph-renderer.js';
 import type { GraphNode } from '../types/dijkstra-types.js';
 
+// Centralizamos los estilos en constantes limpias
+const PREVIEW_BASE = 'fixed pointer-events-none z-50 rounded-full px-3 py-1 text-xs font-bold shadow-lg border -translate-x-1/2 -translate-y-1/2';
+const PREVIEW_START = `${PREVIEW_BASE} bg-amber-500/90 border-amber-400 text-amber-950`;
+const PREVIEW_TARGET = `${PREVIEW_BASE} bg-emerald-500/90 border-emerald-400 text-emerald-950`;
+
 export class MarkerDrag {
   private renderer: GraphRenderer;
   private dragPreview: HTMLDivElement | null = null;
 
   constructor(renderer: GraphRenderer) {
     this.renderer = renderer;
-    // Usamos los IDs exactos de tu HTML
     this.initMarkerEvents('drag-start', 'start');
     this.initMarkerEvents('drag-target', 'target');
   }
@@ -26,11 +30,9 @@ export class MarkerDrag {
         .drag<HTMLElement, unknown>()
         .on('start', (event) => {
           this.dragPreview = document.createElement('div');
-          this.dragPreview.className = `fixed pointer-events-none z-50 rounded-full px-3 py-1 text-xs font-bold shadow-lg border transform -translate-x-1/2 -translate-y-1/2 ${
-            type === 'start'
-              ? 'bg-amber-500/90 border-amber-400 text-amber-950'
-              : 'bg-emerald-500/90 border-emerald-400 text-emerald-950'
-          }`;
+          
+          // Asignamos la constante correspondiente
+          this.dragPreview.className = type === 'start' ? PREVIEW_START : PREVIEW_TARGET;
           this.dragPreview.innerText = type === 'start' ? 'INICIO' : 'META';
 
           const srcEvent = event.sourceEvent as MouseEvent;
@@ -53,7 +55,6 @@ export class MarkerDrag {
           }
           element.style.opacity = '1';
 
-          // Calculamos las coordenadas del soltado sobre el SVG
           const [x, y] = d3.pointer(event.sourceEvent, svgNode);
           const node = this.findNodeAtPosition(x, y);
 
@@ -73,7 +74,7 @@ export class MarkerDrag {
     return this.renderer.getNodes().find((node) => {
       const dx = x - node.x;
       const dy = y - node.y;
-      return Math.sqrt(dx * dx + dy * dy) <= radius;
+      return Math.hypot(dx, dy) <= radius;
     });
   }
 }

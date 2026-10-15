@@ -10,7 +10,7 @@
     --color-edge-active: #10b981;
   }
 
-  /* Estado base para todos los nodos */
+  /* nodos */
   .node-default circle {
     fill: #0f172a;
     stroke: #475569;
@@ -36,7 +36,7 @@
     filter: drop-shadow(0 0 8px rgba(16, 185, 129, 0.8));
   }
 
-  /* Estados de la Papelera */
+  /* papelera */
   #trash-zone.trash-visible {
     opacity: 0.9;
     border-color: rgba(239, 68, 68, 0.4);
@@ -74,12 +74,12 @@
     stroke: #818cf8;
   }
 
-  /* Punta de la flecha */
+  /* punta flecha */
   .edge-marker {
     fill: #475569;
   }
 
-  /* Peso */
+  /* peso */
   .edge-weight {
     fill: #94a3b8;
     font-size: 12px;
@@ -87,7 +87,7 @@
     user-select: none;
   }
 
-  /* Procesamiento de nodos */
+  /* proceso de nodos */
   .node-processing circle {
     fill: #8b5cf6;
     stroke: #a78bfa;
@@ -115,7 +115,7 @@
     fill: #10b981;
   }
 
-  /* Alertas, textos, etc */
+  /* alertas, textos, etc */
   .modal-overlay {
     @apply fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 flex items-center justify-center opacity-0 pointer-events-none transition-opacity duration-200;
   }
@@ -190,4 +190,33 @@
 
 .status-completed {
   @apply text-xs px-2.5 py-1 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 font-mono transition-all;
+}
+
+/* clases para filas de tabla */
+.table-row-base {
+  @apply transition-colors duration-200 hover:bg-slate-800/50;
+}
+.table-row-current {
+  @apply bg-indigo-900/40 border-l-2 border-indigo-400;
+}
+.table-row-visited {
+  @apply text-slate-500;
+}
+.table-dist-infinity {
+  @apply text-slate-600 font-serif text-lg;
+}
+.table-dist-value {
+  @apply text-indigo-300 font-bold;
+}
+.table-cell-node {
+  @apply px-2.5 py-1.5 flex items-center gap-2 font-bold;
+}
+.table-cell-dist {
+  @apply px-2.5 py-1.5;
+}
+.table-cell-prev {
+  @apply px-2.5 py-1.5 text-slate-500;
+}
+.pulse-dot {
+  @apply w-1.5 h-1.5 rounded-full bg-indigo-400 animate-pulse shadow-[0_0_8px_rgba(129,140,248,0.8)];
 }

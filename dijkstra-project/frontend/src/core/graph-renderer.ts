@@ -9,7 +9,6 @@ export class GraphRenderer {
   private startNodeId: string | null = null;
   private targetNodeId: string | null = null;
 
-  // Estado visual de la animación
   private currentVisitedNodes: string[] = [];
   private currentNodeProcessing: string | null = null;
   private activeEdge: { from: string; to: string } | null = null;
@@ -52,7 +51,6 @@ export class GraphRenderer {
     this.render();
   }
 
-  // Actualiza los estados visuales según el paso actual devuelto por la API
   public renderStepState(step: Step): void {
     this.currentVisitedNodes = step.visited || [];
     this.currentNodeProcessing = step.currentNode;
@@ -61,7 +59,6 @@ export class GraphRenderer {
     this.render();
   }
 
-  // Ilumina la ruta óptima final
   public renderFinalPath(path: string[]): void {
     this.finalPathEdges.clear();
     for (let i = 0; i < path.length - 1; i++) {
@@ -72,7 +69,6 @@ export class GraphRenderer {
     this.render();
   }
 
-  // Limpia resaltados de la animación y regresa al modo edición
   public resetVisualStates(): void {
     this.currentVisitedNodes = [];
     this.currentNodeProcessing = null;
@@ -90,56 +86,37 @@ export class GraphRenderer {
       mainGroup.append('g').attr('class', 'nodes-layer');
     }
 
-    // Defs para los marcadores de flecha (Normal, Temporal y Ruta Óptima)
+    // defs para los marcadores de flecha
     if (this.svg.select('defs#marker-defs').empty()) {
       const defs = this.svg.append('defs').attr('id', 'marker-defs');
 
-      // Flechas normales
-      defs
-        .append('marker')
-        .attr('id', 'arrowhead')
-        .attr('viewBox', '0 -5 10 10')
-        .attr('refX', this.nodeRadius + 10)
-        .attr('refY', 0)
-        .attr('markerWidth', 6)
-        .attr('markerHeight', 6)
-        .attr('orient', 'auto')
-        .append('path')
-        .attr('d', 'M0,-5L10,0L0,5')
-        .attr('class', 'edge-marker');
+      const createMarker = (id: string, markerClass: string) => {
+        defs
+          .append('marker')
+          .attr('id', id)
+          .attr('viewBox', '0 -5 10 10')
+          .attr('refX', id === 'temp-arrowhead' ? 8 : this.nodeRadius + 10)
+          .attr('refY', 0)
+          .attr('markerWidth', 6)
+          .attr('markerHeight', 6)
+          .attr('orient', 'auto')
+          .append('path')
+          .attr('d', 'M0,-5L10,0L0,5')
+          .attr('class', markerClass);
+      };
 
-      // Flecha temporal
-      defs
-        .append('marker')
-        .attr('id', 'temp-arrowhead')
-        .attr('viewBox', '0 -5 10 10')
-        .attr('refX', 8)
-        .attr('refY', 0)
-        .attr('markerWidth', 6)
-        .attr('markerHeight', 6)
-        .attr('orient', 'auto')
-        .append('path')
-        .attr('d', 'M0,-5L10,0L0,5')
-        .attr('class', 'temp-edge-marker');
-
-      // Flecha para la ruta final
-      defs
-        .append('marker')
-        .attr('id', 'path-arrowhead')
-        .attr('viewBox', '0 -5 10 10')
-        .attr('refX', this.nodeRadius + 10)
-        .attr('refY', 0)
-        .attr('markerWidth', 6)
-        .attr('markerHeight', 6)
-        .attr('orient', 'auto')
-        .append('path')
-        .attr('d', 'M0,-5L10,0L0,5')
-        .attr('class', 'path-edge-marker');
+      createMarker('arrowhead', 'edge-marker');
+      createMarker('temp-arrowhead', 'temp-edge-marker');
+      createMarker('path-arrowhead', 'path-edge-marker');
     }
 
-    // -------------------------------------------------------------
-    // EDGES (ARISTAS)
-    // -------------------------------------------------------------
+    // hash map para busqueda de nodos
+    const nodeMap = new Map<string, GraphNode>();
+    for (const node of this.nodes) {
+      nodeMap.set(node.id, node);
+    }
+
+    // edges
     const edgesLayer = mainGroup.select<SVGGElement>('g.edges-layer');
 
     const edgeSelection = edgesLayer
@@ -167,14 +144,14 @@ export class GraphRenderer {
 
     edgeUpdate.each((d, i, nodes) => {
       const group = d3.select(nodes[i]);
-      const sourceNode = this.nodes.find((n) => n.id === d.from);
-      const targetNode = this.nodes.find((n) => n.id === d.to);
+    
+      const sourceNode = nodeMap.get(d.from);
+      const targetNode = nodeMap.get(d.to);
 
       if (!sourceNode || !targetNode) return;
 
       const line = group.select('line');
 
-      // Determinar clases visuales para animación
       const isPath = this.finalPathEdges.has(`${d.from}-${d.to}`);
       const isActive = this.activeEdge?.from === d.from && this.activeEdge?.to === d.to;
 
@@ -202,9 +179,7 @@ export class GraphRenderer {
         .text(d.weight);
     });
 
-    // -------------------------------------------------------------
-    // NODOS
-    // -------------------------------------------------------------
+    // nodos
     const nodesLayer = mainGroup.select<SVGGElement>('g.nodes-layer');
 
     const nodeSelection = nodesLayer
@@ -225,14 +200,15 @@ export class GraphRenderer {
       .append('text')
       .attr('text-anchor', 'middle')
       .attr('dy', '0.35em')
-      .attr('class', 'fill-slate-200 text-xs font-bold pointer-events-none')
-      .text((d) => d.id);
+      .attr('class', 'fill-slate-200 text-xs font-bold pointer-events-none');
 
     const nodeUpdate = nodeEnter.merge(nodeSelection);
 
     nodeUpdate.attr('transform', (d) => `translate(${d.x}, ${d.y})`);
+    
+    // actualizar texto
+    nodeUpdate.select('text').text((d) => d.id);
 
-    // Asignar estado base (Procesando > Inicio > Meta > Visitado > Default)
     nodeUpdate.attr('class', (d) => {
       let baseClass = 'node-default';
 
@@ -246,10 +222,8 @@ export class GraphRenderer {
         baseClass = 'node-visited';
       }
 
-      // Si el nodo está seleccionado en la caja, se le concatena la clase node-selected
       const selectedClass = d.selected ? ' node-selected' : '';
-
       return `node-group ${baseClass}${selectedClass} cursor-grab`;
     });
   }
-} 
+}

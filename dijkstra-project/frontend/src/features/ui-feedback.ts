@@ -1,5 +1,3 @@
-// src/features/ui-feedback.ts
-
 export class UIFeedback {
   private modalContainer: HTMLElement | null;
   private modalTitle: HTMLElement | null;
@@ -92,21 +90,40 @@ export class UIFeedback {
 
       if (this.modalTitle) this.modalTitle.textContent = options.title;
       if (this.modalSubtitle) this.modalSubtitle.textContent = options.subtitle;
+      
       if (this.modalInputContainer) this.modalInputContainer.classList.add('hidden');
 
       this.openModal();
+
+      setTimeout(() => {
+        this.btnConfirm?.focus();
+      }, 50);
 
       const cleanup = () => {
         this.closeModal();
         this.btnConfirm?.removeEventListener('click', onConfirm);
         this.btnCancel?.removeEventListener('click', onCancel);
+
+        document.removeEventListener('keydown', onKeyDown);
       };
 
       const onConfirm = () => { cleanup(); resolve(true); };
       const onCancel = () => { cleanup(); resolve(false); };
 
+      const onKeyDown = (e: KeyboardEvent) => {
+        if (e.key === 'Enter') {
+          e.preventDefault();
+          onConfirm();
+        } else if (e.key === 'Escape') {
+          e.preventDefault();
+          onCancel();
+        }
+      };
+
       this.btnConfirm?.addEventListener('click', onConfirm);
       this.btnCancel?.addEventListener('click', onCancel);
+      
+      document.addEventListener('keydown', onKeyDown);
     });
   }
 
@@ -119,13 +136,14 @@ export class UIFeedback {
 
     this.toastContainer.appendChild(toast);
 
+    // requestAnimationFrame registra la pos y luego animacion
     requestAnimationFrame(() => {
       toast.classList.add('toast-show');
     });
 
     setTimeout(() => {
       toast.classList.remove('toast-show');
-      setTimeout(() => toast.remove(), 300);
+      setTimeout(() => toast.remove(), 300); // 300ms lo que dura la transicion
     }, 3500);
   }
 

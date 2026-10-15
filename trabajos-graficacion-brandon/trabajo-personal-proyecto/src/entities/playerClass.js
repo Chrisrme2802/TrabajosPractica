@@ -108,7 +108,8 @@ class Player extends Entity {
             this.gridY = targetY;
             this.lastMoveFrame = frameCount;
 
-            if (element && !element.isSolid && element.label !== "none") {
+            let currentElement = gameMap.matrix[this.gridY][this.gridX].mapElement;
+            if (currentElement && !currentElement.isSolid && currentElement.label !== "none") {
                 this.collectItem(element, targetX, targetY);
             }
         }
@@ -118,6 +119,9 @@ class Player extends Entity {
         if (element instanceof Item) {
             element.applyEffect(this);
         }
+
+        if (element.label === "exit") return;
+
         gameMap.matrix[y][x].mapElement = null; 
     }
 

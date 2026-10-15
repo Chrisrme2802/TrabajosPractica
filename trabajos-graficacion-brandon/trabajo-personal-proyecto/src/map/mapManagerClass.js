@@ -91,7 +91,12 @@ class MapManager {
             for (let c = gridX - radius; c <= gridX + radius; c++) {
                 if (r > 0 && r < this.rows - 1 && c > 0 && c < this.cols - 1) {
                     if (this.matrix[r][c].mapElement && this.matrix[r][c].mapElement.label === "box") {
-                        this.matrix[r][c].mapElement = null;
+                        // Si la caja que se limpia es la salida, instanciar la puerta
+                        if (this.exitPosition && this.exitPosition.c === c && this.exitPosition.r === r) {
+                            this.matrix[r][c].mapElement = new MapElement("exit", c, r, COLORS.EXIT, false);
+                        } else {
+                            this.matrix[r][c].mapElement = null;
+                        }
                     }
                 }
             }

@@ -9,7 +9,8 @@ export class AnimationController {
   private finalPath: string[] = [];
   private totalDistance: number = 0;
   private currentStepIndex: number = -1;
-  private timer: number | null = null;
+  
+  private isRunning: boolean = false;
   private speedMs: number = 500;
 
   private btnPlay: HTMLButtonElement | null;
@@ -23,7 +24,6 @@ export class AnimationController {
   private pathSummary: HTMLElement | null;
   private summaryPathText: HTMLElement | null;
   private summaryDistanceText: HTMLElement | null;
-
   private tableBody: HTMLElement | null;
 
   constructor(renderer: GraphRenderer, sounds: SoundEffects) {
@@ -41,7 +41,6 @@ export class AnimationController {
     this.pathSummary = document.getElementById('path-summary');
     this.summaryPathText = document.getElementById('summary-path-text');
     this.summaryDistanceText = document.getElementById('summary-distance-text');
-
     this.tableBody = document.getElementById('node-distance-table-body');
 
     this.initEvents();
@@ -55,10 +54,6 @@ export class AnimationController {
     this.speedInput?.addEventListener('input', (e: Event) => {
       const target = e.target as HTMLInputElement;
       this.speedMs = 1600 - parseInt(target.value, 10);
-      if (this.isPlaying()) {
-        this.pause();
-        this.play();
-      }
     });
   }
 
@@ -75,41 +70,7 @@ export class AnimationController {
   }
 
   public isPlaying(): boolean {
-    return this.timer !== null;
-  }
-
-  public play(): void {
-    if (this.steps.length === 0) return;
-    if (this.currentStepIndex >= this.steps.length - 1) {
-      this.currentStepIndex = 0;
-    }
-
-    if (this.btnPlay) this.btnPlay.textContent = 'Pausar';
-    if (this.statusIndicator) {
-      this.statusIndicator.textContent = 'Ejecutando...';
-      this.statusIndicator.className = 'status-running';
-    }
-
-    this.timer = window.setInterval(() => {
-      if (this.currentStepIndex < this.steps.length - 1) {
-        this.stepForward();
-      } else {
-        this.pause();
-        this.highlightFinalPath();
-      }
-    }, this.speedMs);
-  }
-
-  public pause(): void {
-    if (this.timer !== null) {
-      clearInterval(this.timer);
-      this.timer = null;
-    }
-    if (this.btnPlay) this.btnPlay.textContent = 'Reproducir';
-    if (this.statusIndicator) {
-      this.statusIndicator.textContent = 'Pausado';
-      this.statusIndicator.className = 'status-paused';
-    }
+    return this.isRunning;
   }
 
   public togglePlay(): void {
@@ -117,6 +78,54 @@ export class AnimationController {
       this.pause();
     } else {
       this.play();
+    }
+  }
+
+  public play(): void {
+    if (this.steps.length === 0) return;
+    
+    // reiniciar desde cero si ya había terminado
+    if (this.currentStepIndex >= this.steps.length - 1) {
+      this.currentStepIndex = -1;
+    }
+
+    this.isRunning = true;
+    
+    if (this.btnPlay) this.btnPlay.textContent = 'Pausar';
+    if (this.statusIndicator) {
+      this.statusIndicator.textContent = 'Ejecutando...';
+      this.statusIndicator.className = 'status-running';
+    }
+
+    // iniciar bucle
+    this.playLoop();
+  }
+
+  public pause(): void {
+    this.isRunning = false;
+    
+    if (this.btnPlay) this.btnPlay.textContent = 'Reproducir';
+    if (this.statusIndicator) {
+      this.statusIndicator.textContent = 'Pausado';
+      this.statusIndicator.className = 'status-paused';
+    }
+  }
+
+  // bucle con requestAnimationFrame
+  private async playLoop(): Promise<void> {
+    if (!this.isRunning) return;
+
+    if (this.currentStepIndex < this.steps.length - 1) {
+      this.stepForward();
+      
+      // velocidad
+      await new Promise(resolve => setTimeout(resolve, this.speedMs));
+      
+      // Sincronizar el siguiente paso con el pintado de la pantalla
+      requestAnimationFrame(() => this.playLoop());
+    } else {
+      this.pause();
+      this.highlightFinalPath();
     }
   }
 
@@ -145,9 +154,7 @@ export class AnimationController {
     if (nodes.length === 0) {
       this.tableBody.innerHTML = `
         <tr>
-          <td colspan="3" class="table-empty-cell">
-            No hay nodos en el lienzo.
-          </td>
+          <td colspan="3" class="table-empty-cell">No hay nodos en el lienzo.</td>
         </tr>`;
       return;
     }
@@ -163,23 +170,19 @@ export class AnimationController {
         const isVisited = step.visited?.includes(node.id);
 
         let rowClass = 'table-row-base';
-        if (isCurrent) {
-          rowClass = 'table-row-current';
-        } else if (isVisited) {
-          rowClass = 'table-row-visited';
-        }
+        if (isCurrent) rowClass += ' table-row-current';
+        else if (isVisited) rowClass += ' table-row-visited';
 
         const distClass = isInfinity ? 'table-dist-infinity' : 'table-dist-value';
+        const pulseIndicator = isCurrent ? '<span class="pulse-dot"></span>' : '';
 
         return `
           <tr class="${rowClass}">
             <td class="table-cell-node">
               <span>${node.id}</span>
-              ${isCurrent ? '<span class="pulse-dot"></span>' : ''}
+              ${pulseIndicator}
             </td>
-            <td class="table-cell-dist ${distClass}">
-              ${distText}
-            </td>
+            <td class="table-cell-dist ${distClass}">${distText}</td>
             <td class="table-cell-prev">${prevText}</td>
           </tr>
         `;
@@ -214,7 +217,7 @@ export class AnimationController {
     if (this.pathSummary && this.summaryPathText && this.summaryDistanceText) {
       if (this.finalPath.length > 0) {
         this.summaryPathText.textContent = this.finalPath.join(' ➔ ');
-        this.summaryDistanceText.textContent = `Costo Total Mínimo: ${this.totalDistance}`;
+        this.summaryDistanceText.textContent = `Costo Total: ${this.totalDistance}`;
         this.sounds.playSuccess();
       } else {
         this.summaryPathText.textContent = 'No existe ruta alcanzable';
@@ -224,6 +227,7 @@ export class AnimationController {
     }
 
     this.renderer.renderFinalPath(this.finalPath);
+    this.updateControlsState();
   }
 
   private updateControlsState(): void {
@@ -249,9 +253,7 @@ export class AnimationController {
     if (this.tableBody) {
       this.tableBody.innerHTML = `
         <tr>
-          <td colspan="3" class="table-empty-cell">
-            Sin datos de ejecución.
-          </td>
+          <td colspan="3" class="table-empty-cell">Sin datos de ejecución.</td>
         </tr>`;
     }
 
