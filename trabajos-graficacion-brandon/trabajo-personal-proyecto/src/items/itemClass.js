@@ -5,24 +5,36 @@ class Item extends MapElement {
         this.type = typeConfig;
     }
 
-    draw(x, y, size) {
+    draw() {
         push();
-        let centerX = x + size / 2;
-        let centerY = y + size / 2;
+        let centerX = this.gridX * CONFIG.SIZE + CONFIG.SIZE / 2;
+        let centerY = this.gridY * CONFIG.SIZE + CONFIG.SIZE / 2;
 
         let pulse = sin(frameCount * 0.1) * 2;
-        fill(this.color);
+        
+        if (this.type.id === ITEM_TYPES.GHOST.id || this.type.color === "RAINBOW") {
+            fill(getRainbowColor(5));
+        } else {
+            fill(this.type.color);
+        }
+
         noStroke();
-        ellipse(centerX, centerY, size * 0.6 + pulse);
+        ellipse(centerX, centerY, CONFIG.SIZE * 0.6 + pulse);
 
         noFill();
         stroke(255, 200);
         strokeWeight(1.5);
-        ellipse(centerX, centerY, size * 0.65 + pulse);
+        ellipse(centerX, centerY, CONFIG.SIZE * 0.65 + pulse);
         pop();
     }
 
     applyEffect(player) {
+        ScreenManager.triggerItemAlert(
+            `¡${this.type.name}!`,
+            `Efecto obtenido: ${this.type.name}`,
+            this.type.color === "RAINBOW" ? "#A855F7" : this.type.color
+        );
+        
         switch (this.type.id) {
             case ITEM_TYPES.BOMB_UP.id:
                 player.maxBombs++;
@@ -48,6 +60,17 @@ class Item extends MapElement {
                 timer = max(0, timer - 5);
                 console.log("¡Trampa! -5s");
                 break;
+            case ITEM_TYPES.GHOST.id:
+                player.activateGhostMode(300);
+                break;
         }
     }
+}
+
+function getRainbowColor(speed = 5) {
+        colorMode(HSB, 360, 100, 100);
+        let hueValue = (frameCount * speed) % 360;
+        let c = color(hueValue, 80, 100);
+        colorMode(RGB, 255);
+        return c;
 }

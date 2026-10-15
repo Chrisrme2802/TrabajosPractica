@@ -7,19 +7,14 @@ class Player extends Entity {
         this.maxBombs = 1;
         this.moveDelay = 15;
 
-        this.isPoweredUp = false;
-        this.powerUpTimer = 0;
+        this.isGhostMode = false;
+        this.ghostModeTimer = 0;
         
         this.lastMoveFrame = 0;
     }
 
     draw() {
         if (this.shouldSkipDraw()) return;
-
-        if (this.isPoweredUp) {
-            fill(255, 215, 0, 150);
-            ellipse(posX, posY, size * 1.2);
-        }
 
         push()
         fill(this.color);
@@ -28,6 +23,15 @@ class Player extends Entity {
         // temporal
         let posX = this.gridX * CONFIG.SIZE + CONFIG.SIZE / 2;
         let posY = this.gridY * CONFIG.SIZE + CONFIG.SIZE / 2;
+
+        if (this.isGhostMode) {
+            let auraSize = CONFIG.SIZE * 1.3 + sin(frameCount * 0.2) * 5;
+            let rainbow = getRainbowColor(8);
+            
+            rainbow.setAlpha(150); 
+            fill(rainbow);
+            ellipse(posX, posY, auraSize);
+        }
 
         let pulse = sin(frameCount * 0.1) * 2;
 
@@ -51,10 +55,10 @@ class Player extends Entity {
     update() {
         this.updateEntity();
         
-        if (this.isPoweredUp) {
-            this.powerUpTimer--;
-            if (this.powerUpTimer <= 0) {
-                this.isPoweredUp = false;
+        if (this.isGhostMode) {
+            this.ghostModeTimer--;
+            if (this.ghostModeTimer <= 0) {
+                this.isGhostMode = false;
                 this.moveDelay = 15;
             }
         }
@@ -87,8 +91,17 @@ class Player extends Entity {
             let element = targetCell.mapElement;
 
             // solidos
-            if (element && element.isSolid) {
+            if (element && element.label === "wall") {
                 return; 
+            }
+
+            if (element && element.label === "box") {
+                if (this.isGhostMode) {
+                    gameMap.destroyBoxAndSpawnItem(targetX, targetY);
+                    element = gameMap.matrix[targetY][targetX].mapElement;
+                } else {
+                    return;
+                }
             }
 
             this.gridX = targetX;
@@ -108,9 +121,9 @@ class Player extends Entity {
         gameMap.matrix[y][x].mapElement = null; 
     }
 
-    activateSpeedPowerUp() {
-        this.isPoweredUp = true;
-        this.powerUpTimer = 300;
+    activateGhostMode() {
+        this.isGhostMode = true;
+        this.ghostModeTimer = 240;
         this.moveDelay = 7;
     }
 }   

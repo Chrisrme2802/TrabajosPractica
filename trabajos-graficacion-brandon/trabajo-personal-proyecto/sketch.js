@@ -62,6 +62,8 @@ function draw() {
             player.draw();
         }
 
+        ScreenManager.drawItemOverlay();
+
         bombs.forEach(bomb => {
             bomb.update();
             bomb.draw();

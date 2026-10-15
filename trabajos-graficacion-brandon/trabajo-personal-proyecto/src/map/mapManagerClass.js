@@ -11,11 +11,21 @@ class MapManager {
     draw() {
         this.matrix.forEach(cellRow => {
             cellRow.forEach(cell => {
-                let element = cell.mapElement ? cell.mapElement : cell.voidElement;
-                
-                fill(element.color);
+                let voidElem = cell.voidElement;
+                fill(voidElem.color);
                 stroke(COLORS.GRID_STROKE);
-                rect(element.posX * this.size, element.posY * this.size, this.size, this.size);
+                rect(voidElem.gridX * this.size, voidElem.gridY * this.size, this.size, this.size);
+                
+                if (cell.mapElement) {
+                    let mapElem = cell.mapElement;
+                    if (typeof mapElem.draw === "function") {
+                        mapElem.draw();
+                    } else {
+                        fill(mapElem.color);
+                        stroke(COLORS.GRID_STROKE);
+                        rect(mapElem.gridX * this.size, mapElem.gridY * this.size, this.size, this.size);
+                    }
+                }
             });
         });
     }
@@ -60,7 +70,7 @@ class MapManager {
                 if (r === 0 || r === this.rows - 1 || c === 0 || c === this.cols - 1 || (r % 2 === 0 && c % 2 === 0)) {
                     this.matrix[r][c].mapElement = new MapElement("wall", c, r, COLORS.WALL, true);
                 } 
-                // zona de spadaniwn
+                // zona de spawn
                 else if (dist(c, r, this.playerSpawn.c, this.playerSpawn.r) <= 1.5) {
                     this.matrix[r][c].mapElement = null;
                 } 
@@ -127,13 +137,7 @@ class MapManager {
 
         // probabilidad
         if (random(1) < dropChance) {
-            const availableItems = [
-                ITEM_TYPES.BOMB_UP,
-                ITEM_TYPES.RANGE_UP,
-                ITEM_TYPES.SPEED_UP,
-                ITEM_TYPES.TIME_ADD,
-                ITEM_TYPES.TIME_SUB
-            ];
+            const availableItems = Object.values(ITEM_TYPES);
             let selectedType = random(availableItems);
             cell.mapElement = new Item(selectedType, x, y);
         } else {

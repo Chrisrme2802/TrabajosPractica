@@ -1,8 +1,8 @@
 class MapElement{
-    constructor(label, posX, posY, color, isSolid = false){
+    constructor(label, gridX, gridY, color, isSolid = false){
         this.label = label;
-        this.posX = posX;
-        this.posY = posY;
+        this.gridX = gridX;
+        this.gridY = gridY;
         this.color = color;
         this.isSolid = isSolid;
     }
