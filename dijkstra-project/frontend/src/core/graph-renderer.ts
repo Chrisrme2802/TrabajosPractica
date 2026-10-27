@@ -26,6 +26,37 @@ export class GraphRenderer {
   public getStartNodeId(): string | null { return this.startNodeId; }
   public getTargetNodeId(): string | null { return this.targetNodeId; }
 
+  public loadGraph(nodes: Partial<GraphNode>[], edges: GraphEdge[]): void {
+    // reset
+    this.startNodeId = null;
+    this.targetNodeId = null;
+    this.resetVisualStates();
+
+    // nodos
+    this.nodes = nodes.map((node, index) => {
+      let x = node.x;
+      let y = node.y;
+
+      return {
+        id: node.id || `node-${index}`,
+        label: node.label || node.id,
+        x,
+        y,
+        selected: false,
+      } as GraphNode;
+    });
+
+    // aristas
+    this.edges = edges.map((edge, index) => ({
+      id: edge.id || `edge-${edge.from}-${edge.to}-${index}`,
+      from: edge.from,
+      to: edge.to,
+      weight: edge.weight,
+    }));
+
+    this.render();
+  }
+
   public addNode(node: GraphNode): void {
     this.nodes.push(node);
     this.render();

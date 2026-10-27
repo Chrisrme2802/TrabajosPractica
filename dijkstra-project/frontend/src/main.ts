@@ -6,9 +6,10 @@ import { DijkstraApi } from './services/dijkstra-api.js';
 import { SoundEffects } from './services/sound-effects.js';
 import { UIFeedback } from './features/ui-feedback.js';
 import { SelectionClipboard } from './core/selection-clipboard.js';
+import { GraphLoaderService } from './services/graph-loader.js';
 
 document.addEventListener('DOMContentLoaded', () => {
-  // global
+  // globales
   const sounds = new SoundEffects();
   const ui = new UIFeedback();
 
@@ -16,14 +17,58 @@ document.addEventListener('DOMContentLoaded', () => {
   const renderer = new GraphRenderer('graph-canvas');
   const animController = new AnimationController(renderer, sounds);
 
-  // autonomos sin asignar a variables
+  // interacciones
   const interactions = new GraphInteractions(renderer, ui, sounds);
   new SelectionClipboard(renderer, interactions, ui, sounds);
-  new GraphInteractions(renderer, ui, sounds);
   new MarkerDrag(renderer);
-  new SelectionClipboard(renderer, interactions, ui, sounds); // Aquí necesitas pasar 'interactions', así que ajustaremos esto:  
 
   const btnExecute = document.getElementById('btn-execute') as HTMLButtonElement | null;
+
+  // presets
+  const btnLoadSinaloa = document.getElementById('btn-load-sinaloa') as HTMLButtonElement | null;
+  const btnUploadJson = document.getElementById('btn-upload-json') as HTMLButtonElement | null;
+  const fileInputJson = document.getElementById('file-input-json') as HTMLInputElement | null;
+
+  btnLoadSinaloa?.addEventListener('click', () => {
+    try {
+      const data = GraphLoaderService.getSinaloaPreset();
+      
+      renderer.loadGraph(data.nodes, data.edges);
+      
+      interactions.rebindNodeEvents();
+
+      sounds.playSuccess?.();
+      ui.showToast('Mapa de Sinaloa cargado correctamente', 'success');
+    } catch (error: any) {
+      ui.showToast('Error al cargar el mapa preset', 'error');
+    }
+  });
+
+  // upload
+  btnUploadJson?.addEventListener('click', () => {
+    fileInputJson?.click();
+  });
+
+  fileInputJson?.addEventListener('change', async (event) => {
+    const input = event.target as HTMLInputElement;
+    if (!input.files || input.files.length === 0) return;
+
+    const file = input.files[0];
+    try {
+      const data = await GraphLoaderService.parseJsonFile(file);
+      
+      // renderizar datos con load
+      renderer.loadGraph(data.nodes, data.edges);
+      
+      // recargar eventos
+      interactions.rebindNodeEvents();
+
+      ui.showToast(`Grafo '${file.name}' cargado con éxito`, 'success');
+      input.value = '';
+    } catch (error: any) {
+      ui.showToast(error.message || 'Error al procesar el archivo JSON', 'error');
+    }
+  });
 
   btnExecute?.addEventListener('click', async () => {
     const startNode = renderer.getStartNodeId();
@@ -42,7 +87,7 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     try {
-      // bloquear raton para evitar multiples clicks a la api
+      // bloquear botón para evitar spam de peticiones
       btnExecute.disabled = true;
       btnExecute.textContent = 'Calculando...';
       btnExecute.classList.add('opacity-50', 'cursor-not-allowed');
@@ -52,7 +97,7 @@ document.addEventListener('DOMContentLoaded', () => {
       ui.showToast('Ruta calculada con éxito', 'success');
       animController.loadExecution(response);
       animController.play();
-      
+
     } catch (error: any) {
       ui.showToast(error.message || 'Error al conectar con el servidor', 'error');
     } finally {

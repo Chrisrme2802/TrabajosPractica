@@ -1,16 +1,11 @@
-export interface GraphNode {
-  id: string;
+export interface GraphNode extends Node {
   x: number;
   y: number;
-  label?: string;
   selected?: boolean;
 }
 
-export interface GraphEdge {
+export interface GraphEdge extends Edge {
   id: string;
-  from: string;
-  to: string;
-  weight: number;
 }
 
 // Las mismas del backend

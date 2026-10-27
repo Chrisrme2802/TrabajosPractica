@@ -65,7 +65,6 @@
         <div class="border-t border-slate-800 pt-3 flex flex-col gap-2">
           <div class="flex items-center justify-between">
             <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400">Tabla de Distancias</span>
-            <span class="text-[10px] text-slate-500 font-mono">Dijkstra Live</span>
           </div>
         
           <div class="max-h-48 overflow-y-auto rounded-lg border border-slate-800 bg-slate-950/50">
@@ -86,6 +85,22 @@
               </tbody>
             </table>
           </div>
+        </div>
+
+        <div class="border-t border-slate-800 pt-3 flex flex-col gap-2">
+          <button 
+            id="btn-load-sinaloa" 
+            class="w-full bg-slate-800 hover:bg-slate-700 text-indigo-300 text-xs py-2 px-3 rounded-lg font-medium border border-indigo-500/20 transition cursor-pointer flex items-center justify-center gap-2">
+            Mapa Sinaloa
+          </button>
+        
+          <button 
+            id="btn-upload-json" 
+            class="w-full bg-slate-800/60 hover:bg-slate-700/60 text-slate-300 text-xs py-1.5 px-3 rounded-lg font-medium border border-slate-700 transition cursor-pointer flex items-center justify-center gap-2">
+            Custom...
+          </button>
+
+          <input type="file" id="file-input-json" accept=".json" class="hidden" />
         </div>
       </aside>
 

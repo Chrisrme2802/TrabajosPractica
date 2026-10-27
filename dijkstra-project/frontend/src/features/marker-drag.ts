@@ -54,7 +54,9 @@ export class MarkerDrag {
           }
           element.style.opacity = '1';
 
-          const [x, y] = d3.pointer(event.sourceEvent, svgNode);
+          // Usar el contenedor transformado 'g.main-group' en lugar del SVG raíz
+          const mainGroupNode = svg.select<SVGGElement>('g.main-group').node() || svgNode;
+          const [x, y] = d3.pointer(event.sourceEvent, mainGroupNode);
           const node = this.findNodeAtPosition(x, y);
 
           if (node) {

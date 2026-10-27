@@ -29,7 +29,10 @@ export class GraphInteractions {
 
     this.zoomBehavior = d3.zoom<SVGSVGElement, unknown>()
       .scaleExtent([0.3, 3])
-      .filter((event) => event.type === 'wheel' || (this.isAltPressed && event.button === 0))
+      .filter((event) => {
+        if (event.type === 'wheel') return true;
+        return event.altKey || this.isAltPressed;
+      })
       .on('zoom', (event) => {
         const mainGroup = this.renderer.getSvg().select('g.main-group');
         mainGroup.attr('transform', event.transform);
@@ -56,17 +59,29 @@ export class GraphInteractions {
     svg.call(this.zoomBehavior);
 
     window.addEventListener('keydown', (e) => {
-      if (e.key === 'Alt' && !this.isAltPressed) {
-        this.isAltPressed = true;
-        svg.classed('cursor-grab', true);
+      if (e.key === 'Alt') {
+        e.preventDefault(); // Evita que la tecla Alt active la barra de menús del navegador
+        if (!this.isAltPressed) {
+          this.isAltPressed = true;
+          svg.classed('cursor-grab', true);
+        }
       }
     });
 
+    const resetAltState = () => {
+      this.isAltPressed = false;
+      svg.classed('cursor-grab cursor-grabbing', false);
+    };
+
     window.addEventListener('keyup', (e) => {
       if (e.key === 'Alt') {
-        this.isAltPressed = false;
-        svg.classed('cursor-grab', false);
+        e.preventDefault();
+        resetAltState();
       }
+    });
+
+    window.addEventListener('blur', () => {
+      resetAltState();
     });
   }
 
@@ -86,7 +101,7 @@ export class GraphInteractions {
 
     svg.on('dblclick', async (event: MouseEvent) => {
       event.preventDefault();
-      if (event.shiftKey || this.isAltPressed) return;
+      if (event.shiftKey || event.altKey || this.isAltPressed) return;
       const [x, y] = d3.pointer(event, svg.select('g.main-group').node());
       await this.promptAddNode(x, y);
     });
@@ -95,7 +110,7 @@ export class GraphInteractions {
       const target = event.target as HTMLElement;
       const isBackground = target.tagName === 'svg' || target.classList.contains('canvas-bg');
 
-      if (isBackground && !this.isAltPressed && event.button === 0) {
+      if (isBackground && !event.altKey && !this.isAltPressed && event.button === 0) {
         if (!event.ctrlKey && !event.metaKey) {
           this.renderer.getNodes().forEach((n) => (n.selected = false));
           this.renderer.render(); // Redibujado síncrono al iniciar clics sueltos
@@ -217,7 +232,7 @@ export class GraphInteractions {
     // click simple seleccionar / renombrar
     nodeGroups.on('click', async (event: MouseEvent, d) => {
       event.stopPropagation();
-      if (this.isAltPressed) return;
+      if (event.altKey || this.isAltPressed) return;
 
       if (!event.ctrlKey && !event.metaKey) {
         this.renderer.getNodes().forEach((n) => (n.selected = false));
@@ -233,7 +248,7 @@ export class GraphInteractions {
 
     const dragBehavior = d3
       .drag<SVGGElement, GraphNode>()
-      .filter((event: MouseEvent) => event.button === 0 && !this.isAltPressed)
+      .filter((event: MouseEvent) => event.button === 0 && !event.altKey && !this.isAltPressed)
       .on('start', (event, d) => {
         if (event.sourceEvent.shiftKey) {
           this.sourceNode = d;
@@ -292,7 +307,8 @@ export class GraphInteractions {
           this.tempLine = null;
 
           if (this.sourceNode) {
-            const [x, y] = d3.pointer(event, svg.select('g.main-group').node());
+            const mainGroupNode = svg.select('g.main-group').node();
+            const [x, y] = d3.pointer(event, mainGroupNode);
             const targetNode = this.findNodeAtPosition(x, y);
 
             if (targetNode && targetNode.id !== this.sourceNode.id) {
@@ -358,7 +374,6 @@ export class GraphInteractions {
     return this.renderer.getNodes().find((node) => {
       const dx = x - node.x;
       const dy = y - node.y;
-      // Uso de Math.hypot, es ligeramente más rápido y limpio matemáticamente
       return Math.hypot(dx, dy) <= radius;
     });
   }
